@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartAdmin.Entity\SmartAdmin.Entity.csproj" />
+    <ProjectReference Include="..\SmartAdmin.Repository\SmartAdmin.Repository.csproj" />
+    <ProjectReference Include="..\URF.Core\URF.Core.EF.Trackable\URF.Core.EF.Trackable.csproj" />
+    <ProjectReference Include="..\URF.Core\URF.Core.Services\URF.Core.Services.csproj" />
+  </ItemGroup>
+
+</Project>

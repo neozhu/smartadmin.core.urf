@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Version>3.1.0</Version>
+    <Authors>Long Le, Tony Sneed</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/urfnet/URF.Core</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <Title>URF - Unit of Work and Repositories Framework for .NET Standard and .NET Core (Official): Trackable Entities Core</Title>
+    <Description>This official URF framework minimizes the surface area of your ORM technlogy from disseminating in your application. Framework provides an elegant way to implement a reusable and extensible Unit of Work and Repository pattern.</Description>
+    <PackageTags>repository unitofwork patterns</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.4" />
+    <PackageReference Include="TrackableEntities.Common.Core" Version="3.1.0" />
+    <PackageReference Include="TrackableEntities.EF.Core" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\URF.Core.Abstractions.Trackable\URF.Core.Abstractions.Trackable.csproj" />
+    <ProjectReference Include="..\URF.Core.Abstractions\URF.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\URF.Core.EF\URF.Core.EF.csproj" />
+  </ItemGroup>
+
+</Project>

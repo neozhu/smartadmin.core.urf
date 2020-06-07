@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Version>3.1.2</Version>
+    <Authors>Long Le, Tony Sneed</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/urfnet/URF.Core</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <Title>URF - Unit of Work and Repositories Framework for .NET Standard and .NET Core (Official): Abstractions</Title>
+    <Description>This official URF framework minimizes the surface area of your ORM technlogy from disseminating in your application. Framework provides an elegant way to implement a reusable and extensible Unit of Work and Repository pattern.</Description>
+    <PackageTags>repository unitofwork service patterns</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/urfnet/URF.Core</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+</Project>
