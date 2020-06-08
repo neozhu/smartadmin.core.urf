@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using SmartAdmin.Entity.Models;
@@ -8,6 +9,7 @@ using URF.Core.Abstractions;
 
 namespace SmartAdmin.WebUI.Controllers
 {
+  [Authorize]
   public class HomeController : Controller
   {
     private readonly ICompanyService  _companyService;

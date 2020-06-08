@@ -51,7 +51,13 @@ namespace SmartAdmin.WebUI
 
       services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
       services.AddDbContext<SmartDbContext>(options => options.UseSqlServer(connectionString));
-      services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+      services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+        options.Password.RequiredLength = 4;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+      })
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
