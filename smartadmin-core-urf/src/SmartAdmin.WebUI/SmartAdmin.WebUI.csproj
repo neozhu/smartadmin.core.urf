@@ -5,11 +5,6 @@
     <UserSecretsId>aspnet-SmartAdmin.WebUI-1757DFEF-8A50-4CF6-A39D-79B9DFFE19FC</UserSecretsId>
   </PropertyGroup>
 
-
-  <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.4" />
@@ -24,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartAdmin.Data\SmartAdmin.Data.csproj" />
+    <ProjectReference Include="..\SmartAdmin.Service\SmartAdmin.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
