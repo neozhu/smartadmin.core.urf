@@ -9,7 +9,7 @@ namespace Northwind.Data
         public SmartDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<SmartDbContext>();
-            optionsBuilder.UseSqlServer("Server=.;Database=Northwind;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=(LocalDb)\\MSSQLLocalDB;Database=SmartDb;Trusted_Connection=True;");
             return new SmartDbContext(optionsBuilder.Options);
         }
     }

@@ -30,6 +30,9 @@ namespace Northwind.Data.Models
                 entity.HasIndex(e => e.Name)
                         .IsUnique()
                         .HasFilter(null);
+                entity.HasIndex(e => e.Code)
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
             });
         }
