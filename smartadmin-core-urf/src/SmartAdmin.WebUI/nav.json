@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "4.5",
   "lists": [
     {
@@ -12,7 +12,21 @@
           "href": "intel_analytics_dashboard.html",
           "roles": []
         }
-       
+
+      ]
+    },
+    {
+      "title": "组织架构",
+      "icon": "fal fa-window",
+      "roles": [],
+      "items": [
+        {
+          "title": "企业信息",
+          "showOnSeed": false,
+          "href": "Company_Index.html",
+          "roles": []
+        }
+
       ]
     }
     
