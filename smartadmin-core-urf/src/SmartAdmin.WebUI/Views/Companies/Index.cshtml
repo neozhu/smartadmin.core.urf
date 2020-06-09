@@ -554,9 +554,10 @@
             $('#dt-basic-example').dataTable({
                 responsive: true,
                 searching: false,
-                "lengthMenu": [[10, 20, 50, 100, 500, 1000, -1],[10,20 ,50, 100, 500,1000,"ALL"]],
-                "dom": 'rt<"d-flex flex-row"<"mr-auto"l><"mr-2"i><""p>><"clear">',
-                "language": {
+                responsive: true,
+                lengthMenu: [[10, 20, 50, 100, 500, 1000, -1],[10,20 ,50, 100, 500,1000,"ALL"]],
+                dom: 'rt<"d-flex flex-row"<"mr-auto"l><"mr-2"i><""p>><"clear">',
+                language: {
                     "loadingRecords": "加载数据...",
                     "processing": "处理数据...",
                     "search": "查询:",
