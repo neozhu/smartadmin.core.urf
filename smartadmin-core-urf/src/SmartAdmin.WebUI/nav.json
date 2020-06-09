@@ -18,7 +18,7 @@
     {
       "title": "组织架构",
       "icon": "fal fa-window",
-      "roles": ["admin"],
+      "roles": [],
       "items": [
         {
           "title": "企业信息",

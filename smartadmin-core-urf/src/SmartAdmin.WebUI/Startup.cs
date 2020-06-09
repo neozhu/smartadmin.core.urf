@@ -87,7 +87,7 @@ namespace SmartAdmin.WebUI
           .AddControllersWithViews();
 
       services.AddRazorPages();
-
+      services.AddMvc().AddRazorRuntimeCompilation();
       services.ConfigureApplicationCookie(options =>
       {
         // Cookie settings
