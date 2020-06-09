@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,26 +45,36 @@ namespace SmartAdmin.WebUI
 
       services.Configure<CookiePolicyOptions>(options =>
       {
-              // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-              options.CheckConsentNeeded = context => true;
+        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+        options.CheckConsentNeeded = context => true;
         options.MinimumSameSitePolicy = SameSiteMode.None;
       });
       var connectionString = Configuration.GetConnectionString(nameof(SmartDbContext));
 
       services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
       services.AddDbContext<SmartDbContext>(options => options.UseSqlServer(connectionString));
-      services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+      services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+      {
+        // Password settings.
         options.Password.RequiredLength = 4;
         options.Password.RequireLowercase = false;
         options.Password.RequireUppercase = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireDigit = false;
+
+        // Lockout settings.
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
+        // User settings.
+        //options.User.AllowedUserNameCharacters ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        options.User.RequireUniqueEmail = true;
       })
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-
+   
 
       services.AddScoped<DbContext, SmartDbContext>();
       services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -78,6 +90,10 @@ namespace SmartAdmin.WebUI
 
       services.ConfigureApplicationCookie(options =>
       {
+        // Cookie settings
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
         options.AccessDeniedPath = "/Identity/Account/AccessDenied";

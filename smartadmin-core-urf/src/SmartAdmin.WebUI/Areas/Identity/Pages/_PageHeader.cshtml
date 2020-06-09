@@ -8,16 +8,16 @@
         @if (canLogin)
         {
             <span class="text-white opacity-50 ml-auto mr-2 hidden-sm-down">
-                Already a member?
+                已有账号?
             </span>
             <a class="btn-link text-white ml-auto ml-sm-0" asp-area="Identity" asp-page="/account/login">
-                Secure Login
+                登录
             </a>
         }
         else
         {
             <a class="btn-link text-white ml-auto" asp-area="Identity" asp-page="/account/register">
-                Register account
+                注册新账号
             </a>
         }
     </div>
