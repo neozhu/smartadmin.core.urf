@@ -21,7 +21,7 @@
 
             </div>
             <div class="panel-container show">
-                <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
+                <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
                     <div class="row no-gutters align-items-center">
                         <div class="col">
                             <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
@@ -42,16 +42,18 @@
                                 <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 最常用的企业 </a>
+                                <div class="dropdown-menu dropdown-menu-animated">
+                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
                                 </div>
                             </div>
                             <div class="btn-group btn-group-sm hidden-xs">
                                 <button type="button" onclick="importexcel('Company')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
-                                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu dropdown-menu-animated">
                                     <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()"><span class="fal fa-download"></span> 下载模板 </a>
                                 </div>
                             </div>
@@ -534,7 +536,7 @@
                                 <td>$112,000</td>
                             </tr>
                         </tbody>
-                        
+
                     </table>
                 </div>
             </div>
@@ -548,36 +550,44 @@
 @section ScriptsBlock {
     <script src="~/js/datagrid/datatables/datatables.bundle.js"></script>
     <script>
-        /* demo scripts for change table color */
-        /* change background */
+
         $(document).ready(function () {
-            $('#dt-basic-example').dataTable({
+
+            $('#dt-basic-example thead tr').clone(true).appendTo('#dt-basic-example thead');
+            $('#dt-basic-example thead tr:eq(1) th').each(function (i) {
+                var title = $(this).text();
+                $(this).html('<input type="text" class="form-control form-control-sm" placeholder="' + title + '" />');
+                $('input', this).on('keyup change', function () {
+                    console.log(table)
+                    if (table.column(i).search() !== this.value) {
+                        table
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+            var table = $('#dt-basic-example').DataTable({
+                searching: true,
                 responsive: true,
-                searching: false,
-                responsive: true,
-                lengthMenu: [[10, 20, 50, 100, 500, 1000, -1],[10,20 ,50, 100, 500,1000,"ALL"]],
+                orderCellsTop: true,
+                fixedHeader: true,
+                lengthMenu: [[10, 20, 50, 100, 500, 1000, -1], [10, 20, 50, 100, 500, 1000, "ALL"]],
                 dom: 'rt<"d-flex flex-row"<"mr-auto"l><"mr-2"i><""p>><"clear">',
                 language: {
-                    "loadingRecords": "加载数据...",
-                    "processing": "处理数据...",
-                    "search": "查询:",
-                    "lengthMenu": " _MENU_ ",
-                    "zeroRecords": "空",
-                    "info": "第 _PAGE_  共 _PAGES_ 页  _TOTAL_ 行记录 ",
-                    "infoEmpty": "空",
-                    "infoFiltered": "(有 _MAX_ 项结果过滤)"
+                    loadingRecords: "加载数据...",
+                    processing: "处理数据...",
+                    search: "查询:",
+                    lengthMenu: " _MENU_ ",
+                    zeroRecords: "空",
+                    info: "第 _PAGE_ 页  共 _PAGES_ 页  _TOTAL_ 行记录 ",
+                    infoEmpty: "第 0 至 0 项结果，共 0 项",
+                    infoFiltered: "(有 _MAX_ 项结果过滤)"
                 }
             });
-            $('.js-thead-colors a').on('click', function () {
-                var theadColor = $(this).attr("data-bg");
-                console.log(theadColor);
-                $('#dt-basic-example thead').removeClassPrefix('bg-').addClass(theadColor);
-            });
-            $('.js-tbody-colors a').on('click', function () {
-                var theadColor = $(this).attr("data-bg");
-                console.log(theadColor);
-                $('#dt-basic-example').removeClassPrefix('bg-').addClass(theadColor);
-            });
+             
+           
+            
         });
     </script>
 }
