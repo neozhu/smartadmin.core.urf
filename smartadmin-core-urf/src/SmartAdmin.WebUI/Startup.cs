@@ -84,7 +84,8 @@ namespace SmartAdmin.WebUI
       services.AddTransient<IEmailSender, EmailSender>();
 
       services
-          .AddControllersWithViews();
+          .AddControllersWithViews()
+          .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null); ;
 
       services.AddRazorPages();
       services.AddMvc().AddRazorRuntimeCompilation();
