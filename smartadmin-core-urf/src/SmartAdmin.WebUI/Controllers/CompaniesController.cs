@@ -13,6 +13,7 @@ using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using SmartAdmin.WebUI.Models;
 using URF.Core.Abstractions;
+using URF.Core.EF;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -36,26 +37,34 @@ namespace SmartAdmin.WebUI.Controllers
 
     public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {
-      var filters = JsonSerializer.Deserialize<IEnumerable<filteritem>>(filterRules);
-      var total = await this.companyService
-                           .Query().CountAsync();
-      var pagerows = (await this.companyService
-                           .Query()
-                         .OrderBy(n => n.OrderBy(sort, order))
-                         .Skip(page-1).Take(rows).SelectAsync())
-                         .Select(n => new {
+      try
+      {
+        var filters = PredicateBuilder.FromFilter<Company>(filterRules);
+        var total = await this.companyService
+                             .Query(filters).CountAsync();
+        var pagerows = (await this.companyService
+                             .Query(filters)
+                           .OrderBy(n => n.OrderBy(sort, order))
+                           .Skip(page - 1).Take(rows).SelectAsync())
+                           .Select(n => new
+                           {
 
 
-                                         Id = n.Id,
-                                         Name = n.Name,
-                                         Code = n.Code,
-                                         Address = n.Address,
-                                         Contect = n.Contect,
-                                         PhoneNumber = n.PhoneNumber,
-                                         RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
-                                       }).ToList();
-      var pagelist = new { total = total, rows = pagerows };
-      return Json(pagelist);
+                             Id = n.Id,
+                             Name = n.Name,
+                             Code = n.Code,
+                             Address = n.Address,
+                             Contect = n.Contect,
+                             PhoneNumber = n.PhoneNumber,
+                             RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
+                           }).ToList();
+        var pagelist = new { total = total, rows = pagerows };
+        return Json(pagelist);
+      }
+      catch(Exception e) {
+        throw e;
+        }
+
     }
      
   }

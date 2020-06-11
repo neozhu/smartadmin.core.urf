@@ -18,7 +18,8 @@ namespace URF.Core.EF
 
         public Query(IRepository<TEntity> repository) =>_query = repository.Queryable();
         public Query(IRepository<TEntity> repository, IQueryObject<TEntity> queryObject) => _query = repository.Queryable().Where(queryObject.Query());
-        public virtual IQuery<TEntity> Where(Expression<Func<TEntity, bool>> predicate)
+    public Query(IRepository<TEntity> repository, Expression<Func<TEntity, bool>> predicate) => _query = repository.Queryable().Where(predicate);
+    public virtual IQuery<TEntity> Where(Expression<Func<TEntity, bool>> predicate)
             => Set(q => q._query = q._query.Where(predicate));
 
         public virtual IQuery<TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> navigationProperty) 

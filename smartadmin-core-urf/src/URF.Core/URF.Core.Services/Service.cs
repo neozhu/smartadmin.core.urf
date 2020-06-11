@@ -83,5 +83,7 @@ namespace URF.Core.Services
 
         public IQuery<TEntity> Query(IQueryObject<TEntity> queryObject)
          =>  Repository.Query(queryObject);
-    }
+    public IQuery<TEntity> Query(Expression<Func<TEntity, bool>> predicate)
+        => Repository.Query(predicate);
+  }
 }
