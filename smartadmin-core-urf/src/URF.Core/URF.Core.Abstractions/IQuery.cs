@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace URF.Core.Abstractions
         IQuery<TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> navigationProperty);
         IQuery<TEntity> Include(string navigationPropertyPath);
         IQuery<TEntity> OrderBy(Expression<Func<TEntity, object>> keySelector);
+       IQuery<TEntity> OrderBy(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy);
         IQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> keySelector);
         Task<IEnumerable<TEntity>> SelectAsync(CancellationToken cancellationToken = default);
         IQuery<TEntity> Skip(int skip);

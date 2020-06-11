@@ -67,117 +67,225 @@
 
                 </div>
                 <div class="panel-content">
-                    <table id="dt-basic-example" class="table table-bordered table-hover table-striped w-100">
-                    </table>
+                    <div class="table-responsive">
+                        <table id="companies_datagrid">
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @section HeadBlock {
-    <link rel="stylesheet" media="screen, print" href="~/css/datagrid/datatables/datatables.bundle.css">
-
+    <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" />
+    <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" />
+    <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
 }
 @section ScriptsBlock {
-    <script src="~/js/dependency/moment/moment.js"></script>
-    <script src="~/js/datagrid/datatables/datatables.bundle.js"></script>
-    <script>
+    <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+    <script src="~/js/notifications/toastr/toastr.js"></script>
+    <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
 
+    <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+    <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+    <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
+    <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
+    <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+    <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+
+    <script>
+        var $dg = $('#companies_datagrid');
         $(document).ready(function () {
 
-            
-            var table = $('#dt-basic-example').DataTable({
-                searching: true,
-                responsive: true,
-                serverSide:true,
-                orderCellsTop: true,
-                orderMulti:false,
-                fixedHeader: true,
-                lengthMenu: [[10, 20, 50, 100, 500, 1000, -1], [10, 20, 50, 100, 500, 1000, "ALL"]],
-                dom: 'rt<"d-flex flex-row"<"mr-auto"l><"mr-2"i><""p>><"clear">',
-                initComplete: function () {
-                    $('#dt-basic-example thead tr').clone(true).appendTo('#dt-basic-example thead');
-                    $('#dt-basic-example thead tr:eq(1) th').each(function (i) {
-                        var title = $(this).text();
-                        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="' + title + '" />');
-                        $('input', this).on('keyup change', function () {
-                            if (table.column(i).search() !== this.value) {
-                                table
-                                    .column(i)
-                                    .search(this.value)
-                                    .draw();
-                            }
-                        });
-                    });
-                },
-                ajax: {
-                    url: "/Companies/LoadData",
-                    type: "POST",
-                    datatype: "json"
-                },
-                order: [[0, "desc"]],
-                columnDefs: [{
-                    targets: [0],
-                    visible: false,
-                    searchable: false
-                }],
-                columns: [
-                    {
-                        data: "Id",
-                        name: "Id",
-                        autoWidth: true
-                    },
-                    {
-                        data: "Name",
-                        name:'Name',
-                        title:'@Html.DisplayNameFor(model=> model.Name)',
-                        autoWidth: true
-                    },
-                    {
-                        data: "Code",
-                        name: 'Code',
-                       title: "@Html.DisplayNameFor(model=> model.Code)",
-                        autoWidth: true
-                    },
-                    {
-                        data: "Address",
-                        name: 'Address',
-                        title: "@Html.DisplayNameFor(model=> model.Address)",
-                        autoWidth: true
-                    },
-                    {
-                        data: "Contect",
-                        name: 'Contect',
-                        title: "@Html.DisplayNameFor(model=> model.Contect)",
-                        autoWidth: true
-                    },
-                    {
-                        data: "PhoneNumber",
-                        name: 'PhoneNumber',
-                        title: "@Html.DisplayNameFor(model=> model.PhoneNumber)",
-                        autoWidth: true
-                    },
-                    {
-                        data: "RegisterDate",
-                        name: "RegisterDate",
-                        title: "@Html.DisplayNameFor(model=> model.RegisterDate)",
-                        autoWidth: true,
-                        render: function (data, type, full, meta) {
-                            return moment(data).format('YYYY-MM-DD')
-                        }
-                    },
-                    ],
-                language: {
-                    loadingRecords: "加载数据...",
-                    processing: "处理数据...",
-                    search: "查询:",
-                    lengthMenu: " _MENU_ ",
-                    zeroRecords: "空",
-                    info: "第 _PAGE_ 页  共 _PAGES_ 页  _TOTAL_ 行记录 ",
-                    infoEmpty: "第 0 至 0 项结果，共 0 项",
-                    infoFiltered: "(有 _MAX_ 项结果过滤)"
-                }
-            });
+
+            function onClickCell() { }
+
+      //定义datagrid结构
+      $dg.datagrid({
+        rownumbers: true,
+        checkOnSelect: false,
+        selectOnCheck: false,
+        idField: 'Id',
+        sortName: 'Id',
+        sortOrder: 'desc',
+        remoteFilter: true,
+        singleSelect: false,
+        url: '/Companies/GetData',
+        method: 'get',
+        onClickCell: onClickCell,
+        clientPaging: false,
+        pagination: true,
+        striped: true,
+        onHeaderContextMenu: function (e, field) {
+          e.preventDefault();
+          $(this).datagrid('columnMenu').menu('show', {
+            left: e.pageX,
+            top: e.pageY
+          });
+        },
+        onBeforeLoad: function () {
+          const that = $(this);
+          document.addEventListener('panel.onfullscreen', () => {
+            setTimeout(() => {
+              that.datagrid('resize');
+            }, 200)
+          })
+        },
+        onLoadSuccess: function (data) {
+          editIndex = undefined;
+        },
+        onCheck: function () {
+          $("button[name*='deletebutton']").prop('disabled', false);
+        },
+        onUncheck: function () {
+          const checked = $(this).datagrid('getChecked').length > 0;
+          $("button[name*='deletebutton']").prop('disabled', !checked);
+        },
+        onSelect: function (index, row) {
+          company = row;
+        },
+        onBeginEdit: function (index, row) {
+          //const editors = $(this).datagrid('getEditors', index);
+
+        },
+        onEndEdit: function (index, row) {
+
+        },
+        onBeforeEdit: function (index, row) {
+          editIndex = index;
+          row.editing = true;
+          $("button[name*='deletebutton']").prop('disabled', false);
+          $("button[name*='cancelbutton']").prop('disabled', false);
+          $("button[name*='savebutton']").prop('disabled', false);
+          $(this).datagrid('refreshRow', index);
+        },
+        onAfterEdit: function (index, row) {
+          row.editing = false;
+          editIndex = undefined;
+          $(this).datagrid('refreshRow', index);
+        },
+        onCancelEdit: function (index, row) {
+          row.editing = false;
+          editIndex = undefined;
+          $("button[name*='deletebutton']").prop('disabled', true);
+          $("button[name*='savebutton']").prop('disabled', true);
+          $("button[name*='cancelbutton']").prop('disabled', true);
+          $(this).datagrid('refreshRow', index);
+        },
+        frozenColumns: [[
+          /*开启CheckBox选择功能*/
+          { field: 'ck', checkbox: true },
+          {
+            field: 'action',
+            title: '操作',
+            width: 85,
+            sortable: false,
+            resizable: true,
+            formatter: function showdetailsformatter(value, row, index) {
+              if (!row.editing) {
+                return `<div class="btn-group">\
+                                                         <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-edit"></i> </button>\
+                                                         <button onclick="deleteRow('${row.Id}',${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="删除记录" ><i class="fal fa-times"></i> </button>\
+                                                    </div>`;
+              } else {
+                return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
+              }
+            }
+          }
+        ]],
+        columns: [[
+          { /*Id*/
+            field: 'Id',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Id)</span>',
+            width: 120,
+            sortable: true,
+            resizable: true,
+            hidden: true
+          },
+          {    /*名称*/
+            field: 'Name',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Name)</span>',
+            width: 200,
+            hidden: false,
+
+            sortable: true,
+            resizable: true
+          },
+          {    /*组织代码*/
+            field: 'Code',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Code)</span>',
+            width: 120,
+            hidden: false,
+
+            sortable: true,
+            resizable: true
+          },
+          {    /*地址*/
+            field: 'Address',
+            title: '@Html.DisplayNameFor(model => model.Address)',
+            width: 200,
+            hidden: false,
+
+            sortable: true,
+            resizable: true
+          },
+          {    /*联系人*/
+            field: 'Contect',
+            title: '@Html.DisplayNameFor(model => model.Contect)',
+            width: 120,
+            hidden: false,
+
+            sortable: true,
+            resizable: true
+          },
+          {    /*联系电话*/
+            field: 'PhoneNumber',
+            title: '@Html.DisplayNameFor(model => model.PhoneNumber)',
+            width: 120,
+            hidden: false,
+
+            sortable: true,
+            resizable: true
+          },
+          {   /*注册日期*/
+            field: 'RegisterDate',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.RegisterDate)</span>',
+            width: 100,
+            align: 'right',
+            hidden: false,
+
+            formatter: dateformatter,
+            sortable: true,
+            resizable: true
+          },
+        ]]
+      }).datagrid('columnMoving')
+        .datagrid('resetColumns');
+
+      $dg.datagrid('enableFilter', [
+        {   /*Id*/
+          field: 'Id',
+          type: 'numberbox',
+          op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
+        },
+        {     /*注册日期*/
+          field: 'RegisterDate',
+          type: 'dateRange',
+          options: {
+            onChange: value => {
+              $dg.datagrid('addFilterRule', {
+                field: 'RegisterDate',
+                op: 'between',
+                value: value
+              });
+
+              $dg.datagrid('doFilter');
+            }
+          }
+        },
+      ]);
+
 
 
 

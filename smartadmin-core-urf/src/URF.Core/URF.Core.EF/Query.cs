@@ -33,8 +33,13 @@ namespace URF.Core.EF
             else _orderedQuery.OrderBy(keySelector);
             return this;
         }
+    public IQuery<TEntity> OrderBy(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy)
+    {
+      _orderedQuery = orderBy(_query);
+      return this;
+    }
 
-        public virtual IQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> thenBy)
+    public virtual IQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> thenBy)
             => Set(q => q._orderedQuery.ThenBy(thenBy));
 
         public virtual IQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> keySelector)
