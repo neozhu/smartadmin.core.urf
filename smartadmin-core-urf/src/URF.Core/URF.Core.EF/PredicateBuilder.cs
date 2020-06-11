@@ -60,6 +60,7 @@ namespace URF.Core.EF
       var expressionParameter = GetMemberExpression<T>(parameter, fieldName);
       if (prop != null && fieldValue != null)
       {
+       
         BinaryExpression body = null;
         switch (selectedOperator)
         {
@@ -86,11 +87,11 @@ namespace URF.Core.EF
             var bodyLike = Expression.Call(expressionParameter, contains, Expression.Constant(Convert.ChangeType(fieldValue, prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(bodyLike, parameter);
           case OperationExpression.endwith:
-            var endswith = typeof(string).GetMethod("EndsWith");
+            var endswith = typeof(string).GetMethod("EndsWith",new[] { typeof(string) });
             var bodyendwith = Expression.Call(expressionParameter, endswith, Expression.Constant(Convert.ChangeType(fieldValue, prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(bodyendwith, parameter);
           case OperationExpression.beginwith:
-            var startswith = typeof(string).GetMethod("StartsWith");
+            var startswith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
             var bodystartswith = Expression.Call(expressionParameter, startswith, Expression.Constant(Convert.ChangeType(fieldValue, prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(bodystartswith, parameter);
           case OperationExpression.includes:
