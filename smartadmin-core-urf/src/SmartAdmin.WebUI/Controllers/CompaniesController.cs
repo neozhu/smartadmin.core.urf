@@ -48,8 +48,6 @@ namespace SmartAdmin.WebUI.Controllers
                            .Skip(page - 1).Take(rows).SelectAsync())
                            .Select(n => new
                            {
-
-
                              Id = n.Id,
                              Name = n.Name,
                              Code = n.Code,

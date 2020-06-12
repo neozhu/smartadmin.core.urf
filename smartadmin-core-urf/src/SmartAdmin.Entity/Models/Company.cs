@@ -11,7 +11,7 @@ namespace SmartAdmin.Entity.Models
     {
 
 
-        [Display(Name = "名称", Description = "名称")]
+        [Display(Name = "企业名称", Description = "归属企业名称")]
         [MaxLength(50)]
         [Required]
         //[Index(IsUnique = true)]

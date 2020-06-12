@@ -1321,7 +1321,7 @@ var initApp = (function(app) {
 		if( typeof($.fn.popover) !== 'undefined' && $('[data-toggle="popover"]').length ){
 
 			/* BS4 sanatize */
-			var myDefaultWhiteList = $.fn.tooltip.Constructor.Default.whiteList
+		 //var myDefaultWhiteList = $.fn.tooltip.Constructor.Default.whiteList
 
 			/* init popover */
 			/* data-sanitize="false" was not working so had to add this globally */
