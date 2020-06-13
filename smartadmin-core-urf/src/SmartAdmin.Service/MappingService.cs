@@ -19,7 +19,7 @@ using System.Data.Common;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace SmartAdmin.Services
+namespace SmartAdmin.Service
 {
   public class DataTableImportMappingService : Service<DataTableImportMapping>, IDataTableImportMappingService
   {
@@ -36,7 +36,7 @@ namespace SmartAdmin.Services
       => await Task.Run(() =>
                         {
                           var list = new List<EntityInfo>();
-                          var asm = Assembly.GetExecutingAssembly();
+                          var asm = Assembly.Load("SmartAdmin.Entity");
                           list = asm.GetTypes()
                                  .Where(type => typeof(Entity).IsAssignableFrom(type))
                                  .SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
@@ -51,7 +51,7 @@ namespace SmartAdmin.Services
     public async Task GenerateByEnityNameAsync(string entityName)
     {
 
-      var asm = Assembly.GetExecutingAssembly();
+      var asm = Assembly.Load("SmartAdmin.Entity");
       var list = asm.GetTypes()
              .Where(type => typeof(Entity).IsAssignableFrom(type))
              .SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
@@ -188,8 +188,8 @@ namespace SmartAdmin.Services
             EntitySetName = row["实体名称"].ToString(),
             DefaultValue = row["默认值"].ToString(),
             FieldName = row["字段名"].ToString(),
-            IgnoredColumn = Convert.ToBoolean(row["是否忽略导出"].ToString()),
-            IsEnabled = Convert.ToBoolean(row["是否启用"].ToString()),
+            IgnoredColumn = Convert.ToBoolean(row["是否导出"].ToString()),
+            IsEnabled = Convert.ToBoolean(row["是否导入"].ToString()),
             IsRequired = Convert.ToBoolean(row["是否必填"].ToString()),
             SourceFieldName = row["Excel列名"].ToString(),
             RegularExpression = row["验证表达式"].ToString(),
@@ -212,6 +212,16 @@ namespace SmartAdmin.Services
     public async Task<Stream> ExportExcelAsync(string filterRules = "", string sort = "Id", string order = "asc")
     {
       var filters = PredicateBuilder.FromFilter<DataTableImportMapping>(filterRules);
+      var expcolopts = await this.Queryable()
+                   .Where(x => x.EntitySetName == "DataTableImportMapping")
+                   .Select(x => new ExpColumnOpts()
+                   {
+                     EntitySetName = x.EntitySetName,
+                     FieldName = x.FieldName,
+                     IgnoredColumn = x.IgnoredColumn,
+                     SourceFieldName = x.SourceFieldName
+                   }).ToArrayAsync();
+
       var query = (await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync()).ToList();
       var datarows = query.Select(n => new
       {
@@ -225,7 +235,7 @@ namespace SmartAdmin.Services
         IgnoredColumn = n.IgnoredColumn,
         RegularExpression = n.RegularExpression
       }).ToList();
-      return await NPOIHelper.ExportExcelAsync("DataTableImportMapping", datarows,null);
+      return await NPOIHelper.ExportExcelAsync("DataTableImportMapping", datarows, expcolopts);
     }
   }
 }

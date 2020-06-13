@@ -76,6 +76,8 @@ namespace SmartAdmin.WebUI
       services.AddScoped<IUnitOfWork, UnitOfWork>();
       services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
       services.AddScoped<ICompanyService, CompanyService>();
+      services.AddScoped<ITrackableRepository<DataTableImportMapping>, TrackableRepository<DataTableImportMapping>>();
+      services.AddScoped<IDataTableImportMappingService, DataTableImportMappingService>();
 
       services.AddTransient<IEmailSender, EmailSender>();
 

@@ -9,7 +9,7 @@ using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
 using URF.Core.EF;
 using Microsoft.AspNetCore.Authorization;
-using SmartAdmin.Services;
+using SmartAdmin.Service;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -26,15 +26,16 @@ namespace SmartAdmin.WebUI.Controllers
 
     public DataTableImportMappingsController(IDataTableImportMappingService dataTableImportMappingService,
       IWebHostEnvironment webHostEnvironment,
+      ILogger<CompaniesController> logger,
       IUnitOfWork unitOfWork)
     {
       _webHostEnvironment = webHostEnvironment;
       _dataTableImportMappingService = dataTableImportMappingService;
       _unitOfWork = unitOfWork;
+      this.logger = logger;
     }
 
     // GET: DataTableImportMappings/Index
-    [Route("Index", Name = "Excel导入导出配置", Order = 1)]
     public ActionResult Index()
     {
 

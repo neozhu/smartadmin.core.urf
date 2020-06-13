@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SmartAdmin.Data.Models;
 using URF.Core.Abstractions.Services;
 
-namespace SmartAdmin.Services
+namespace SmartAdmin.Service
 {
   public interface IDataTableImportMappingService : IService<DataTableImportMapping>
   {

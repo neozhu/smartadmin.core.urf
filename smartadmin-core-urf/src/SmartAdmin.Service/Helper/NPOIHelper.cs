@@ -144,7 +144,7 @@ namespace SmartAdmin
       {
         var fieldname = PropertyInfos[i].Name;
         var fieldtype = PropertyInfos[i].PropertyType;
-        if (colopts.Where(n=> n.FieldName==fieldname && n.IgnoredColumn==false).Any())
+        if (colopts!=null && colopts.Where(n=> n.FieldName==fieldname && n.IgnoredColumn==false).Any())
         {
           continue;
         }
@@ -168,7 +168,7 @@ namespace SmartAdmin
         {
           var fieldname = PropertyInfos[l].Name;
           var fieldtype = PropertyInfos[l].PropertyType;
-          if (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any())
+          if (colopts!=null && colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any())
           {
             continue;
           }
@@ -227,9 +227,11 @@ namespace SmartAdmin
           sheet.AutoSizeColumn(col);
         }
       }
-
-      workbook.Write(stream);
-      stream.Position = 0;
+      var bookstream = new MemoryStream();
+      workbook.Write(bookstream);
+      var byteArray = bookstream.ToArray();
+      stream.Write(byteArray, 0, byteArray.Length);
+      stream.Seek(0, SeekOrigin.Begin);
       return  stream;
     });
   }
