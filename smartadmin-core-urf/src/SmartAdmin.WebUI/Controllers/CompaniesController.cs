@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
-using SmartAdmin.WebUI.Models;
-using TrackableEntities.Common.Core;
 using URF.Core.Abstractions;
 using URF.Core.EF;
 
@@ -185,6 +177,28 @@ namespace SmartAdmin.WebUI.Controllers
       }
 
     }
-
+    //导出Excel
+    [HttpPost]
+    public async Task<IActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
+    {
+      var fileName = "companies_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+      var filters = PredicateBuilder.FromFilter<Company>(filterRules);
+      var rows = (await this.companyService
+                             .Query(filters)
+                           .OrderBy(n => n.OrderBy(sort, order))
+                           .SelectAsync())
+                           .Select(n => new
+                           {
+                             Id = n.Id,
+                             Name = n.Name,
+                             Code = n.Code,
+                             Address = n.Address,
+                             Contect = n.Contect,
+                             PhoneNumber = n.PhoneNumber,
+                             RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
+                           }).ToList();
+      var stream = new System.IO.MemoryStream();
+      return File(stream, "application/vnd.ms-excel", fileName);
+    }
   }
 }

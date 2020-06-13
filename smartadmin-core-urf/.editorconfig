@@ -22,7 +22,7 @@ insert_final_newline = true
 [*.{md,json,config,xml,props,targets}]
 indent_size = 2
 # Web Files
-[*.{htm,html,js,ts,tsx,css,sass,scss,less,svg,vue}]
+[*.{htm,html,cshtml,js,ts,tsx,css,sass,scss,less,svg,vue}]
 indent_size = 2
 insert_final_newline = true
 

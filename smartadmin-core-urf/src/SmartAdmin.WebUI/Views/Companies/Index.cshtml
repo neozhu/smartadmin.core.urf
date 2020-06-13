@@ -1,80 +1,92 @@
 ﻿@model SmartAdmin.Data.Models.Company;
 @using SmartAdmin.WebUI.Extensions;
 @{
-    ViewData["Title"] = "企业信息";
-    ViewData["PageName"] = "Companies_Index";
-    ViewData["Heading"] = "<i class='fal fa-window text-primary'></i> 企业信息";
-    ViewData["Category1"] = "组织架构";
-    ViewData["PageDescription"] = "";
+  ViewData["Title"] = "企业信息";
+  ViewData["PageName"] = "Companies_Index";
+  ViewData["Heading"] = "<i class='fal fa-window text-primary'></i> 企业信息";
+  ViewData["Category1"] = "组织架构";
+  ViewData["PageDescription"] = "";
 }
 <div class="row">
-    <div class="col-lg-12 col-xl-12">
-        <div id="panel-1" class="panel">
-            <div class="panel-hdr">
-                <h2>
-                    公司信息
-                </h2>
-                <div class="panel-toolbar">
-                    <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
-                    <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
-                </div>
-
-            </div>
-            <div class="panel-container show">
-                <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col">
-                            <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
-                            <div class="btn-group btn-group-sm">
-                                <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 新增 </button>
-                            </div>
-                            <div class="btn-group btn-group-sm">
-                                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
-                            </div>
-                            <div class="btn-group btn-group-sm">
-                                <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
-                            </div>
-                            <div class="btn-group btn-group-sm">
-                                <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span> 取消 </button>
-                            </div>
-                            <div class="btn-group btn-group-sm">
-                                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
-                                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-animated">
-                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
-                                </div>
-                            </div>
-                            <div class="btn-group btn-group-sm hidden-xs">
-                                <button type="button" onclick="importexcel('Company')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
-                                <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-animated">
-                                    <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()"><span class="fal fa-download"></span> 下载模板 </a>
-                                </div>
-                            </div>
-                            <div class="btn-group btn-group-sm hidden-xs">
-                                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  导出 </button>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-                <div class="panel-content">
-                    <div class="table-responsive">
-                        <table id="companies_datagrid">
-                        </table>
-                    </div>
-                </div>
-            </div>
+  <div class="col-lg-12 col-xl-12">
+    <div id="panel-1" class="panel">
+      <div class="panel-hdr">
+        <h2>
+          公司信息
+        </h2>
+        <div class="panel-toolbar">
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
         </div>
+
+      </div>
+      <div class="panel-container show">
+        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
+          <div class="row no-gutters align-items-center">
+            <div class="col">
+              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+              <div class="btn-group btn-group-sm">
+                <button onclick="append()" class="btn btn-default">
+                  <span class="fal fa-plus mr-1"></span> 新增
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default">
+                  <span class="fal fa-times mr-1"></span> 删除
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default">
+                  <span class="fal fa-save mr-1"></span> 保存
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="cancelbutton" disabled onclick="rejectChanges()" class="btn btn-default">
+                  <span class="fal fa-ban mr-1"></span> 取消
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-animated">
+                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm hidden-xs">
+                <button type="button" onclick="importexcel('Company')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-animated">
+                  <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()">
+                    <span class="fal fa-download"></span> 下载模板
+                  </a>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm hidden-xs">
+                <button onclick="exportexcel()" class="btn btn-default">
+                  <span class="fal fa-file-export mr-1"></span>  导出
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+        <div class="panel-content">
+          <div class="table-responsive">
+            <table id="companies_datagrid">
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <!-- 弹出窗体form表单 -->
 <div id="companydetailwindow" class="easyui-window"
@@ -110,28 +122,28 @@
                     onMaximize:function(){
                     }
                     " style="width:820px;height:420px;display:none">
-    <!-- toolbar -->
-    <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
-        <div class="d-flex flex-row-reverse pr-4">
-            <div class="btn-group btn-group-sm mr-1">
-                <button name="saveitembutton" onclick="savecompanyitem()" class="btn btn-default">
-                    <i class="fal fa-save"></i> 保存
-                </button>
-            </div>
-            <div class="btn-group btn-group-sm mr-1" id="deleteitem-btn-group">
-                <button onclick="deletecompanyitem()" class="btn btn-danger">
-                    <i class="fal fa-trash-alt"></i> 删除
-                </button>
-            </div>
-        </div>
+  <!-- toolbar -->
+  <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
+    <div class="d-flex flex-row-reverse pr-4">
+      <div class="btn-group btn-group-sm mr-1">
+        <button name="saveitembutton" onclick="savecompanyitem()" class="btn btn-default">
+          <i class="fal fa-save"></i> 保存
+        </button>
+      </div>
+      <div class="btn-group btn-group-sm mr-1" id="deleteitem-btn-group">
+        <button onclick="deletecompanyitem()" class="btn btn-danger">
+          <i class="fal fa-trash-alt"></i> 删除
+        </button>
+      </div>
     </div>
-    <div class="panel-container show">
-        <div class="container">
-            <div class="panel-content">
-                <form id="company_form"
-                      class="easyui-form form-horizontal p-1"
-                      method="post"
-                      data-options="novalidate:true,
+  </div>
+  <div class="panel-container show">
+    <div class="container">
+      <div class="panel-content">
+        <form id="company_form"
+              class="easyui-form form-horizontal p-1"
+              method="post"
+              data-options="novalidate:true,
                             onChange: function(target){
                               hook = true;
                               $('button[name*=\'saveitembutton\']').prop('disabled', false);
@@ -140,138 +152,177 @@
                                hook = false;
                                $('button[name*=\'saveitembutton\']').prop('disabled', true);
                              }">
-                    @Html.AntiForgeryToken()
-                    <!--Primary Key-->
-                    @Html.HiddenFor(model => model.Id)
-                    <fieldset class="form-group">
-                        <!-- begin row -->
-                        <!--名称-->
-                        <div class="row h-100 justify-content-center align-items-center">
-                            <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.Name)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.Name)"
-                                       name="@Html.NameFor(model => model.Name)"
-                                       value="@Html.ValueFor(model => model.Name)"
-                                       tabindex="0" required
-                                       class="easyui-textbox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.Name)',
+          @Html.AntiForgeryToken()
+          <!--Primary Key-->
+          @Html.HiddenFor(model => model.Id)
+          <fieldset class="form-group">
+            <!-- begin row -->
+            <!--名称-->
+            <div class="row h-100 justify-content-center align-items-center">
+              <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.Name)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.Name)"
+                       name="@Html.NameFor(model => model.Name)"
+                       value="@Html.ValueFor(model => model.Name)"
+                       tabindex="0" required
+                       class="easyui-textbox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.Name)',
 								 required:true,
                                  validType: 'length[0,50]'
                                  " />
-                            </div>
-                            <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.Code)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.Code)"
-                                       name="@Html.NameFor(model => model.Code)"
-                                       value="@Html.ValueFor(model => model.Code)"
-                                       tabindex="1" required
-                                       class="easyui-textbox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.Code)',
+              </div>
+              <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.Code)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.Code)"
+                       name="@Html.NameFor(model => model.Code)"
+                       value="@Html.ValueFor(model => model.Code)"
+                       tabindex="1" required
+                       class="easyui-textbox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.Code)',
 								 required:true,
                                  validType: 'length[0,12]'
                                  " />
-                            </div>
-                            <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Address)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.Address)"
-                                       name="@Html.NameFor(model => model.Address)"
-                                       value="@Html.ValueFor(model => model.Address)"
-                                       tabindex="2"
-                                       class="easyui-textbox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.Address)',
+              </div>
+              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Address)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.Address)"
+                       name="@Html.NameFor(model => model.Address)"
+                       value="@Html.ValueFor(model => model.Address)"
+                       tabindex="2"
+                       class="easyui-textbox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.Address)',
 								 required:false,
                                  validType: 'length[0,50]'
                                  " />
-                            </div>
-                            <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Contect)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.Contect)"
-                                       name="@Html.NameFor(model => model.Contect)"
-                                       value="@Html.ValueFor(model => model.Contect)"
-                                       tabindex="3"
-                                       class="easyui-textbox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.Contect)',
+              </div>
+              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Contect)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.Contect)"
+                       name="@Html.NameFor(model => model.Contect)"
+                       value="@Html.ValueFor(model => model.Contect)"
+                       tabindex="3"
+                       class="easyui-textbox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.Contect)',
 								 required:false,
                                  validType: 'length[0,12]'
                                  " />
-                            </div>
-                            <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.PhoneNumber)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.PhoneNumber)"
-                                       name="@Html.NameFor(model => model.PhoneNumber)"
-                                       value="@Html.ValueFor(model => model.PhoneNumber)"
-                                       tabindex="4"
-                                       class="easyui-textbox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.PhoneNumber)',
+              </div>
+              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.PhoneNumber)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.PhoneNumber)"
+                       name="@Html.NameFor(model => model.PhoneNumber)"
+                       value="@Html.ValueFor(model => model.PhoneNumber)"
+                       tabindex="4"
+                       class="easyui-textbox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.PhoneNumber)',
 								 required:false,
                                  validType: 'length[0,20]'
                                  " />
-                            </div>
-                            <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.RegisterDate)</label>
-                            <div class="col-md-4 mb-1 pl-1">
-                                <input id="@Html.IdFor(model => model.RegisterDate)"
-                                       name="@Html.NameFor(model => model.RegisterDate)"
-                                       value="@Html.ValueFor(model => model.RegisterDate)"
-                                       tabindex="5" required
-                                       class="easyui-datebox"
-                                       style="width:100%"
-                                       type="text"
-                                       data-options="prompt:'@Html.DescriptionFor(model => model.RegisterDate)',
+              </div>
+              <label class="col-md-2 pr-1 form-label text-right text-danger">@Html.DisplayNameFor(model => model.RegisterDate)</label>
+              <div class="col-md-4 mb-1 pl-1">
+                <input id="@Html.IdFor(model => model.RegisterDate)"
+                       name="@Html.NameFor(model => model.RegisterDate)"
+                       value="@Html.ValueFor(model => model.RegisterDate)"
+                       tabindex="5" required
+                       class="easyui-datebox"
+                       style="width:100%"
+                       type="text"
+                       data-options="prompt:'@Html.DescriptionFor(model => model.RegisterDate)',
 								 required:true,
 								 formatter:dateformatter" />
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
+              </div>
             </div>
-        </div>
+          </fieldset>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
+
+<partial name="_ImportWindow" />
 @section HeadBlock {
-    <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" />
-    <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css"  rel="stylesheet" asp-append-version="true" />
-    <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet"  asp-append-version="true"/>
+  <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader-theme-dragdrop.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/font/font-fileuploader.css" rel="stylesheet" asp-append-version="true" />
 }
 @section ScriptsBlock {
-    <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
-    <script src="~/js/notifications/toastr/toastr.js"></script>
-    <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/notifications/toastr/toastr.js"></script>
+  <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
 
-    <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
-    <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
-    <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
-    <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
-    <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
-    <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
-    <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
-    <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
-    <script>
-        var company = {
-            $dg: $('#companies_datagrid'),
-            EDITINLINE: true,
-            company: null,
-            editIndex: undefined,
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script>
+        var $dg = $('#companies_datagrid');
+        var EDITINLINE = true;
+        var company = null;
+    var editIndex = undefined;
+    //下载Excel导入模板
+    function downloadtemplate() {
+      //默认模板路径存放位置
+      const url = '/FileUpload/Download?file=ExcelTemplate/Company.xlsx';
+      $.fileDownload(url)
+        .done(() => {
+          toastr.success('模板下载完成!');
+        })
+        .fail(() => {
+          $.messager.alert('错误', '没有下载到导入模板[Work.xlsx]文件!', 'error');
+        });
+    }
+    //执行导出下载Excel
+    function exportexcel() {
+      const filterRules = JSON.stringify($dg.datagrid('options').filterRules);
+      console.log(filterRules);
+      $.messager.progress({ title: '请等待',msg:'正在执行导出...' });
+      let formData = new FormData();
+      formData.append('filterRules', filterRules);
+      formData.append('sort', 'Id');
+      formData.append('order', 'asc');
+      $.postDownload('/Companies/ExportExcel', formData).then(res => {
+        $.messager.progress('close');
+        toastr.success('导出成功!');
+      }).catch(err => {
+        //console.log(err);
+        $.messager.progress('close');
+        $.messager.alert('导出失败', err.statusText, 'error');
+      });
+
+    }
             //弹出明细信息
-            showeditwindow: function showdetailswindow(id, index) {
-                const company =$dg.datagrid('getRows')[index];
-                opencompanydetailwindow(company, 'Modified');
-            },
-            reload: function reload() {
+    function showdetailswindow(id, index) {
+      const company = $dg.datagrid('getRows')[index];
+      opencompanydetailwindow(company, 'Modified');
+    }
+        function reload() {
                $dg.datagrid('uncheckAll');
                $dg.datagrid('reload');
-            },
+        }
             //新增记录
-            append: function append() {
+       function append() {
                 company = {
                     Address: '-',
                     RegisterDate: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -293,9 +344,9 @@
                         hook = true;
                     }
                 }
-            },
+        }
             //删除编辑的行
-            remove: function removeit() {
+        function removeit() {
                 if (this.$dg.datagrid('getChecked').length <= 0 && EDITINLINE) {
                     if (editIndex !== undefined) {
                         const delindex = editIndex;
@@ -313,20 +364,20 @@
                 } else {
                     deletechecked();
                 }
-            },
+        }
             //删除该行
-            deleteRow: function deleteRow(id) {
-                $.messager.confirm('确认', '你确定要删除该记录?', result => {
-                    if (result) {
-                        dodeletechecked([id]);
-                    }
-                })
-            },
+        function deleteRow(id) {
+            $.messager.confirm('确认', '你确定要删除该记录?', result => {
+                if (result) {
+                    dodeletechecked([id]);
+                }
+            })
+        }
             //删除选中的行
-            deletechecked: function deletechecked() {
+         function deletechecked() {
                 const id =$dg.datagrid('getChecked').filter(item => item.Id != null && item.Id > 0).map(item => {
                     return item.Id;
-                });;
+                });
                 if (id.length > 0) {
                     $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length} </span> 行记录?`, result => {
                         if (result) {
@@ -336,420 +387,408 @@
                 } else {
                     $.messager.alert('提示', '请先选择要删除的记录!', 'question');
                 }
-            },
+        }
             //执行删除
-            dodeletechecked: function dodeletechecked(id) {
-                $.post('/Companies/DeleteChecked', { id: id })
-                    .done(response => {
-                        if (response.success) {
-                            toastr.error(`成功删除[${id.length}]行记录`);
-                            reload();
-                        } else {
-                            $.messager.alert('错误', response.err, 'error');
-                        }
-                    })
-                    .fail((jqXHR, textStatus, errorThrown) => {
-                        $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-                    });
-            },
-            //开启编辑状态
-            onClickCell: function onClickCell(index, field) {
-                company =$dg.datagrid('getRows')[index];
-                const _actions = ['action', 'ck'];
-                if (!EDITINLINE || $.inArray(field, _actions) >= 0) {
-                    return;
-                }
-                if (editIndex !== index) {
-                    if (endEditing()) {
-                       $dg.datagrid('selectRow', index)
-                            .datagrid('beginEdit', index);
-                        hook = true;
-                        editIndex = index;
-                        const ed =$dg.datagrid('getEditor', { index: index, field: field });
-                        if (ed) {
-                            ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
-                        }
+        function dodeletechecked(id) {
+            $.post('/Companies/DeleteChecked', { id: id })
+                .done(response => {
+                    if (response.success) {
+                        toastr.error(`成功删除[${id.length}]行记录`);
+                        reload();
                     } else {
-                       $dg.datagrid('selectRow', editIndex);
+                        $.messager.alert('错误', response.err, 'error');
                     }
-                }
-            },
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                    $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+                });
+        }
+            //开启编辑状态
+    function onClickCell(index, field) {
+
+      company = $dg.datagrid('getRows')[index];
+      const _actions = ['action', 'ck'];
+      if (!EDITINLINE || $.inArray(field, _actions) >= 0) {
+        return;
+      }
+
+      if (editIndex !== index) {
+        if (endEditing()) {
+          $dg.datagrid('selectRow', index)
+            .datagrid('beginEdit', index);
+          hook = true;
+          editIndex = index;
+          const ed = $dg.datagrid('getEditor', { index: index, field: field });
+          if (ed) {
+            ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+          }
+        } else {
+          $dg.datagrid('selectRow', editIndex);
+        }
+      }
+    }
             //关闭编辑状态
-            endEditing: function endEditing() {
-                if (editIndex === undefined) {
-                    return true;
-                }
-                if (this.$dg.datagrid('validateRow', editIndex)) {
-                   $dg.datagrid('endEdit', editIndex);
-                    return true;
-                } else {
-                    const invalidinput = $('input.validatebox-invalid',$dg.datagrid('getPanel'));
-                    const fieldnames = invalidinput.map((index, item) => {
-                        return $(item).attr('placeholder') || $(item).attr('id');
-                    });
-                    $.messager.alert('提示', `${Array.from(fieldnames)} 输入有误.`, 'error');
-                    return false;
-                }
-            },
+    function endEditing() {
+
+            if (editIndex === undefined) {
+                return true;
+            }
+            if (this.$dg.datagrid('validateRow', editIndex)) {
+                $dg.datagrid('endEdit', editIndex);
+                return true;
+            } else {
+                const invalidinput = $('input.validatebox-invalid', $dg.datagrid('getPanel'));
+                const fieldnames = invalidinput.map((index, item) => {
+                    return $(item).attr('placeholder') || $(item).attr('id');
+                });
+                $.messager.alert('提示', `${Array.from(fieldnames)} 输入有误.`, 'error');
+                return false;
+            }
+        }
             //提交保存后台数据库
-            acceptChanges: function acceptChanges() {
-                if (endEditing()) {
-                    if (this.$dg.datagrid('getChanges').length > 0) {
-                        const inserted =$dg.datagrid('getChanges', 'inserted').map(item => {
-                            item.TrackingState = 1;
-                            return item;
-                        });
-                        const updated =$dg.datagrid('getChanges', 'updated').map(item => {
-                            item.TrackingState = 2
-                            return item;
-                        });
-                        const deleted =$dg.datagrid('getChanges', 'deleted').map(item => {
-                            item.TrackingState = 3
-                            return item;
-                        });
-                        //过滤已删除的重复项
-                        const changed = inserted.concat(updated.filter(item => {
-                            return !deleted.includes(item);
-                        })).concat(deleted);
-                        //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
-                        $.post('/Companies/AcceptChanges', { companies: changed })
-                            .done(response => {
-                                //$.messager.progress('close');
-                                //console.log(response);
-                                if (response.success) {
-                                    toastr.success('保存成功');
-                                   $dg.datagrid('acceptChanges');
-                                    reload();
-                                    hook = false;
-                                } else {
-                                    $.messager.alert('错误', response.err, 'error');
-                                }
-                            })
-                            .fail((jqXHR, textStatus, errorThrown) => {
-                                //$.messager.progress('close');
-                                $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-                            });
-                    }
-                }
-            },
-            rejectChanges: function rejectChanges() {
-               $dg.datagrid('rejectChanges');
-                editIndex = undefined;
-                hook = false;
-            },
-            init: function () {
-                //定义datagrid结构
-               $dg.datagrid({
-                    rownumbers: true,
-                    checkOnSelect: false,
-                    selectOnCheck: false,
-                    idField: 'Id',
-                    sortName: 'Id',
-                    sortOrder: 'desc',
-                    remoteFilter: true,
-                    singleSelect: false,
-                    method: 'get',
-                    onClickCell: this.onClickCell,
-                    clientPaging: false,
-                    pagination: true,
-                    striped: true,
-                    filterRules: [],
-                    onHeaderContextMenu: function (e, field) {
-                        e.preventDefault();
-                        $(this).datagrid('columnMenu').menu('show', {
-                            left: e.pageX,
-                            top: e.pageY
-                        });
-                    },
-                    onBeforeLoad: function () {
-                        const that = $(this);
-                        document.addEventListener('panel.onfullscreen', () => {
-                            setTimeout(() => {
-                                that.datagrid('resize');
-                            }, 200)
+        function acceptChanges() {
+            if (endEditing()) {
+                if ($dg.datagrid('getChanges').length > 0) {
+                    const inserted = $dg.datagrid('getChanges', 'inserted').map(item => {
+                        item.TrackingState = 1;
+                        return item;
+                    });
+                    const updated = $dg.datagrid('getChanges', 'updated').map(item => {
+                        item.TrackingState = 2
+                        return item;
+                    });
+                    const deleted = $dg.datagrid('getChanges', 'deleted').map(item => {
+                        item.TrackingState = 3
+                        return item;
+                    });
+                    //过滤已删除的重复项
+                    const changed = inserted.concat(updated.filter(item => {
+                        return !deleted.includes(item);
+                    })).concat(deleted);
+                    //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
+                    $.post('/Companies/AcceptChanges', { companies: changed })
+                        .done(response => {
+                            //$.messager.progress('close');
+                            //console.log(response);
+                            if (response.success) {
+                                toastr.success('保存成功');
+                                $dg.datagrid('acceptChanges');
+                                reload();
+                                hook = false;
+                            } else {
+                                $.messager.alert('错误', response.err, 'error');
+                            }
                         })
-                    },
-                    onLoadSuccess: function (data) {
-                        editIndex = undefined;
-                        $("button[name*='deletebutton']").prop('disabled', true);
-                        $("button[name*='savebutton']").prop('disabled', true);
-                        $("button[name*='cancelbutton']").prop('disabled', true);
-                    },
-                    onCheck: function () {
-                        $("button[name*='deletebutton']").prop('disabled', false);
-                    },
-                    onUncheck: function () {
-                        const checked = $(this).datagrid('getChecked').length > 0;
-                        $("button[name*='deletebutton']").prop('disabled', !checked);
-                    },
-                    onSelect: function (index, row) {
-                        company = row;
-                    },
-                    onBeginEdit: function (index, row) {
-                        //const editors = $(this).datagrid('getEditors', index);
+                        .fail((jqXHR, textStatus, errorThrown) => {
+                            //$.messager.progress('close');
+                            $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+                        });
+                }
+            }
+        }
+        function rejectChanges() {
+            $dg.datagrid('rejectChanges');
+            editIndex = undefined;
+            hook = false;
+        }
+    $(document).ready(function () {
+      //定义datagrid结构
+      $dg.datagrid({
+        rownumbers: true,
+        checkOnSelect: false,
+        selectOnCheck: false,
+        idField: 'Id',
+        sortName: 'Id',
+        sortOrder: 'desc',
+        remoteFilter: true,
+        singleSelect: true,
+        method: 'get',
+        onClickCell: onClickCell,
+        clientPaging: false,
+        pagination: true,
+        striped: true,
+        filterRules: [],
+        onHeaderContextMenu: function (e, field) {
+          e.preventDefault();
+          $(this).datagrid('columnMenu').menu('show', {
+            left: e.pageX,
+            top: e.pageY
+          });
+        },
+        onBeforeLoad: function () {
+          const that = $(this);
+          document.addEventListener('panel.onfullscreen', () => {
+            setTimeout(() => {
+              that.datagrid('resize');
+            }, 200)
+          })
+        },
+        onLoadSuccess: function (data) {
+          editIndex = undefined;
+          $("button[name*='deletebutton']").prop('disabled', true);
+          $("button[name*='savebutton']").prop('disabled', true);
+          $("button[name*='cancelbutton']").prop('disabled', true);
+        },
+        onCheck: function () {
+          $("button[name*='deletebutton']").prop('disabled', false);
+        },
+        onUncheck: function () {
+          const checked = $(this).datagrid('getChecked').length > 0;
+          $("button[name*='deletebutton']").prop('disabled', !checked);
+        },
+        onSelect: function (index, row) {
+          company = row;
+        },
+        onBeginEdit: function (index, row) {
+          //const editors = $(this).datagrid('getEditors', index);
 
-                    },
-                    onEndEdit: function (index, row) {
-
-                    },
-                    onBeforeEdit: function (index, row) {
-                        editIndex = index;
-                        row.editing = true;
-                        $("button[name*='deletebutton']").prop('disabled', false);
-                        $("button[name*='cancelbutton']").prop('disabled', false);
-                        $("button[name*='savebutton']").prop('disabled', false);
-                        $(this).datagrid('refreshRow', index);
-                    },
-                    onAfterEdit: function (index, row) {
-                        row.editing = false;
-                        editIndex = undefined;
-                        $(this).datagrid('refreshRow', index);
-                    },
-                    onCancelEdit: function (index, row) {
-                        row.editing = false;
-                        editIndex = undefined;
-                        $("button[name*='deletebutton']").prop('disabled', true);
-                        $("button[name*='savebutton']").prop('disabled', true);
-                        $("button[name*='cancelbutton']").prop('disabled', true);
-                        $(this).datagrid('refreshRow', index);
-                    },
-                    frozenColumns: [[
-                        /*开启CheckBox选择功能*/
-                        { field: 'ck', checkbox: true },
-                        {
-                            field: 'action',
-                            title: '操作',
-                            width: 85,
-                            sortable: false,
-                            resizable: true,
-                            formatter: function showdetailsformatter(value, row, index) {
-                                if (!row.editing) {
-                                    return `<div class="btn-group">\
+        },
+        onEndEdit: function (index, row) {
+          editIndex = undefined;
+        },
+        onBeforeEdit: function (index, row) {
+          editIndex = index;
+          row.editing = true;
+          $("button[name*='deletebutton']").prop('disabled', false);
+          $("button[name*='cancelbutton']").prop('disabled', false);
+          $("button[name*='savebutton']").prop('disabled', false);
+          $(this).datagrid('refreshRow', index);
+        },
+        onAfterEdit: function (index, row) {
+          row.editing = false;
+          editIndex = undefined;
+          $(this).datagrid('refreshRow', index);
+        },
+        onCancelEdit: function (index, row) {
+          row.editing = false;
+          editIndex = undefined;
+          $("button[name*='deletebutton']").prop('disabled', true);
+          $("button[name*='savebutton']").prop('disabled', true);
+          $("button[name*='cancelbutton']").prop('disabled', true);
+          $(this).datagrid('refreshRow', index);
+        },
+        frozenColumns: [[
+          /*开启CheckBox选择功能*/
+          { field: 'ck', checkbox: true },
+          {
+            field: 'action',
+            title: '操作',
+            width: 85,
+            sortable: false,
+            resizable: true,
+            formatter: function showdetailsformatter(value, row, index) {
+              if (!row.editing) {
+                return `<div class="btn-group">\
                                                          <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-edit"></i> </button>\
                                                          <button onclick="deleteRow('${row.Id}',${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="删除记录" ><i class="fal fa-times"></i> </button>\
                                                     </div>`;
-                                } else {
-                                    return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
-                                }
-                            }
-                        }
-                    ]],
-                    columns: [[
-
-                        {    /*名称*/
-                            field: 'Name',
-                            title: '<span class="required">@Html.DisplayNameFor(model => model.Name)</span>',
-                            width: 200,
-                            hidden: false,
-                            editor: {
-                                type: 'textbox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.Name)', required: true, validType: 'length[0,50]' }
-                            },
-                            sortable: true,
-                            resizable: true
-                        },
-                        {    /*组织代码*/
-                            field: 'Code',
-                            title: '<span class="required">@Html.DisplayNameFor(model => model.Code)</span>',
-                            width: 120,
-                            hidden: false,
-                            editor: {
-                                type: 'textbox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.Code)', required: true, validType: 'length[0,12]' }
-                            },
-                            sortable: true,
-                            resizable: true
-                        },
-                        {    /*地址*/
-                            field: 'Address',
-                            title: '@Html.DisplayNameFor(model => model.Address)',
-                            width: 200,
-                            hidden: false,
-                            editor: {
-                                type: 'textbox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.Address)', required: false, validType: 'length[0,50]' }
-                            },
-                            sortable: true,
-                            resizable: true
-                        },
-                        {    /*联系人*/
-                            field: 'Contect',
-                            title: '@Html.DisplayNameFor(model => model.Contect)',
-                            width: 120,
-                            hidden: false,
-                            editor: {
-                                type: 'textbox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.Contect)', required: false, validType: 'length[0,12]' }
-                            },
-                            sortable: true,
-                            resizable: true
-                        },
-                        {    /*联系电话*/
-                            field: 'PhoneNumber',
-                            title: '@Html.DisplayNameFor(model => model.PhoneNumber)',
-                            width: 120,
-                            hidden: false,
-                            editor: {
-                                type: 'textbox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.PhoneNumber)', required: false, validType: 'length[0,20]' }
-                            },
-                            sortable: true,
-                            resizable: true
-                        },
-                        {   /*注册日期*/
-                            field: 'RegisterDate',
-                            title: '<span class="required">@Html.DisplayNameFor(model => model.RegisterDate)</span>',
-                            width: 140,
-                            align: 'right',
-                            hidden: false,
-                            editor: {
-                                type: 'datebox',
-                                options: { prompt: '@Html.DescriptionFor(model => model.RegisterDate)', required: true }
-                            },
-                            formatter: dateformatter,
-                            sortable: true,
-                            resizable: true
-                        },
-                    ]]
-                }).datagrid('columnMoving')
-                    .datagrid('resetColumns')
-                    .datagrid('enableFilter', [
-                        {   /*Id*/
-                            field: 'Id',
-                            type: 'numberbox',
-                            op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
-                        },
-                        {     /*注册日期*/
-                            field: 'RegisterDate',
-                            type: 'dateRange',
-                            options: {
-                                onChange: value => {
-                                   $dg.datagrid('addFilterRule', {
-                                        field: 'RegisterDate',
-                                        op: 'between',
-                                        value: value
-                                    });
-
-                                   $dg.datagrid('doFilter');
-                                }
-                            }
-                        },
-                    ])
-                    .datagrid('load', '/Companies/GetData');
+              } else {
+                return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
+              }
             }
+          }
+        ]],
+        columns: [[
 
-        }
+          {    /*名称*/
+            field: 'Name',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Name)</span>',
+            width: 200,
+            hidden: false,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '@Html.DescriptionFor(model => model.Name)', required: true, validType: 'length[0,50]' }
+            },
+            sortable: true,
+            resizable: true
+          },
+          {    /*组织代码*/
+            field: 'Code',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Code)</span>',
+            width: 120,
+            hidden: false,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '@Html.DescriptionFor(model => model.Code)', required: true, validType: 'length[0,12]' }
+            },
+            sortable: true,
+            resizable: true
+          },
+          {    /*地址*/
+            field: 'Address',
+            title: '@Html.DisplayNameFor(model => model.Address)',
+            width: 200,
+            hidden: false,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '@Html.DescriptionFor(model => model.Address)', required: false, validType: 'length[0,50]' }
+            },
+            sortable: true,
+            resizable: true
+          },
+          {    /*联系人*/
+            field: 'Contect',
+            title: '@Html.DisplayNameFor(model => model.Contect)',
+            width: 120,
+            hidden: false,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '@Html.DescriptionFor(model => model.Contect)', required: false, validType: 'length[0,12]' }
+            },
+            sortable: true,
+            resizable: true
+          },
+          {    /*联系电话*/
+            field: 'PhoneNumber',
+            title: '@Html.DisplayNameFor(model => model.PhoneNumber)',
+            width: 120,
+            hidden: false,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '@Html.DescriptionFor(model => model.PhoneNumber)', required: false, validType: 'length[0,20]' }
+            },
+            sortable: true,
+            resizable: true
+          },
+          {   /*注册日期*/
+            field: 'RegisterDate',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.RegisterDate)</span>',
+            width: 140,
+            align: 'right',
+            hidden: false,
+            editor: {
+              type: 'datebox',
+              options: { prompt: '@Html.DescriptionFor(model => model.RegisterDate)', required: true }
+            },
+            formatter: dateformatter,
+            sortable: true,
+            resizable: true
+          },
+        ]]
+      }).datagrid('columnMoving')
+        .datagrid('resetColumns')
+        .datagrid('enableFilter', [
+          {   /*Id*/
+            field: 'Id',
+            type: 'numberbox',
+            op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
+          },
+          {     /*注册日期*/
+            field: 'RegisterDate',
+            type: 'dateRange',
+            options: {
+              onChange: value => {
+                $dg.datagrid('addFilterRule', {
+                  field: 'RegisterDate',
+                  op: 'between',
+                  value: value
+                });
 
-
-
-
-
-
-
-        $(document).ready(function () {
-
-            company.init()
-
-
-
-        });
-
-    </script>
-    <script type="text/javascript">
-        //判断新增编辑状态
-        var MODELSTATE = 'Added';
-        var companyid = null;
-        function opencompanydetailwindow(data, state) {
-            MODELSTATE = state;
-            initcompanydetailview();
-            companyid = (data.Id || 0);
-            $("#companydetailwindow").window("open");
-            $('#company_form').form('reset');
-            $('#company_form').form('load', data);
-        }
-        //删除当前记录
-        function deletecompanyitem() {
-            $.messager.confirm('确认', '你确定要删除该记录?', result => {
-                if (result) {
-                    const url = `/Companies/Delete/${companyid}`;
-                    $.get(url).done(res => {
-                        if (res.success) {
-                            toastr.success("删除成功");
-                            $("#companydetailwindow").window("close");
-                            reload();
-                        } else {
-                            $.messager.alert("错误", res.err, "error");
-                        }
-                    });
-                }
-            });
-        }
-        //async 保存数据
-        async function savecompanyitem() {
-            const $companyform = $('#company_form');
-            if ($companyform.form('enableValidation').form('validate')) {
-                let company = $companyform.serializeJSON();
-                let url = '/Companies/Edit';
-                //判断是新增或是修改方法
-                if (MODELSTATE === 'Added') {
-                    url = '/Companies/Create';
-                }
-                var token = $('input[name="__RequestVerificationToken"]', $companyform).val();
-                //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: {
-                        __RequestVerificationToken: token,
-                        company: company
-                    },
-                    dataType: 'json',
-                    contentType: 'application/x-www-form-urlencoded; charset=utf-8'
-                })
-                    .done(response => {
-                        //$.messager.progress('close');
-                        if (response.success) {
-                            hook = false;
-                            $companyform.form('disableValidation');
-                           $dg.datagrid('reload');
-                            $('#companydetailwindow').window("close");
-                            toastr.success("保存成功");
-                        } else {
-                            $.messager.alert("错误", response.err, "error");
-                        }
-                    })
-                    .fail((jqXHR, textStatus, errorThrown) => {
-                        //$.messager.progress('close');
-                        $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-                    });
+                $dg.datagrid('doFilter');
+              }
             }
-        }
-        //关闭窗口
-        function closecompanydetailwindow() {
-            $('#companydetailwindow').window('close');
-        }
+          },
+        ])
+        .datagrid('load', '/Companies/GetData');
+    }
+    );
 
-        //判断是否有没有保存的记录
-        function companyhasmodified() {
-            return hook;
-        }
-
-
-        function initcompanydetailview() {
-            //判断是否显示功能按钮
-            if (MODELSTATE === 'Added') {
-                $('#deleteitem-btn-group').hide();
+  </script>
+  <script type="text/javascript">
+    //判断新增编辑状态
+    var MODELSTATE = 'Added';
+    var companyid = null;
+    function opencompanydetailwindow(data, state) {
+      MODELSTATE = state;
+      initcompanydetailview();
+      companyid = (data.Id || 0);
+      $("#companydetailwindow").window("open");
+      $('#company_form').form('reset');
+      $('#company_form').form('load', data);
+    }
+    //删除当前记录
+    function deletecompanyitem() {
+      $.messager.confirm('确认', '你确定要删除该记录?', result => {
+        if (result) {
+          const url = `/Companies/Delete/${companyid}`;
+          $.get(url).done(res => {
+            if (res.success) {
+              toastr.success("删除成功");
+              $("#companydetailwindow").window("close");
+              reload();
             } else {
-                $('#deleteitem-btn-group').show();
+              $.messager.alert("错误", res.err, "error");
             }
-
-            //回车光标移动到下个输入控件
-            //日期类型 注册日期
-            $('#RegisterDate').datebox('textbox').bind('keydown', function (e) {
-                if (e.keyCode == 13) {
-                    $(e.target).emulateTab();
-                }
-            });
+          });
         }
-    </script>
+      });
+    }
+    //async 保存数据
+    async function savecompanyitem() {
+      const $companyform = $('#company_form');
+      if ($companyform.form('enableValidation').form('validate')) {
+        let company = $companyform.serializeJSON();
+        let url = '/Companies/Edit';
+        //判断是新增或是修改方法
+        if (MODELSTATE === 'Added') {
+          url = '/Companies/Create';
+        }
+        var token = $('input[name="__RequestVerificationToken"]', $companyform).val();
+        //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: {
+            __RequestVerificationToken: token,
+            company: company
+          },
+          dataType: 'json',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8'
+        })
+          .done(response => {
+            //$.messager.progress('close');
+            if (response.success) {
+              hook = false;
+              $companyform.form('disableValidation');
+              $dg.datagrid('reload');
+              $('#companydetailwindow').window("close");
+              toastr.success("保存成功");
+            } else {
+              $.messager.alert("错误", response.err, "error");
+            }
+          })
+          .fail((jqXHR, textStatus, errorThrown) => {
+            //$.messager.progress('close');
+            $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+          });
+      }
+    }
+    //关闭窗口
+    function closecompanydetailwindow() {
+      $('#companydetailwindow').window('close');
+    }
+
+    //判断是否有没有保存的记录
+    function companyhasmodified() {
+      return hook;
+    }
+
+
+    function initcompanydetailview() {
+      //判断是否显示功能按钮
+      if (MODELSTATE === 'Added') {
+        $('#deleteitem-btn-group').hide();
+      } else {
+        $('#deleteitem-btn-group').show();
+      }
+
+      //回车光标移动到下个输入控件
+      //日期类型 注册日期
+      $('#RegisterDate').datebox('textbox').bind('keydown', function (e) {
+        if (e.keyCode == 13) {
+          $(e.target).emulateTab();
+        }
+      });
+    }
+  </script>
 }

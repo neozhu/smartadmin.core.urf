@@ -19,7 +19,9 @@ namespace SmartAdmin.Service
     // Example, adding synchronous Single method
     public Company Single(Expression<Func<Company, bool>> predicate)
     {
+      
       return this.Repository.Queryable().Single(predicate);
+
     }
   }
 }
