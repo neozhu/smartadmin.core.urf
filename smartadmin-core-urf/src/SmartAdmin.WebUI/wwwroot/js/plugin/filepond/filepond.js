@@ -1,5 +1,5 @@
 /*!
- * FilePond 4.7.4
+ * FilePond 4.17.1
  * Licensed under MIT, https://opensource.org/licenses/MIT/
  * Please visit https://pqina.nl/filepond/ for details.
  */
@@ -65,13 +65,9 @@
 
     // adds a new action, calls its handler and
     var dispatch = function dispatch(type, data, isBlocking) {
-      // is blocking action
-      if (isBlocking) {
-        dispatchQueue.push({
-          type: type,
-          data: data
-        });
-
+      // is blocking action (should never block if document is hidden)
+      if (isBlocking && !document.hidden) {
+        dispatchQueue.push({ type: type, data: data });
         return;
       }
 
@@ -230,6 +226,25 @@
     };
   };
 
+  var IS_BROWSER = (function() {
+    return (
+      typeof window !== 'undefined' && typeof window.document !== 'undefined'
+    );
+  })();
+  var isBrowser = function isBrowser() {
+    return IS_BROWSER;
+  };
+
+  var testElement = isBrowser() ? createElement('svg') : {};
+  var getChildCount =
+    'children' in testElement
+      ? function(el) {
+          return el.children.length;
+        }
+      : function(el) {
+          return el.childNodes.length;
+        };
+
   var getViewRect = function getViewRect(
     elementRect,
     childViews,
@@ -354,11 +369,9 @@
       var resting = false;
 
       // updates spring state
-      var interpolate = function interpolate() {
+      var interpolate = function interpolate(ts, skipToEndState) {
         // in rest, don't animate
-        if (resting) {
-          return;
-        }
+        if (resting) return;
 
         // need at least a target or position to do springy things
         if (!(isNumber(target) && isNumber(position))) {
@@ -380,7 +393,7 @@
         velocity *= damping;
 
         // we've arrived if we're near target and our velocity is near zero
-        if (thereYet(position, target, velocity)) {
+        if (thereYet(position, target, velocity) || skipToEndState) {
           position = target;
           velocity = 0;
           resting = true;
@@ -480,30 +493,26 @@
       var reverse = false;
       var target = null;
 
-      var interpolate = function interpolate(ts) {
-        if (resting || target === null) {
-          return;
-        }
+      var interpolate = function interpolate(ts, skipToEndState) {
+        if (resting || target === null) return;
 
         if (start === null) {
           start = ts;
         }
 
-        if (ts - start < delay) {
-          return;
-        }
+        if (ts - start < delay) return;
 
         t = ts - start - delay;
 
-        if (t < duration) {
-          p = t / duration;
-          api.onupdate((t >= 0 ? easing(reverse ? 1 - p : p) : 0) * target);
-        } else {
+        if (t >= duration || skipToEndState) {
           t = 1;
           p = reverse ? 0 : 1;
           api.onupdate(p * target);
           api.oncomplete(p * target);
           resting = true;
+        } else {
+          p = t / duration;
+          api.onupdate((t >= 0 ? easing(reverse ? 1 - p : p) : 0) * target);
         }
       };
 
@@ -608,10 +617,6 @@
     });
   };
 
-  var isDefined = function isDefined(value) {
-    return value != null;
-  };
-
   // add to state,
   // add getters and setters to internal and external api (if not set)
   // setup animators
@@ -620,8 +625,7 @@
     var mixinConfig = _ref.mixinConfig,
       viewProps = _ref.viewProps,
       viewInternalAPI = _ref.viewInternalAPI,
-      viewExternalAPI = _ref.viewExternalAPI,
-      viewState = _ref.viewState;
+      viewExternalAPI = _ref.viewExternalAPI;
     // initial properties
     var initialProps = Object.assign({}, viewProps);
 
@@ -669,12 +673,11 @@
     // expose internal write api
     return {
       write: function write(ts) {
+        var skipToEndState = document.hidden;
         var resting = true;
         animations.forEach(function(animation) {
-          if (!animation.resting) {
-            resting = false;
-          }
-          animation.interpolate(ts);
+          if (!animation.resting) resting = false;
+          animation.interpolate(ts, skipToEndState);
         });
         return resting;
       },
@@ -747,6 +750,10 @@
       viewProps = _ref.viewProps,
       viewExternalAPI = _ref.viewExternalAPI;
     addGetSet(mixinConfig, viewExternalAPI, viewProps);
+  };
+
+  var isDefined = function isDefined(value) {
+    return value != null;
   };
 
   // add to state,
@@ -1361,7 +1368,7 @@
         });
 
         // append created child views to root node
-        var childCount = element.children.length; // need to know the current child count so appending happens in correct order
+        var childCount = getChildCount(element); // need to know the current child count so appending happens in correct order
         childViews.forEach(function(child, index) {
           internalAPI.appendChild(child.element, childCount + index);
         });
@@ -1938,1283 +1945,6 @@
     return Math.random()
       .toString(36)
       .substr(2, 9);
-  };
-
-  var arrayRemove = function arrayRemove(arr, index) {
-    return arr.splice(index, 1);
-  };
-
-  var on = function on() {
-    var listeners = [];
-    var off = function off(event, cb) {
-      arrayRemove(
-        listeners,
-        listeners.findIndex(function(listener) {
-          return listener.event === event && (listener.cb === cb || !cb);
-        })
-      );
-    };
-    return {
-      fire: function fire(event) {
-        for (
-          var _len = arguments.length,
-            args = new Array(_len > 1 ? _len - 1 : 0),
-            _key = 1;
-          _key < _len;
-          _key++
-        ) {
-          args[_key - 1] = arguments[_key];
-        }
-        listeners
-          .filter(function(listener) {
-            return listener.event === event;
-          })
-          .map(function(listener) {
-            return listener.cb;
-          })
-          .forEach(function(cb) {
-            setTimeout(function() {
-              cb.apply(void 0, args);
-            }, 0);
-          });
-      },
-      on: function on(event, cb) {
-        listeners.push({ event: event, cb: cb });
-      },
-      onOnce: function onOnce(event, _cb) {
-        listeners.push({
-          event: event,
-          cb: function cb() {
-            off(event, _cb);
-            _cb.apply(void 0, arguments);
-          }
-        });
-      },
-      off: off
-    };
-  };
-
-  var copyObjectPropertiesToObject = function copyObjectPropertiesToObject(
-    src,
-    target,
-    excluded
-  ) {
-    Object.getOwnPropertyNames(src)
-      .filter(function(property) {
-        return !excluded.includes(property);
-      })
-      .forEach(function(key) {
-        return Object.defineProperty(
-          target,
-          key,
-          Object.getOwnPropertyDescriptor(src, key)
-        );
-      });
-  };
-
-  var PRIVATE = [
-    'fire',
-    'process',
-    'revert',
-    'load',
-    'on',
-    'off',
-    'onOnce',
-    'retryLoad',
-    'extend',
-    'archive',
-    'archived',
-    'release',
-    'released',
-    'requestProcessing',
-    'freeze'
-  ];
-
-  var createItemAPI = function createItemAPI(item) {
-    var api = {};
-    copyObjectPropertiesToObject(item, api, PRIVATE);
-    return api;
-  };
-
-  var removeReleasedItems = function removeReleasedItems(items) {
-    items.forEach(function(item, index) {
-      if (item.released) {
-        arrayRemove(items, index);
-      }
-    });
-  };
-
-  var ItemStatus = {
-    INIT: 1,
-    IDLE: 2,
-    PROCESSING_QUEUED: 9,
-    PROCESSING: 3,
-    PROCESSING_COMPLETE: 5,
-    PROCESSING_ERROR: 6,
-    PROCESSING_REVERT_ERROR: 10,
-    LOADING: 7,
-    LOAD_ERROR: 8
-  };
-
-  var FileOrigin = {
-    INPUT: 1,
-    LIMBO: 2,
-    LOCAL: 3
-  };
-
-  var getNonNumeric = function getNonNumeric(str) {
-    return /[^0-9]+/.exec(str);
-  };
-
-  var getDecimalSeparator = function getDecimalSeparator() {
-    return getNonNumeric((1.1).toLocaleString())[0];
-  };
-
-  var getThousandsSeparator = function getThousandsSeparator() {
-    // Added for browsers that do not return the thousands separator (happend on native browser Android 4.4.4)
-    // We check against the normal toString output and if they're the same return a comma when decimal separator is a dot
-    var decimalSeparator = getDecimalSeparator();
-    var thousandsStringWithSeparator = (1000.0).toLocaleString();
-    var thousandsStringWithoutSeparator = (1000.0).toString();
-    if (thousandsStringWithSeparator !== thousandsStringWithoutSeparator) {
-      return getNonNumeric(thousandsStringWithSeparator)[0];
-    }
-    return decimalSeparator === '.' ? ',' : '.';
-  };
-
-  var Type = {
-    BOOLEAN: 'boolean',
-    INT: 'int',
-    NUMBER: 'number',
-    STRING: 'string',
-    ARRAY: 'array',
-    OBJECT: 'object',
-    FUNCTION: 'function',
-    ACTION: 'action',
-    SERVER_API: 'serverapi',
-    REGEX: 'regex'
-  };
-
-  // all registered filters
-  var filters = [];
-
-  // loops over matching filters and passes options to each filter, returning the mapped results
-  var applyFilterChain = function applyFilterChain(key, value, utils) {
-    return new Promise(function(resolve, reject) {
-      // find matching filters for this key
-      var matchingFilters = filters
-        .filter(function(f) {
-          return f.key === key;
-        })
-        .map(function(f) {
-          return f.cb;
-        });
-
-      // resolve now
-      if (matchingFilters.length === 0) {
-        resolve(value);
-        return;
-      }
-
-      // first filter to kick things of
-      var initialFilter = matchingFilters.shift();
-
-      // chain filters
-      matchingFilters
-        .reduce(
-          // loop over promises passing value to next promise
-          function(current, next) {
-            return current.then(function(value) {
-              return next(value, utils);
-            });
-          },
-
-          // call initial filter, will return a promise
-          initialFilter(value, utils)
-
-          // all executed
-        )
-        .then(function(value) {
-          return resolve(value);
-        })
-        .catch(function(error) {
-          return reject(error);
-        });
-    });
-  };
-
-  var applyFilters = function applyFilters(key, value, utils) {
-    return filters
-      .filter(function(f) {
-        return f.key === key;
-      })
-      .map(function(f) {
-        return f.cb(value, utils);
-      });
-  };
-
-  // adds a new filter to the list
-  var addFilter = function addFilter(key, cb) {
-    return filters.push({ key: key, cb: cb });
-  };
-
-  var extendDefaultOptions = function extendDefaultOptions(additionalOptions) {
-    return Object.assign(defaultOptions, additionalOptions);
-  };
-
-  var getOptions = function getOptions() {
-    return Object.assign({}, defaultOptions);
-  };
-
-  var setOptions = function setOptions(opts) {
-    forin(opts, function(key, value) {
-      // key does not exist, so this option cannot be set
-      if (!defaultOptions[key]) {
-        return;
-      }
-      defaultOptions[key][0] = getValueByType(
-        value,
-        defaultOptions[key][0],
-        defaultOptions[key][1]
-      );
-    });
-  };
-
-  // default options on app
-  var defaultOptions = {
-    // the id to add to the root element
-    id: [null, Type.STRING],
-
-    // input field name to use
-    name: ['filepond', Type.STRING],
-
-    // disable the field
-    disabled: [false, Type.BOOLEAN],
-
-    // classname to put on wrapper
-    className: [null, Type.STRING],
-
-    // is the field required
-    required: [false, Type.BOOLEAN],
-
-    // Allow media capture when value is set
-    captureMethod: [null, Type.STRING],
-    // - "camera", "microphone" or "camcorder",
-    // - Does not work with multiple on apple devices
-    // - If set, acceptedFileTypes must be made to match with media wildcard "image/*", "audio/*" or "video/*"
-
-    // Feature toggles
-    allowDrop: [true, Type.BOOLEAN], // Allow dropping of files
-    allowBrowse: [true, Type.BOOLEAN], // Allow browsing the file system
-    allowPaste: [true, Type.BOOLEAN], // Allow pasting files
-    allowMultiple: [false, Type.BOOLEAN], // Allow multiple files (disabled by default, as multiple attribute is also required on input to allow multiple)
-    allowReplace: [true, Type.BOOLEAN], // Allow dropping a file on other file to replace it (only works when multiple is set to false)
-    allowRevert: [true, Type.BOOLEAN], // Allows user to revert file upload
-
-    // Revert mode
-    forceRevert: [false, Type.BOOLEAN], // Set to 'force' to require the file to be reverted before removal
-
-    // Input requirements
-    maxFiles: [null, Type.INT], // Max number of files
-    checkValidity: [false, Type.BOOLEAN], // Enables custom validity messages
-
-    // Where to put file
-    itemInsertLocationFreedom: [true, Type.BOOLEAN], // Set to false to always add items to begin or end of list
-    itemInsertLocation: ['before', Type.STRING], // Default index in list to add items that have been dropped at the top of the list
-    itemInsertInterval: [75, Type.INT],
-
-    // Drag 'n Drop related
-    dropOnPage: [false, Type.BOOLEAN], // Allow dropping of files anywhere on page (prevents browser from opening file if dropped outside of Up)
-    dropOnElement: [true, Type.BOOLEAN], // Drop needs to happen on element (set to false to also load drops outside of Up)
-    dropValidation: [false, Type.BOOLEAN], // Enable or disable validating files on drop
-    ignoredFiles: [['.ds_store', 'thumbs.db', 'desktop.ini'], Type.ARRAY],
-
-    // Upload related
-    instantUpload: [true, Type.BOOLEAN], // Should upload files immidiately on drop
-    maxParallelUploads: [2, Type.INT], // Maximum files to upload in parallel
-
-    // Chunks
-    chunkUploads: [false, Type.BOOLEAN], // Enable chunked uploads
-    chunkForce: [false, Type.BOOLEAN], // Force use of chunk uploads even for files smaller than chunk size
-    chunkSize: [5000000, Type.INT], // Size of chunks (5MB default)
-    chunkRetryDelays: [[500, 1000, 3000], Type.Array], // Amount of times to retry upload of a chunk when it fails
-
-    // The server api end points to use for uploading (see docs)
-    server: [null, Type.SERVER_API],
-
-    // Labels and status messages
-    labelDecimalSeparator: [getDecimalSeparator(), Type.STRING], // Default is locale separator
-    labelThousandsSeparator: [getThousandsSeparator(), Type.STRING], // Default is locale separator
-
-    labelIdle: [
-      'Drag & Drop your files or <span class="filepond--label-action">Browse</span>',
-      Type.STRING
-    ],
-    labelInvalidField: ['Field contains invalid files', Type.STRING],
-    labelFileWaitingForSize: ['Waiting for size', Type.STRING],
-    labelFileSizeNotAvailable: ['Size not available', Type.STRING],
-    labelFileCountSingular: ['file in list', Type.STRING],
-    labelFileCountPlural: ['files in list', Type.STRING],
-    labelFileLoading: ['Loading', Type.STRING],
-    labelFileAdded: ['Added', Type.STRING], // assistive only
-    labelFileLoadError: ['Error during load', Type.STRING],
-    labelFileRemoved: ['Removed', Type.STRING], // assistive only
-    labelFileRemoveError: ['Error during remove', Type.STRING],
-    labelFileProcessing: ['Uploading', Type.STRING],
-    labelFileProcessingComplete: ['Upload complete', Type.STRING],
-    labelFileProcessingAborted: ['Upload cancelled', Type.STRING],
-    labelFileProcessingError: ['Error during upload', Type.STRING],
-    labelFileProcessingRevertError: ['Error during revert', Type.STRING],
-
-    labelTapToCancel: ['tap to cancel', Type.STRING],
-    labelTapToRetry: ['tap to retry', Type.STRING],
-    labelTapToUndo: ['tap to undo', Type.STRING],
-
-    labelButtonRemoveItem: ['Remove', Type.STRING],
-    labelButtonAbortItemLoad: ['Abort', Type.STRING],
-    labelButtonRetryItemLoad: ['Retry', Type.STRING],
-    labelButtonAbortItemProcessing: ['Cancel', Type.STRING],
-    labelButtonUndoItemProcessing: ['Undo', Type.STRING],
-    labelButtonRetryItemProcessing: ['Retry', Type.STRING],
-    labelButtonProcessItem: ['Upload', Type.STRING],
-
-    // make sure width and height plus viewpox are even numbers so icons are nicely centered
-    iconRemove: [
-      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M11.586 13l-2.293 2.293a1 1 0 0 0 1.414 1.414L13 14.414l2.293 2.293a1 1 0 0 0 1.414-1.414L14.414 13l2.293-2.293a1 1 0 0 0-1.414-1.414L13 11.586l-2.293-2.293a1 1 0 0 0-1.414 1.414L11.586 13z" fill="currentColor" fill-rule="nonzero"/></svg>',
-      Type.STRING
-    ],
-
-    iconProcess: [
-      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M14 10.414v3.585a1 1 0 0 1-2 0v-3.585l-1.293 1.293a1 1 0 0 1-1.414-1.415l3-3a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1-1.414 1.415L14 10.414zM9 18a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2H9z" fill="currentColor" fill-rule="evenodd"/></svg>',
-      Type.STRING
-    ],
-
-    iconRetry: [
-      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M10.81 9.185l-.038.02A4.997 4.997 0 0 0 8 13.683a5 5 0 0 0 5 5 5 5 0 0 0 5-5 1 1 0 0 1 2 0A7 7 0 1 1 9.722 7.496l-.842-.21a.999.999 0 1 1 .484-1.94l3.23.806c.535.133.86.675.73 1.21l-.804 3.233a.997.997 0 0 1-1.21.73.997.997 0 0 1-.73-1.21l.23-.928v-.002z" fill="currentColor" fill-rule="nonzero"/></svg>',
-      Type.STRING
-    ],
-
-    iconUndo: [
-      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M9.185 10.81l.02-.038A4.997 4.997 0 0 1 13.683 8a5 5 0 0 1 5 5 5 5 0 0 1-5 5 1 1 0 0 0 0 2A7 7 0 1 0 7.496 9.722l-.21-.842a.999.999 0 1 0-1.94.484l.806 3.23c.133.535.675.86 1.21.73l3.233-.803a.997.997 0 0 0 .73-1.21.997.997 0 0 0-1.21-.73l-.928.23-.002-.001z" fill="currentColor" fill-rule="nonzero"/></svg>',
-      Type.STRING
-    ],
-
-    iconDone: [
-      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M18.293 9.293a1 1 0 0 1 1.414 1.414l-7.002 7a1 1 0 0 1-1.414 0l-3.998-4a1 1 0 1 1 1.414-1.414L12 15.586l6.294-6.293z" fill="currentColor" fill-rule="nonzero"/></svg>',
-      Type.STRING
-    ],
-
-    // event handlers
-    oninit: [null, Type.FUNCTION],
-    onwarning: [null, Type.FUNCTION],
-    onerror: [null, Type.FUNCTION],
-    onactivatefile: [null, Type.FUNCTION],
-    onaddfilestart: [null, Type.FUNCTION],
-    onaddfileprogress: [null, Type.FUNCTION],
-    onaddfile: [null, Type.FUNCTION],
-    onprocessfilestart: [null, Type.FUNCTION],
-    onprocessfileprogress: [null, Type.FUNCTION],
-    onprocessfileabort: [null, Type.FUNCTION],
-    onprocessfilerevert: [null, Type.FUNCTION],
-    onprocessfile: [null, Type.FUNCTION],
-    onprocessfiles: [null, Type.FUNCTION],
-    onremovefile: [null, Type.FUNCTION],
-    onpreparefile: [null, Type.FUNCTION],
-    onupdatefiles: [null, Type.FUNCTION],
-
-    // hooks
-    beforeDropFile: [null, Type.FUNCTION],
-    beforeAddFile: [null, Type.FUNCTION],
-    beforeRemoveFile: [null, Type.FUNCTION],
-
-    // styles
-    stylePanelLayout: [null, Type.STRING], // null 'integrated', 'compact', 'circle'
-    stylePanelAspectRatio: [null, Type.STRING], // null or '3:2' or 1
-    styleItemPanelAspectRatio: [null, Type.STRING],
-    styleButtonRemoveItemPosition: ['left', Type.STRING],
-    styleButtonProcessItemPosition: ['right', Type.STRING],
-    styleLoadIndicatorPosition: ['right', Type.STRING],
-    styleProgressIndicatorPosition: ['right', Type.STRING],
-
-    // custom initial files array
-    files: [[], Type.ARRAY]
-  };
-
-  var getItemByQuery = function getItemByQuery(items, query) {
-    // just return first index
-    if (isEmpty(query)) {
-      return items[0] || null;
-    }
-
-    // query is index
-    if (isInt(query)) {
-      return items[query] || null;
-    }
-
-    // if query is item, get the id
-    if (typeof query === 'object') {
-      query = query.id;
-    }
-
-    // assume query is a string and return item by id
-    return (
-      items.find(function(item) {
-        return item.id === query;
-      }) || null
-    );
-  };
-
-  var getNumericAspectRatioFromString = function getNumericAspectRatioFromString(
-    aspectRatio
-  ) {
-    if (isEmpty(aspectRatio)) {
-      return aspectRatio;
-    }
-    if (/:/.test(aspectRatio)) {
-      var parts = aspectRatio.split(':');
-      return parts[1] / parts[0];
-    }
-    return parseFloat(aspectRatio);
-  };
-
-  var getActiveItems = function getActiveItems(items) {
-    return items.filter(function(item) {
-      return !item.archived;
-    });
-  };
-
-  var Status = {
-    EMPTY: 0,
-    IDLE: 1, // waiting
-    ERROR: 2, // a file is in error state
-    BUSY: 3, // busy processing or loading
-    READY: 4 // all files uploaded
-  };
-
-  var ITEM_ERROR = [
-    ItemStatus.LOAD_ERROR,
-    ItemStatus.PROCESSING_ERROR,
-    ItemStatus.PROCESSING_REVERT_ERROR
-  ];
-  var ITEM_BUSY = [
-    ItemStatus.LOADING,
-    ItemStatus.PROCESSING,
-    ItemStatus.PROCESSING_QUEUED,
-    ItemStatus.INIT
-  ];
-  var ITEM_READY = [ItemStatus.PROCESSING_COMPLETE];
-
-  var isItemInErrorState = function isItemInErrorState(item) {
-    return ITEM_ERROR.includes(item.status);
-  };
-  var isItemInBusyState = function isItemInBusyState(item) {
-    return ITEM_BUSY.includes(item.status);
-  };
-  var isItemInReadyState = function isItemInReadyState(item) {
-    return ITEM_READY.includes(item.status);
-  };
-
-  var queries = function queries(state) {
-    return {
-      GET_STATUS: function GET_STATUS() {
-        var items = getActiveItems(state.items);
-        var EMPTY = Status.EMPTY,
-          ERROR = Status.ERROR,
-          BUSY = Status.BUSY,
-          IDLE = Status.IDLE,
-          READY = Status.READY;
-
-        if (items.length === 0) return EMPTY;
-
-        if (items.some(isItemInErrorState)) return ERROR;
-
-        if (items.some(isItemInBusyState)) return BUSY;
-
-        if (items.some(isItemInReadyState)) return READY;
-
-        return IDLE;
-      },
-
-      GET_ITEM: function GET_ITEM(query) {
-        return getItemByQuery(state.items, query);
-      },
-
-      GET_ACTIVE_ITEM: function GET_ACTIVE_ITEM(query) {
-        return getItemByQuery(getActiveItems(state.items), query);
-      },
-
-      GET_ACTIVE_ITEMS: function GET_ACTIVE_ITEMS() {
-        return getActiveItems(state.items);
-      },
-
-      GET_ITEMS: function GET_ITEMS() {
-        return state.items;
-      },
-
-      GET_ITEM_NAME: function GET_ITEM_NAME(query) {
-        var item = getItemByQuery(state.items, query);
-        return item ? item.filename : null;
-      },
-
-      GET_ITEM_SIZE: function GET_ITEM_SIZE(query) {
-        var item = getItemByQuery(state.items, query);
-        return item ? item.fileSize : null;
-      },
-
-      GET_STYLES: function GET_STYLES() {
-        return Object.keys(state.options)
-          .filter(function(key) {
-            return /^style/.test(key);
-          })
-          .map(function(option) {
-            return {
-              name: option,
-              value: state.options[option]
-            };
-          });
-      },
-
-      GET_PANEL_ASPECT_RATIO: function GET_PANEL_ASPECT_RATIO() {
-        var isShapeCircle = /circle/.test(state.options.stylePanelLayout);
-        var aspectRatio = isShapeCircle
-          ? 1
-          : getNumericAspectRatioFromString(
-              state.options.stylePanelAspectRatio
-            );
-        return aspectRatio;
-      },
-
-      GET_ITEM_PANEL_ASPECT_RATIO: function GET_ITEM_PANEL_ASPECT_RATIO() {
-        return state.options.styleItemPanelAspectRatio;
-      },
-
-      GET_ITEMS_BY_STATUS: function GET_ITEMS_BY_STATUS(status) {
-        return getActiveItems(state.items).filter(function(item) {
-          return item.status === status;
-        });
-      },
-
-      GET_TOTAL_ITEMS: function GET_TOTAL_ITEMS() {
-        return getActiveItems(state.items).length;
-      },
-
-      IS_ASYNC: function IS_ASYNC() {
-        return (
-          isObject(state.options.server) &&
-          (isObject(state.options.server.process) ||
-            isFunction(state.options.server.process))
-        );
-      }
-    };
-  };
-
-  var hasRoomForItem = function hasRoomForItem(state) {
-    var count = getActiveItems(state.items).length;
-
-    // if cannot have multiple items, to add one item it should currently not contain items
-    if (!state.options.allowMultiple) {
-      return count === 0;
-    }
-
-    // if allows multiple items, we check if a max item count has been set, if not, there's no limit
-    var maxFileCount = state.options.maxFiles;
-    if (maxFileCount === null) {
-      return true;
-    }
-
-    // we check if the current count is smaller than the max count, if so, another file can still be added
-    if (count < maxFileCount) {
-      return true;
-    }
-
-    // no more room for another file
-    return false;
-  };
-
-  var limit = function limit(value, min, max) {
-    return Math.max(Math.min(max, value), min);
-  };
-
-  var arrayInsert = function arrayInsert(arr, index, item) {
-    return arr.splice(index, 0, item);
-  };
-
-  var insertItem = function insertItem(items, item, index) {
-    if (isEmpty(item)) {
-      return null;
-    }
-
-    // if index is undefined, append
-    if (typeof index === 'undefined') {
-      items.push(item);
-      return item;
-    }
-
-    // limit the index to the size of the items array
-    index = limit(index, 0, items.length);
-
-    // add item to array
-    arrayInsert(items, index, item);
-
-    // expose
-    return item;
-  };
-
-  var isBase64DataURI = function isBase64DataURI(str) {
-    return /^\s*data:([a-z]+\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,([a-z0-9!$&',()*+;=\-._~:@\/?%\s]*)\s*$/i.test(
-      str
-    );
-  };
-
-  var getFilenameFromURL = function getFilenameFromURL(url) {
-    return url
-      .split('/')
-      .pop()
-      .split('?')
-      .shift();
-  };
-
-  var getExtensionFromFilename = function getExtensionFromFilename(name) {
-    return name.split('.').pop();
-  };
-
-  var guesstimateExtension = function guesstimateExtension(type) {
-    // if no extension supplied, exit here
-    if (typeof type !== 'string') {
-      return '';
-    }
-
-    // get subtype
-    var subtype = type.split('/').pop();
-
-    // is svg subtype
-    if (/svg/.test(subtype)) {
-      return 'svg';
-    }
-
-    if (/zip|compressed/.test(subtype)) {
-      return 'zip';
-    }
-
-    if (/plain/.test(subtype)) {
-      return 'txt';
-    }
-
-    if (/msword/.test(subtype)) {
-      return 'doc';
-    }
-
-    // if is valid subtype
-    if (/[a-z]+/.test(subtype)) {
-      // always use jpg extension
-      if (subtype === 'jpeg') {
-        return 'jpg';
-      }
-
-      // return subtype
-      return subtype;
-    }
-
-    return '';
-  };
-
-  var leftPad = function leftPad(value) {
-    var padding =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    return (padding + value).slice(-padding.length);
-  };
-
-  var getDateString = function getDateString() {
-    var date =
-      arguments.length > 0 && arguments[0] !== undefined
-        ? arguments[0]
-        : new Date();
-    return (
-      date.getFullYear() +
-      '-' +
-      leftPad(date.getMonth() + 1, '00') +
-      '-' +
-      leftPad(date.getDate(), '00') +
-      '_' +
-      leftPad(date.getHours(), '00') +
-      '-' +
-      leftPad(date.getMinutes(), '00') +
-      '-' +
-      leftPad(date.getSeconds(), '00')
-    );
-  };
-
-  var getFileFromBlob = function getFileFromBlob(blob, filename) {
-    var type =
-      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var extension =
-      arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-    var file =
-      typeof type === 'string'
-        ? blob.slice(0, blob.size, type)
-        : blob.slice(0, blob.size, blob.type);
-    file.lastModifiedDate = new Date();
-
-    // if blob has name property, use as filename if no filename supplied
-    if (!isString(filename)) {
-      filename = getDateString();
-    }
-
-    // if filename supplied but no extension and filename has extension
-    if (filename && extension === null && getExtensionFromFilename(filename)) {
-      file.name = filename;
-    } else {
-      extension = extension || guesstimateExtension(file.type);
-      file.name = filename + (extension ? '.' + extension : '');
-    }
-
-    return file;
-  };
-
-  var getBlobBuilder = function getBlobBuilder() {
-    return (window.BlobBuilder =
-      window.BlobBuilder ||
-      window.WebKitBlobBuilder ||
-      window.MozBlobBuilder ||
-      window.MSBlobBuilder);
-  };
-
-  var createBlob = function createBlob(arrayBuffer, mimeType) {
-    var BB = getBlobBuilder();
-
-    if (BB) {
-      var bb = new BB();
-      bb.append(arrayBuffer);
-      return bb.getBlob(mimeType);
-    }
-
-    return new Blob([arrayBuffer], {
-      type: mimeType
-    });
-  };
-
-  var getBlobFromByteStringWithMimeType = function getBlobFromByteStringWithMimeType(
-    byteString,
-    mimeType
-  ) {
-    var ab = new ArrayBuffer(byteString.length);
-    var ia = new Uint8Array(ab);
-
-    for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-
-    return createBlob(ab, mimeType);
-  };
-
-  var getMimeTypeFromBase64DataURI = function getMimeTypeFromBase64DataURI(
-    dataURI
-  ) {
-    return (/^data:(.+);/.exec(dataURI) || [])[1] || null;
-  };
-
-  var getBase64DataFromBase64DataURI = function getBase64DataFromBase64DataURI(
-    dataURI
-  ) {
-    // get data part of string (remove data:image/jpeg...,)
-    var data = dataURI.split(',')[1];
-
-    // remove any whitespace as that causes InvalidCharacterError in IE
-    return data.replace(/\s/g, '');
-  };
-
-  var getByteStringFromBase64DataURI = function getByteStringFromBase64DataURI(
-    dataURI
-  ) {
-    return atob(getBase64DataFromBase64DataURI(dataURI));
-  };
-
-  var getBlobFromBase64DataURI = function getBlobFromBase64DataURI(dataURI) {
-    var mimeType = getMimeTypeFromBase64DataURI(dataURI);
-    var byteString = getByteStringFromBase64DataURI(dataURI);
-
-    return getBlobFromByteStringWithMimeType(byteString, mimeType);
-  };
-
-  var getFileFromBase64DataURI = function getFileFromBase64DataURI(
-    dataURI,
-    filename,
-    extension
-  ) {
-    return getFileFromBlob(
-      getBlobFromBase64DataURI(dataURI),
-      filename,
-      null,
-      extension
-    );
-  };
-
-  var getFileNameFromHeader = function getFileNameFromHeader(header) {
-    // test if is content disposition header, if not exit
-    if (!/^content-disposition:/i.test(header)) return null;
-
-    // get filename parts
-    var matches = header
-      .split(/filename=|filename\*=.+''/)
-      .splice(1)
-      .map(function(name) {
-        return name.trim().replace(/^["']|[;"']{0,2}$/g, '');
-      })
-      .filter(function(name) {
-        return name.length;
-      });
-
-    return matches.length ? decodeURI(matches[matches.length - 1]) : null;
-  };
-
-  var getFileSizeFromHeader = function getFileSizeFromHeader(header) {
-    if (/content-length:/i.test(header)) {
-      var size = header.match(/[0-9]+/)[0];
-      return size ? parseInt(size, 10) : null;
-    }
-    return null;
-  };
-
-  var getTranfserIdFromHeader = function getTranfserIdFromHeader(header) {
-    if (/x-content-transfer-id:/i.test(header)) {
-      var id = (header.split(':')[1] || '').trim();
-      return id || null;
-    }
-    return null;
-  };
-
-  var getFileInfoFromHeaders = function getFileInfoFromHeaders(headers) {
-    var info = {
-      source: null,
-      name: null,
-      size: null
-    };
-
-    var rows = headers.split('\n');
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-    try {
-      for (
-        var _iterator = rows[Symbol.iterator](), _step;
-        !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
-        _iteratorNormalCompletion = true
-      ) {
-        var header = _step.value;
-
-        var name = getFileNameFromHeader(header);
-        if (name) {
-          info.name = name;
-          continue;
-        }
-
-        var size = getFileSizeFromHeader(header);
-        if (size) {
-          info.size = size;
-          continue;
-        }
-
-        var source = getTranfserIdFromHeader(header);
-        if (source) {
-          info.source = source;
-          continue;
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-
-    return info;
-  };
-
-  var createFileLoader = function createFileLoader(fetchFn) {
-    var state = {
-      source: null,
-      complete: false,
-      progress: 0,
-      size: null,
-      timestamp: null,
-      duration: 0,
-      request: null
-    };
-
-    var getProgress = function getProgress() {
-      return state.progress;
-    };
-    var abort = function abort() {
-      if (state.request && state.request.abort) {
-        state.request.abort();
-      }
-    };
-
-    // load source
-    var load = function load() {
-      // get quick reference
-      var source = state.source;
-
-      api.fire('init', source);
-
-      // Load Files
-      if (source instanceof File) {
-        api.fire('load', source);
-      } else if (source instanceof Blob) {
-        // Load blobs, set default name to current date
-        api.fire('load', getFileFromBlob(source, source.name));
-      } else if (isBase64DataURI(source)) {
-        // Load base 64, set default name to current date
-        api.fire('load', getFileFromBase64DataURI(source));
-      } else {
-        // Deal as if is external URL, let's load it!
-        loadURL(source);
-      }
-    };
-
-    // loads a url
-    var loadURL = function loadURL(url) {
-      // is remote url and no fetch method supplied
-      if (!fetchFn) {
-        api.fire('error', {
-          type: 'error',
-          body: "Can't load URL",
-          code: 400
-        });
-
-        return;
-      }
-
-      // set request start
-      state.timestamp = Date.now();
-
-      // load file
-      state.request = fetchFn(
-        url,
-        function(response) {
-          // update duration
-          state.duration = Date.now() - state.timestamp;
-
-          // done!
-          state.complete = true;
-
-          // turn blob response into a file
-          if (response instanceof Blob) {
-            response = getFileFromBlob(
-              response,
-              response.name || getFilenameFromURL(url)
-            );
-          }
-
-          api.fire('load', response instanceof Blob ? response : response.body);
-        },
-        function(error) {
-          api.fire(
-            'error',
-            typeof error === 'string'
-              ? {
-                  type: 'error',
-                  code: 0,
-                  body: error
-                }
-              : error
-          );
-        },
-        function(computable, current, total) {
-          // collected some meta data already
-          if (total) {
-            state.size = total;
-          }
-
-          // update duration
-          state.duration = Date.now() - state.timestamp;
-
-          // if we can't compute progress, we're not going to fire progress events
-          if (!computable) {
-            state.progress = null;
-            return;
-          }
-
-          // update progress percentage
-          state.progress = current / total;
-
-          // expose
-          api.fire('progress', state.progress);
-        },
-        function() {
-          api.fire('abort');
-        },
-        function(response) {
-          var fileinfo = getFileInfoFromHeaders(
-            typeof response === 'string' ? response : response.headers
-          );
-          api.fire('meta', {
-            size: state.size || fileinfo.size,
-            filename: fileinfo.name,
-            source: fileinfo.source
-          });
-        }
-      );
-    };
-
-    var api = Object.assign({}, on(), {
-      setSource: function setSource(source) {
-        return (state.source = source);
-      },
-      getProgress: getProgress, // file load progress
-      abort: abort, // abort file load
-      load: load // start load
-    });
-
-    return api;
-  };
-
-  var isGet = function isGet(method) {
-    return /GET|HEAD/.test(method);
-  };
-
-  var sendRequest = function sendRequest(data, url, options) {
-    var api = {
-      onheaders: function onheaders() {},
-      onprogress: function onprogress() {},
-      onload: function onload() {},
-      ontimeout: function ontimeout() {},
-      onerror: function onerror() {},
-      onabort: function onabort() {},
-      abort: function abort() {
-        aborted = true;
-        xhr.abort();
-      }
-    };
-
-    // timeout identifier, only used when timeout is defined
-    var aborted = false;
-    var headersReceived = false;
-
-    // set default options
-    options = Object.assign(
-      {
-        method: 'POST',
-        headers: {},
-        withCredentials: false
-      },
-      options
-    );
-
-    // encode url
-    url = encodeURI(url);
-
-    // if method is GET, add any received data to url
-
-    if (isGet(options.method) && data) {
-      url =
-        '' +
-        url +
-        encodeURIComponent(
-          typeof data === 'string' ? data : JSON.stringify(data)
-        );
-    }
-
-    // create request
-    var xhr = new XMLHttpRequest();
-
-    // progress of load
-    var process = isGet(options.method) ? xhr : xhr.upload;
-    process.onprogress = function(e) {
-      // no progress event when aborted ( onprogress is called once after abort() )
-      if (aborted) {
-        return;
-      }
-
-      api.onprogress(e.lengthComputable, e.loaded, e.total);
-    };
-
-    // tries to get header info to the app as fast as possible
-    xhr.onreadystatechange = function() {
-      // not interesting in these states ('unsent' and 'openend' as they don't give us any additional info)
-      if (xhr.readyState < 2) {
-        return;
-      }
-
-      // no server response
-      if (xhr.readyState === 4 && xhr.status === 0) {
-        return;
-      }
-
-      if (headersReceived) {
-        return;
-      }
-
-      headersReceived = true;
-
-      // we've probably received some useful data in response headers
-      api.onheaders(xhr);
-    };
-
-    // load successful
-    xhr.onload = function() {
-      // is classified as valid response
-      if (xhr.status >= 200 && xhr.status < 300) {
-        api.onload(xhr);
-      } else {
-        api.onerror(xhr);
-      }
-    };
-
-    // error during load
-    xhr.onerror = function() {
-      return api.onerror(xhr);
-    };
-
-    // request aborted
-    xhr.onabort = function() {
-      aborted = true;
-      api.onabort();
-    };
-
-    // request timeout
-    xhr.ontimeout = function() {
-      return api.ontimeout(xhr);
-    };
-
-    // open up open up!
-    xhr.open(options.method, url, true);
-
-    // set timeout if defined (do it after open so IE11 plays ball)
-    if (isInt(options.timeout)) {
-      xhr.timeout = options.timeout;
-    }
-
-    // add headers
-    Object.keys(options.headers).forEach(function(key) {
-      var value = unescape(encodeURIComponent(options.headers[key]));
-      xhr.setRequestHeader(key, value);
-    });
-
-    // set type of response
-    if (options.responseType) {
-      xhr.responseType = options.responseType;
-    }
-
-    // set credentials
-    if (options.withCredentials) {
-      xhr.withCredentials = true;
-    }
-
-    // let's send our data
-    xhr.send(data);
-
-    return api;
-  };
-
-  var createResponse = function createResponse(type, code, body, headers) {
-    return {
-      type: type,
-      code: code,
-      body: body,
-      headers: headers
-    };
-  };
-
-  var createTimeoutResponse = function createTimeoutResponse(cb) {
-    return function(xhr) {
-      cb(createResponse('error', 0, 'Timeout', xhr.getAllResponseHeaders()));
-    };
-  };
-
-  var createFetchFunction = function createFetchFunction() {
-    var apiUrl =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    var action = arguments.length > 1 ? arguments[1] : undefined;
-    // custom handler (should also handle file, load, error, progress and abort)
-    if (typeof action === 'function') {
-      return action;
-    }
-
-    // no action supplied
-    if (!action || !isString(action.url)) {
-      return null;
-    }
-
-    // set onload hanlder
-    var onload =
-      action.onload ||
-      function(res) {
-        return res;
-      };
-    var onerror =
-      action.onerror ||
-      function(res) {
-        return null;
-      };
-
-    // internal handler
-    return function(url, load, error, progress, abort, headers) {
-      // do local or remote request based on if the url is external
-      var request = sendRequest(
-        url,
-        apiUrl + action.url,
-        Object.assign({}, action, {
-          responseType: 'blob'
-        })
-      );
-
-      request.onload = function(xhr) {
-        // get headers
-        var headers = xhr.getAllResponseHeaders();
-
-        // get filename
-        var filename =
-          getFileInfoFromHeaders(headers).name || getFilenameFromURL(url);
-
-        // create response
-        load(
-          createResponse(
-            'load',
-            xhr.status,
-            getFileFromBlob(onload(xhr.response), filename),
-            headers
-          )
-        );
-      };
-
-      request.onerror = function(xhr) {
-        error(
-          createResponse(
-            'error',
-            xhr.status,
-            onerror(xhr.response) || xhr.statusText,
-            xhr.getAllResponseHeaders()
-          )
-        );
-      };
-
-      request.onheaders = function(xhr) {
-        headers(
-          createResponse(
-            'headers',
-            xhr.status,
-            null,
-            xhr.getAllResponseHeaders()
-          )
-        );
-      };
-
-      request.ontimeout = createTimeoutResponse(error);
-      request.onprogress = progress;
-      request.onabort = abort;
-
-      // should return request
-      return request;
-    };
   };
 
   function _typeof(obj) {
@@ -4896,6 +3626,1348 @@
     return _wrapRegExp.apply(this, arguments);
   }
 
+  var arrayRemove = function arrayRemove(arr, index) {
+    return arr.splice(index, 1);
+  };
+
+  var run = function run(cb, sync) {
+    if (sync) {
+      cb();
+    } else if (document.hidden) {
+      Promise.resolve(1).then(cb);
+    } else {
+      setTimeout(cb, 0);
+    }
+  };
+
+  var on = function on() {
+    var listeners = [];
+    var off = function off(event, cb) {
+      arrayRemove(
+        listeners,
+        listeners.findIndex(function(listener) {
+          return listener.event === event && (listener.cb === cb || !cb);
+        })
+      );
+    };
+    var _fire = function fire(event, args, sync) {
+      listeners
+        .filter(function(listener) {
+          return listener.event === event;
+        })
+        .map(function(listener) {
+          return listener.cb;
+        })
+        .forEach(function(cb) {
+          return run(function() {
+            return cb.apply(void 0, _toConsumableArray(args));
+          }, sync);
+        });
+    };
+    return {
+      fireSync: function fireSync(event) {
+        for (
+          var _len = arguments.length,
+            args = new Array(_len > 1 ? _len - 1 : 0),
+            _key = 1;
+          _key < _len;
+          _key++
+        ) {
+          args[_key - 1] = arguments[_key];
+        }
+        _fire(event, args, true);
+      },
+      fire: function fire(event) {
+        for (
+          var _len2 = arguments.length,
+            args = new Array(_len2 > 1 ? _len2 - 1 : 0),
+            _key2 = 1;
+          _key2 < _len2;
+          _key2++
+        ) {
+          args[_key2 - 1] = arguments[_key2];
+        }
+        _fire(event, args, false);
+      },
+      on: function on(event, cb) {
+        listeners.push({ event: event, cb: cb });
+      },
+      onOnce: function onOnce(event, _cb) {
+        listeners.push({
+          event: event,
+          cb: function cb() {
+            off(event, _cb);
+            _cb.apply(void 0, arguments);
+          }
+        });
+      },
+      off: off
+    };
+  };
+
+  var copyObjectPropertiesToObject = function copyObjectPropertiesToObject(
+    src,
+    target,
+    excluded
+  ) {
+    Object.getOwnPropertyNames(src)
+      .filter(function(property) {
+        return !excluded.includes(property);
+      })
+      .forEach(function(key) {
+        return Object.defineProperty(
+          target,
+          key,
+          Object.getOwnPropertyDescriptor(src, key)
+        );
+      });
+  };
+
+  var PRIVATE = [
+    'fire',
+    'process',
+    'revert',
+    'load',
+    'on',
+    'off',
+    'onOnce',
+    'retryLoad',
+    'extend',
+    'archive',
+    'archived',
+    'release',
+    'released',
+    'requestProcessing',
+    'freeze'
+  ];
+
+  var createItemAPI = function createItemAPI(item) {
+    var api = {};
+    copyObjectPropertiesToObject(item, api, PRIVATE);
+    return api;
+  };
+
+  var removeReleasedItems = function removeReleasedItems(items) {
+    items.forEach(function(item, index) {
+      if (item.released) {
+        arrayRemove(items, index);
+      }
+    });
+  };
+
+  var ItemStatus = {
+    INIT: 1,
+    IDLE: 2,
+    PROCESSING_QUEUED: 9,
+    PROCESSING: 3,
+    PROCESSING_COMPLETE: 5,
+    PROCESSING_ERROR: 6,
+    PROCESSING_REVERT_ERROR: 10,
+    LOADING: 7,
+    LOAD_ERROR: 8
+  };
+
+  var FileOrigin = {
+    INPUT: 1,
+    LIMBO: 2,
+    LOCAL: 3
+  };
+
+  var getNonNumeric = function getNonNumeric(str) {
+    return /[^0-9]+/.exec(str);
+  };
+
+  var getDecimalSeparator = function getDecimalSeparator() {
+    return getNonNumeric((1.1).toLocaleString())[0];
+  };
+
+  var getThousandsSeparator = function getThousandsSeparator() {
+    // Added for browsers that do not return the thousands separator (happend on native browser Android 4.4.4)
+    // We check against the normal toString output and if they're the same return a comma when decimal separator is a dot
+    var decimalSeparator = getDecimalSeparator();
+    var thousandsStringWithSeparator = (1000.0).toLocaleString();
+    var thousandsStringWithoutSeparator = (1000.0).toString();
+    if (thousandsStringWithSeparator !== thousandsStringWithoutSeparator) {
+      return getNonNumeric(thousandsStringWithSeparator)[0];
+    }
+    return decimalSeparator === '.' ? ',' : '.';
+  };
+
+  var Type = {
+    BOOLEAN: 'boolean',
+    INT: 'int',
+    NUMBER: 'number',
+    STRING: 'string',
+    ARRAY: 'array',
+    OBJECT: 'object',
+    FUNCTION: 'function',
+    ACTION: 'action',
+    SERVER_API: 'serverapi',
+    REGEX: 'regex'
+  };
+
+  // all registered filters
+  var filters = [];
+
+  // loops over matching filters and passes options to each filter, returning the mapped results
+  var applyFilterChain = function applyFilterChain(key, value, utils) {
+    return new Promise(function(resolve, reject) {
+      // find matching filters for this key
+      var matchingFilters = filters
+        .filter(function(f) {
+          return f.key === key;
+        })
+        .map(function(f) {
+          return f.cb;
+        });
+
+      // resolve now
+      if (matchingFilters.length === 0) {
+        resolve(value);
+        return;
+      }
+
+      // first filter to kick things of
+      var initialFilter = matchingFilters.shift();
+
+      // chain filters
+      matchingFilters
+        .reduce(
+          // loop over promises passing value to next promise
+          function(current, next) {
+            return current.then(function(value) {
+              return next(value, utils);
+            });
+          },
+
+          // call initial filter, will return a promise
+          initialFilter(value, utils)
+
+          // all executed
+        )
+        .then(function(value) {
+          return resolve(value);
+        })
+        .catch(function(error) {
+          return reject(error);
+        });
+    });
+  };
+
+  var applyFilters = function applyFilters(key, value, utils) {
+    return filters
+      .filter(function(f) {
+        return f.key === key;
+      })
+      .map(function(f) {
+        return f.cb(value, utils);
+      });
+  };
+
+  // adds a new filter to the list
+  var addFilter = function addFilter(key, cb) {
+    return filters.push({ key: key, cb: cb });
+  };
+
+  var extendDefaultOptions = function extendDefaultOptions(additionalOptions) {
+    return Object.assign(defaultOptions, additionalOptions);
+  };
+
+  var getOptions = function getOptions() {
+    return Object.assign({}, defaultOptions);
+  };
+
+  var setOptions = function setOptions(opts) {
+    forin(opts, function(key, value) {
+      // key does not exist, so this option cannot be set
+      if (!defaultOptions[key]) {
+        return;
+      }
+      defaultOptions[key][0] = getValueByType(
+        value,
+        defaultOptions[key][0],
+        defaultOptions[key][1]
+      );
+    });
+  };
+
+  // default options on app
+  var defaultOptions = {
+    // the id to add to the root element
+    id: [null, Type.STRING],
+
+    // input field name to use
+    name: ['filepond', Type.STRING],
+
+    // disable the field
+    disabled: [false, Type.BOOLEAN],
+
+    // classname to put on wrapper
+    className: [null, Type.STRING],
+
+    // is the field required
+    required: [false, Type.BOOLEAN],
+
+    // Allow media capture when value is set
+    captureMethod: [null, Type.STRING],
+    // - "camera", "microphone" or "camcorder",
+    // - Does not work with multiple on apple devices
+    // - If set, acceptedFileTypes must be made to match with media wildcard "image/*", "audio/*" or "video/*"
+
+    // sync `acceptedFileTypes` property with `accept` attribute
+    allowSyncAcceptAttribute: [true, Type.BOOLEAN],
+
+    // Feature toggles
+    allowDrop: [true, Type.BOOLEAN], // Allow dropping of files
+    allowBrowse: [true, Type.BOOLEAN], // Allow browsing the file system
+    allowPaste: [true, Type.BOOLEAN], // Allow pasting files
+    allowMultiple: [false, Type.BOOLEAN], // Allow multiple files (disabled by default, as multiple attribute is also required on input to allow multiple)
+    allowReplace: [true, Type.BOOLEAN], // Allow dropping a file on other file to replace it (only works when multiple is set to false)
+    allowRevert: [true, Type.BOOLEAN], // Allows user to revert file upload
+    allowProcess: [true, Type.BOOLEAN], // Allows user to process a file, when set to false, this removes the file upload button
+    allowReorder: [false, Type.BOOLEAN], // Allow reordering of files
+    allowDirectoriesOnly: [false, Type.BOOLEAN], // Allow only selecting directories with browse (no support for filtering dnd at this point)
+
+    // Revert mode
+    forceRevert: [false, Type.BOOLEAN], // Set to 'force' to require the file to be reverted before removal
+
+    // Input requirements
+    maxFiles: [null, Type.INT], // Max number of files
+    checkValidity: [false, Type.BOOLEAN], // Enables custom validity messages
+
+    // Where to put file
+    itemInsertLocationFreedom: [true, Type.BOOLEAN], // Set to false to always add items to begin or end of list
+    itemInsertLocation: ['before', Type.STRING], // Default index in list to add items that have been dropped at the top of the list
+    itemInsertInterval: [75, Type.INT],
+
+    // Drag 'n Drop related
+    dropOnPage: [false, Type.BOOLEAN], // Allow dropping of files anywhere on page (prevents browser from opening file if dropped outside of Up)
+    dropOnElement: [true, Type.BOOLEAN], // Drop needs to happen on element (set to false to also load drops outside of Up)
+    dropValidation: [false, Type.BOOLEAN], // Enable or disable validating files on drop
+    ignoredFiles: [['.ds_store', 'thumbs.db', 'desktop.ini'], Type.ARRAY],
+
+    // Upload related
+    instantUpload: [true, Type.BOOLEAN], // Should upload files immidiately on drop
+    maxParallelUploads: [2, Type.INT], // Maximum files to upload in parallel
+
+    // Chunks
+    chunkUploads: [false, Type.BOOLEAN], // Enable chunked uploads
+    chunkForce: [false, Type.BOOLEAN], // Force use of chunk uploads even for files smaller than chunk size
+    chunkSize: [5000000, Type.INT], // Size of chunks (5MB default)
+    chunkRetryDelays: [[500, 1000, 3000], Type.Array], // Amount of times to retry upload of a chunk when it fails
+
+    // The server api end points to use for uploading (see docs)
+    server: [null, Type.SERVER_API],
+
+    // Labels and status messages
+    labelDecimalSeparator: [getDecimalSeparator(), Type.STRING], // Default is locale separator
+    labelThousandsSeparator: [getThousandsSeparator(), Type.STRING], // Default is locale separator
+
+    labelIdle: [
+      'Drag & Drop your files or <span class="filepond--label-action">Browse</span>',
+      Type.STRING
+    ],
+    labelInvalidField: ['Field contains invalid files', Type.STRING],
+    labelFileWaitingForSize: ['Waiting for size', Type.STRING],
+    labelFileSizeNotAvailable: ['Size not available', Type.STRING],
+    labelFileCountSingular: ['file in list', Type.STRING],
+    labelFileCountPlural: ['files in list', Type.STRING],
+    labelFileLoading: ['Loading', Type.STRING],
+    labelFileAdded: ['Added', Type.STRING], // assistive only
+    labelFileLoadError: ['Error during load', Type.STRING],
+    labelFileRemoved: ['Removed', Type.STRING], // assistive only
+    labelFileRemoveError: ['Error during remove', Type.STRING],
+    labelFileProcessing: ['Uploading', Type.STRING],
+    labelFileProcessingComplete: ['Upload complete', Type.STRING],
+    labelFileProcessingAborted: ['Upload cancelled', Type.STRING],
+    labelFileProcessingError: ['Error during upload', Type.STRING],
+    labelFileProcessingRevertError: ['Error during revert', Type.STRING],
+
+    labelTapToCancel: ['tap to cancel', Type.STRING],
+    labelTapToRetry: ['tap to retry', Type.STRING],
+    labelTapToUndo: ['tap to undo', Type.STRING],
+
+    labelButtonRemoveItem: ['Remove', Type.STRING],
+    labelButtonAbortItemLoad: ['Abort', Type.STRING],
+    labelButtonRetryItemLoad: ['Retry', Type.STRING],
+    labelButtonAbortItemProcessing: ['Cancel', Type.STRING],
+    labelButtonUndoItemProcessing: ['Undo', Type.STRING],
+    labelButtonRetryItemProcessing: ['Retry', Type.STRING],
+    labelButtonProcessItem: ['Upload', Type.STRING],
+
+    // make sure width and height plus viewpox are even numbers so icons are nicely centered
+    iconRemove: [
+      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M11.586 13l-2.293 2.293a1 1 0 0 0 1.414 1.414L13 14.414l2.293 2.293a1 1 0 0 0 1.414-1.414L14.414 13l2.293-2.293a1 1 0 0 0-1.414-1.414L13 11.586l-2.293-2.293a1 1 0 0 0-1.414 1.414L11.586 13z" fill="currentColor" fill-rule="nonzero"/></svg>',
+      Type.STRING
+    ],
+
+    iconProcess: [
+      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M14 10.414v3.585a1 1 0 0 1-2 0v-3.585l-1.293 1.293a1 1 0 0 1-1.414-1.415l3-3a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1-1.414 1.415L14 10.414zM9 18a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2H9z" fill="currentColor" fill-rule="evenodd"/></svg>',
+      Type.STRING
+    ],
+
+    iconRetry: [
+      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M10.81 9.185l-.038.02A4.997 4.997 0 0 0 8 13.683a5 5 0 0 0 5 5 5 5 0 0 0 5-5 1 1 0 0 1 2 0A7 7 0 1 1 9.722 7.496l-.842-.21a.999.999 0 1 1 .484-1.94l3.23.806c.535.133.86.675.73 1.21l-.804 3.233a.997.997 0 0 1-1.21.73.997.997 0 0 1-.73-1.21l.23-.928v-.002z" fill="currentColor" fill-rule="nonzero"/></svg>',
+      Type.STRING
+    ],
+
+    iconUndo: [
+      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M9.185 10.81l.02-.038A4.997 4.997 0 0 1 13.683 8a5 5 0 0 1 5 5 5 5 0 0 1-5 5 1 1 0 0 0 0 2A7 7 0 1 0 7.496 9.722l-.21-.842a.999.999 0 1 0-1.94.484l.806 3.23c.133.535.675.86 1.21.73l3.233-.803a.997.997 0 0 0 .73-1.21.997.997 0 0 0-1.21-.73l-.928.23-.002-.001z" fill="currentColor" fill-rule="nonzero"/></svg>',
+      Type.STRING
+    ],
+
+    iconDone: [
+      '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><path d="M18.293 9.293a1 1 0 0 1 1.414 1.414l-7.002 7a1 1 0 0 1-1.414 0l-3.998-4a1 1 0 1 1 1.414-1.414L12 15.586l6.294-6.293z" fill="currentColor" fill-rule="nonzero"/></svg>',
+      Type.STRING
+    ],
+
+    // event handlers
+    oninit: [null, Type.FUNCTION],
+    onwarning: [null, Type.FUNCTION],
+    onerror: [null, Type.FUNCTION],
+    onactivatefile: [null, Type.FUNCTION],
+    oninitfile: [null, Type.FUNCTION],
+    onaddfilestart: [null, Type.FUNCTION],
+    onaddfileprogress: [null, Type.FUNCTION],
+    onaddfile: [null, Type.FUNCTION],
+    onprocessfilestart: [null, Type.FUNCTION],
+    onprocessfileprogress: [null, Type.FUNCTION],
+    onprocessfileabort: [null, Type.FUNCTION],
+    onprocessfilerevert: [null, Type.FUNCTION],
+    onprocessfile: [null, Type.FUNCTION],
+    onprocessfiles: [null, Type.FUNCTION],
+    onremovefile: [null, Type.FUNCTION],
+    onpreparefile: [null, Type.FUNCTION],
+    onupdatefiles: [null, Type.FUNCTION],
+    onreorderfiles: [null, Type.FUNCTION],
+
+    // hooks
+    beforeDropFile: [null, Type.FUNCTION],
+    beforeAddFile: [null, Type.FUNCTION],
+    beforeRemoveFile: [null, Type.FUNCTION],
+
+    // styles
+    stylePanelLayout: [null, Type.STRING], // null 'integrated', 'compact', 'circle'
+    stylePanelAspectRatio: [null, Type.STRING], // null or '3:2' or 1
+    styleItemPanelAspectRatio: [null, Type.STRING],
+    styleButtonRemoveItemPosition: ['left', Type.STRING],
+    styleButtonProcessItemPosition: ['right', Type.STRING],
+    styleLoadIndicatorPosition: ['right', Type.STRING],
+    styleProgressIndicatorPosition: ['right', Type.STRING],
+    styleButtonRemoveItemAlign: [false, Type.BOOLEAN],
+
+    // custom initial files array
+    files: [[], Type.ARRAY]
+  };
+
+  var getItemByQuery = function getItemByQuery(items, query) {
+    // just return first index
+    if (isEmpty(query)) {
+      return items[0] || null;
+    }
+
+    // query is index
+    if (isInt(query)) {
+      return items[query] || null;
+    }
+
+    // if query is item, get the id
+    if (typeof query === 'object') {
+      query = query.id;
+    }
+
+    // assume query is a string and return item by id
+    return (
+      items.find(function(item) {
+        return item.id === query;
+      }) || null
+    );
+  };
+
+  var getNumericAspectRatioFromString = function getNumericAspectRatioFromString(
+    aspectRatio
+  ) {
+    if (isEmpty(aspectRatio)) {
+      return aspectRatio;
+    }
+    if (/:/.test(aspectRatio)) {
+      var parts = aspectRatio.split(':');
+      return parts[1] / parts[0];
+    }
+    return parseFloat(aspectRatio);
+  };
+
+  var getActiveItems = function getActiveItems(items) {
+    return items.filter(function(item) {
+      return !item.archived;
+    });
+  };
+
+  var Status = {
+    EMPTY: 0,
+    IDLE: 1, // waiting
+    ERROR: 2, // a file is in error state
+    BUSY: 3, // busy processing or loading
+    READY: 4 // all files uploaded
+  };
+
+  var ITEM_ERROR = [
+    ItemStatus.LOAD_ERROR,
+    ItemStatus.PROCESSING_ERROR,
+    ItemStatus.PROCESSING_REVERT_ERROR
+  ];
+  var ITEM_BUSY = [
+    ItemStatus.LOADING,
+    ItemStatus.PROCESSING,
+    ItemStatus.PROCESSING_QUEUED,
+    ItemStatus.INIT
+  ];
+  var ITEM_READY = [ItemStatus.PROCESSING_COMPLETE];
+
+  var isItemInErrorState = function isItemInErrorState(item) {
+    return ITEM_ERROR.includes(item.status);
+  };
+  var isItemInBusyState = function isItemInBusyState(item) {
+    return ITEM_BUSY.includes(item.status);
+  };
+  var isItemInReadyState = function isItemInReadyState(item) {
+    return ITEM_READY.includes(item.status);
+  };
+
+  var queries = function queries(state) {
+    return {
+      GET_STATUS: function GET_STATUS() {
+        var items = getActiveItems(state.items);
+        var EMPTY = Status.EMPTY,
+          ERROR = Status.ERROR,
+          BUSY = Status.BUSY,
+          IDLE = Status.IDLE,
+          READY = Status.READY;
+
+        if (items.length === 0) return EMPTY;
+
+        if (items.some(isItemInErrorState)) return ERROR;
+
+        if (items.some(isItemInBusyState)) return BUSY;
+
+        if (items.some(isItemInReadyState)) return READY;
+
+        return IDLE;
+      },
+
+      GET_ITEM: function GET_ITEM(query) {
+        return getItemByQuery(state.items, query);
+      },
+
+      GET_ACTIVE_ITEM: function GET_ACTIVE_ITEM(query) {
+        return getItemByQuery(getActiveItems(state.items), query);
+      },
+
+      GET_ACTIVE_ITEMS: function GET_ACTIVE_ITEMS() {
+        return getActiveItems(state.items);
+      },
+
+      GET_ITEMS: function GET_ITEMS() {
+        return state.items;
+      },
+
+      GET_ITEM_NAME: function GET_ITEM_NAME(query) {
+        var item = getItemByQuery(state.items, query);
+        return item ? item.filename : null;
+      },
+
+      GET_ITEM_SIZE: function GET_ITEM_SIZE(query) {
+        var item = getItemByQuery(state.items, query);
+        return item ? item.fileSize : null;
+      },
+
+      GET_STYLES: function GET_STYLES() {
+        return Object.keys(state.options)
+          .filter(function(key) {
+            return /^style/.test(key);
+          })
+          .map(function(option) {
+            return {
+              name: option,
+              value: state.options[option]
+            };
+          });
+      },
+
+      GET_PANEL_ASPECT_RATIO: function GET_PANEL_ASPECT_RATIO() {
+        var isShapeCircle = /circle/.test(state.options.stylePanelLayout);
+        var aspectRatio = isShapeCircle
+          ? 1
+          : getNumericAspectRatioFromString(
+              state.options.stylePanelAspectRatio
+            );
+        return aspectRatio;
+      },
+
+      GET_ITEM_PANEL_ASPECT_RATIO: function GET_ITEM_PANEL_ASPECT_RATIO() {
+        return state.options.styleItemPanelAspectRatio;
+      },
+
+      GET_ITEMS_BY_STATUS: function GET_ITEMS_BY_STATUS(status) {
+        return getActiveItems(state.items).filter(function(item) {
+          return item.status === status;
+        });
+      },
+
+      GET_TOTAL_ITEMS: function GET_TOTAL_ITEMS() {
+        return getActiveItems(state.items).length;
+      },
+
+      IS_ASYNC: function IS_ASYNC() {
+        return (
+          isObject(state.options.server) &&
+          (isObject(state.options.server.process) ||
+            isFunction(state.options.server.process))
+        );
+      }
+    };
+  };
+
+  var hasRoomForItem = function hasRoomForItem(state) {
+    var count = getActiveItems(state.items).length;
+
+    // if cannot have multiple items, to add one item it should currently not contain items
+    if (!state.options.allowMultiple) {
+      return count === 0;
+    }
+
+    // if allows multiple items, we check if a max item count has been set, if not, there's no limit
+    var maxFileCount = state.options.maxFiles;
+    if (maxFileCount === null) {
+      return true;
+    }
+
+    // we check if the current count is smaller than the max count, if so, another file can still be added
+    if (count < maxFileCount) {
+      return true;
+    }
+
+    // no more room for another file
+    return false;
+  };
+
+  var limit = function limit(value, min, max) {
+    return Math.max(Math.min(max, value), min);
+  };
+
+  var arrayInsert = function arrayInsert(arr, index, item) {
+    return arr.splice(index, 0, item);
+  };
+
+  var insertItem = function insertItem(items, item, index) {
+    if (isEmpty(item)) {
+      return null;
+    }
+
+    // if index is undefined, append
+    if (typeof index === 'undefined') {
+      items.push(item);
+      return item;
+    }
+
+    // limit the index to the size of the items array
+    index = limit(index, 0, items.length);
+
+    // add item to array
+    arrayInsert(items, index, item);
+
+    // expose
+    return item;
+  };
+
+  var isBase64DataURI = function isBase64DataURI(str) {
+    return /^\s*data:([a-z]+\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,([a-z0-9!$&',()*+;=\-._~:@\/?%\s]*)\s*$/i.test(
+      str
+    );
+  };
+
+  var getFilenameFromURL = function getFilenameFromURL(url) {
+    return url
+      .split('/')
+      .pop()
+      .split('?')
+      .shift();
+  };
+
+  var getExtensionFromFilename = function getExtensionFromFilename(name) {
+    return name.split('.').pop();
+  };
+
+  var guesstimateExtension = function guesstimateExtension(type) {
+    // if no extension supplied, exit here
+    if (typeof type !== 'string') {
+      return '';
+    }
+
+    // get subtype
+    var subtype = type.split('/').pop();
+
+    // is svg subtype
+    if (/svg/.test(subtype)) {
+      return 'svg';
+    }
+
+    if (/zip|compressed/.test(subtype)) {
+      return 'zip';
+    }
+
+    if (/plain/.test(subtype)) {
+      return 'txt';
+    }
+
+    if (/msword/.test(subtype)) {
+      return 'doc';
+    }
+
+    // if is valid subtype
+    if (/[a-z]+/.test(subtype)) {
+      // always use jpg extension
+      if (subtype === 'jpeg') {
+        return 'jpg';
+      }
+
+      // return subtype
+      return subtype;
+    }
+
+    return '';
+  };
+
+  var leftPad = function leftPad(value) {
+    var padding =
+      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (padding + value).slice(-padding.length);
+  };
+
+  var getDateString = function getDateString() {
+    var date =
+      arguments.length > 0 && arguments[0] !== undefined
+        ? arguments[0]
+        : new Date();
+    return (
+      date.getFullYear() +
+      '-' +
+      leftPad(date.getMonth() + 1, '00') +
+      '-' +
+      leftPad(date.getDate(), '00') +
+      '_' +
+      leftPad(date.getHours(), '00') +
+      '-' +
+      leftPad(date.getMinutes(), '00') +
+      '-' +
+      leftPad(date.getSeconds(), '00')
+    );
+  };
+
+  var getFileFromBlob = function getFileFromBlob(blob, filename) {
+    var type =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var extension =
+      arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    var file =
+      typeof type === 'string'
+        ? blob.slice(0, blob.size, type)
+        : blob.slice(0, blob.size, blob.type);
+    file.lastModifiedDate = new Date();
+
+    // copy relative path
+    if (blob._relativePath) file._relativePath = blob._relativePath;
+
+    // if blob has name property, use as filename if no filename supplied
+    if (!isString(filename)) {
+      filename = getDateString();
+    }
+
+    // if filename supplied but no extension and filename has extension
+    if (filename && extension === null && getExtensionFromFilename(filename)) {
+      file.name = filename;
+    } else {
+      extension = extension || guesstimateExtension(file.type);
+      file.name = filename + (extension ? '.' + extension : '');
+    }
+
+    return file;
+  };
+
+  var getBlobBuilder = function getBlobBuilder() {
+    return (window.BlobBuilder =
+      window.BlobBuilder ||
+      window.WebKitBlobBuilder ||
+      window.MozBlobBuilder ||
+      window.MSBlobBuilder);
+  };
+
+  var createBlob = function createBlob(arrayBuffer, mimeType) {
+    var BB = getBlobBuilder();
+
+    if (BB) {
+      var bb = new BB();
+      bb.append(arrayBuffer);
+      return bb.getBlob(mimeType);
+    }
+
+    return new Blob([arrayBuffer], {
+      type: mimeType
+    });
+  };
+
+  var getBlobFromByteStringWithMimeType = function getBlobFromByteStringWithMimeType(
+    byteString,
+    mimeType
+  ) {
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    return createBlob(ab, mimeType);
+  };
+
+  var getMimeTypeFromBase64DataURI = function getMimeTypeFromBase64DataURI(
+    dataURI
+  ) {
+    return (/^data:(.+);/.exec(dataURI) || [])[1] || null;
+  };
+
+  var getBase64DataFromBase64DataURI = function getBase64DataFromBase64DataURI(
+    dataURI
+  ) {
+    // get data part of string (remove data:image/jpeg...,)
+    var data = dataURI.split(',')[1];
+
+    // remove any whitespace as that causes InvalidCharacterError in IE
+    return data.replace(/\s/g, '');
+  };
+
+  var getByteStringFromBase64DataURI = function getByteStringFromBase64DataURI(
+    dataURI
+  ) {
+    return atob(getBase64DataFromBase64DataURI(dataURI));
+  };
+
+  var getBlobFromBase64DataURI = function getBlobFromBase64DataURI(dataURI) {
+    var mimeType = getMimeTypeFromBase64DataURI(dataURI);
+    var byteString = getByteStringFromBase64DataURI(dataURI);
+
+    return getBlobFromByteStringWithMimeType(byteString, mimeType);
+  };
+
+  var getFileFromBase64DataURI = function getFileFromBase64DataURI(
+    dataURI,
+    filename,
+    extension
+  ) {
+    return getFileFromBlob(
+      getBlobFromBase64DataURI(dataURI),
+      filename,
+      null,
+      extension
+    );
+  };
+
+  var getFileNameFromHeader = function getFileNameFromHeader(header) {
+    // test if is content disposition header, if not exit
+    if (!/^content-disposition:/i.test(header)) return null;
+
+    // get filename parts
+    var matches = header
+      .split(/filename=|filename\*=.+''/)
+      .splice(1)
+      .map(function(name) {
+        return name.trim().replace(/^["']|[;"']{0,2}$/g, '');
+      })
+      .filter(function(name) {
+        return name.length;
+      });
+
+    return matches.length ? decodeURI(matches[matches.length - 1]) : null;
+  };
+
+  var getFileSizeFromHeader = function getFileSizeFromHeader(header) {
+    if (/content-length:/i.test(header)) {
+      var size = header.match(/[0-9]+/)[0];
+      return size ? parseInt(size, 10) : null;
+    }
+    return null;
+  };
+
+  var getTranfserIdFromHeader = function getTranfserIdFromHeader(header) {
+    if (/x-content-transfer-id:/i.test(header)) {
+      var id = (header.split(':')[1] || '').trim();
+      return id || null;
+    }
+    return null;
+  };
+
+  var getFileInfoFromHeaders = function getFileInfoFromHeaders(headers) {
+    var info = {
+      source: null,
+      name: null,
+      size: null
+    };
+
+    var rows = headers.split('\n');
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+    try {
+      for (
+        var _iterator = rows[Symbol.iterator](), _step;
+        !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+        _iteratorNormalCompletion = true
+      ) {
+        var header = _step.value;
+
+        var name = getFileNameFromHeader(header);
+        if (name) {
+          info.name = name;
+          continue;
+        }
+
+        var size = getFileSizeFromHeader(header);
+        if (size) {
+          info.size = size;
+          continue;
+        }
+
+        var source = getTranfserIdFromHeader(header);
+        if (source) {
+          info.source = source;
+          continue;
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return info;
+  };
+
+  var createFileLoader = function createFileLoader(fetchFn) {
+    var state = {
+      source: null,
+      complete: false,
+      progress: 0,
+      size: null,
+      timestamp: null,
+      duration: 0,
+      request: null
+    };
+
+    var getProgress = function getProgress() {
+      return state.progress;
+    };
+    var abort = function abort() {
+      if (state.request && state.request.abort) {
+        state.request.abort();
+      }
+    };
+
+    // load source
+    var load = function load() {
+      // get quick reference
+      var source = state.source;
+
+      api.fire('init', source);
+
+      // Load Files
+      if (source instanceof File) {
+        api.fire('load', source);
+      } else if (source instanceof Blob) {
+        // Load blobs, set default name to current date
+        api.fire('load', getFileFromBlob(source, source.name));
+      } else if (isBase64DataURI(source)) {
+        // Load base 64, set default name to current date
+        api.fire('load', getFileFromBase64DataURI(source));
+      } else {
+        // Deal as if is external URL, let's load it!
+        loadURL(source);
+      }
+    };
+
+    // loads a url
+    var loadURL = function loadURL(url) {
+      // is remote url and no fetch method supplied
+      if (!fetchFn) {
+        api.fire('error', {
+          type: 'error',
+          body: "Can't load URL",
+          code: 400
+        });
+
+        return;
+      }
+
+      // set request start
+      state.timestamp = Date.now();
+
+      // load file
+      state.request = fetchFn(
+        url,
+        function(response) {
+          // update duration
+          state.duration = Date.now() - state.timestamp;
+
+          // done!
+          state.complete = true;
+
+          // turn blob response into a file
+          if (response instanceof Blob) {
+            response = getFileFromBlob(
+              response,
+              response.name || getFilenameFromURL(url)
+            );
+          }
+
+          api.fire(
+            'load',
+            // if has received blob, we go with blob, if no response, we return null
+            response instanceof Blob
+              ? response
+              : response
+              ? response.body
+              : null
+          );
+        },
+        function(error) {
+          api.fire(
+            'error',
+            typeof error === 'string'
+              ? {
+                  type: 'error',
+                  code: 0,
+                  body: error
+                }
+              : error
+          );
+        },
+        function(computable, current, total) {
+          // collected some meta data already
+          if (total) {
+            state.size = total;
+          }
+
+          // update duration
+          state.duration = Date.now() - state.timestamp;
+
+          // if we can't compute progress, we're not going to fire progress events
+          if (!computable) {
+            state.progress = null;
+            return;
+          }
+
+          // update progress percentage
+          state.progress = current / total;
+
+          // expose
+          api.fire('progress', state.progress);
+        },
+        function() {
+          api.fire('abort');
+        },
+        function(response) {
+          var fileinfo = getFileInfoFromHeaders(
+            typeof response === 'string' ? response : response.headers
+          );
+          api.fire('meta', {
+            size: state.size || fileinfo.size,
+            filename: fileinfo.name,
+            source: fileinfo.source
+          });
+        }
+      );
+    };
+
+    var api = Object.assign({}, on(), {
+      setSource: function setSource(source) {
+        return (state.source = source);
+      },
+      getProgress: getProgress, // file load progress
+      abort: abort, // abort file load
+      load: load // start load
+    });
+
+    return api;
+  };
+
+  var isGet = function isGet(method) {
+    return /GET|HEAD/.test(method);
+  };
+
+  var sendRequest = function sendRequest(data, url, options) {
+    var api = {
+      onheaders: function onheaders() {},
+      onprogress: function onprogress() {},
+      onload: function onload() {},
+      ontimeout: function ontimeout() {},
+      onerror: function onerror() {},
+      onabort: function onabort() {},
+      abort: function abort() {
+        aborted = true;
+        xhr.abort();
+      }
+    };
+
+    // timeout identifier, only used when timeout is defined
+    var aborted = false;
+    var headersReceived = false;
+
+    // set default options
+    options = Object.assign(
+      {
+        method: 'POST',
+        headers: {},
+        withCredentials: false
+      },
+      options
+    );
+
+    // encode url
+    url = encodeURI(url);
+
+    // if method is GET, add any received data to url
+
+    if (isGet(options.method) && data) {
+      url =
+        '' +
+        url +
+        encodeURIComponent(
+          typeof data === 'string' ? data : JSON.stringify(data)
+        );
+    }
+
+    // create request
+    var xhr = new XMLHttpRequest();
+
+    // progress of load
+    var process = isGet(options.method) ? xhr : xhr.upload;
+    process.onprogress = function(e) {
+      // no progress event when aborted ( onprogress is called once after abort() )
+      if (aborted) {
+        return;
+      }
+
+      api.onprogress(e.lengthComputable, e.loaded, e.total);
+    };
+
+    // tries to get header info to the app as fast as possible
+    xhr.onreadystatechange = function() {
+      // not interesting in these states ('unsent' and 'openend' as they don't give us any additional info)
+      if (xhr.readyState < 2) {
+        return;
+      }
+
+      // no server response
+      if (xhr.readyState === 4 && xhr.status === 0) {
+        return;
+      }
+
+      if (headersReceived) {
+        return;
+      }
+
+      headersReceived = true;
+
+      // we've probably received some useful data in response headers
+      api.onheaders(xhr);
+    };
+
+    // load successful
+    xhr.onload = function() {
+      // is classified as valid response
+      if (xhr.status >= 200 && xhr.status < 300) {
+        api.onload(xhr);
+      } else {
+        api.onerror(xhr);
+      }
+    };
+
+    // error during load
+    xhr.onerror = function() {
+      return api.onerror(xhr);
+    };
+
+    // request aborted
+    xhr.onabort = function() {
+      aborted = true;
+      api.onabort();
+    };
+
+    // request timeout
+    xhr.ontimeout = function() {
+      return api.ontimeout(xhr);
+    };
+
+    // open up open up!
+    xhr.open(options.method, url, true);
+
+    // set timeout if defined (do it after open so IE11 plays ball)
+    if (isInt(options.timeout)) {
+      xhr.timeout = options.timeout;
+    }
+
+    // add headers
+    Object.keys(options.headers).forEach(function(key) {
+      var value = unescape(encodeURIComponent(options.headers[key]));
+      xhr.setRequestHeader(key, value);
+    });
+
+    // set type of response
+    if (options.responseType) {
+      xhr.responseType = options.responseType;
+    }
+
+    // set credentials
+    if (options.withCredentials) {
+      xhr.withCredentials = true;
+    }
+
+    // let's send our data
+    xhr.send(data);
+
+    return api;
+  };
+
+  var createResponse = function createResponse(type, code, body, headers) {
+    return {
+      type: type,
+      code: code,
+      body: body,
+      headers: headers
+    };
+  };
+
+  var createTimeoutResponse = function createTimeoutResponse(cb) {
+    return function(xhr) {
+      cb(createResponse('error', 0, 'Timeout', xhr.getAllResponseHeaders()));
+    };
+  };
+
+  var hasQS = function hasQS(str) {
+    return /\?/.test(str);
+  };
+  var buildURL = function buildURL() {
+    var url = '';
+    for (
+      var _len = arguments.length, parts = new Array(_len), _key = 0;
+      _key < _len;
+      _key++
+    ) {
+      parts[_key] = arguments[_key];
+    }
+    parts.forEach(function(part) {
+      url += hasQS(url) && hasQS(part) ? part.replace(/\?/, '&') : part;
+    });
+    return url;
+  };
+
+  var createFetchFunction = function createFetchFunction() {
+    var apiUrl =
+      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var action = arguments.length > 1 ? arguments[1] : undefined;
+    // custom handler (should also handle file, load, error, progress and abort)
+    if (typeof action === 'function') {
+      return action;
+    }
+
+    // no action supplied
+    if (!action || !isString(action.url)) {
+      return null;
+    }
+
+    // set onload hanlder
+    var onload =
+      action.onload ||
+      function(res) {
+        return res;
+      };
+    var onerror =
+      action.onerror ||
+      function(res) {
+        return null;
+      };
+
+    // internal handler
+    return function(url, load, error, progress, abort, headers) {
+      // do local or remote request based on if the url is external
+      var request = sendRequest(
+        url,
+        buildURL(apiUrl, action.url),
+        Object.assign({}, action, {
+          responseType: 'blob'
+        })
+      );
+
+      request.onload = function(xhr) {
+        // get headers
+        var headers = xhr.getAllResponseHeaders();
+
+        // get filename
+        var filename =
+          getFileInfoFromHeaders(headers).name || getFilenameFromURL(url);
+
+        // create response
+        load(
+          createResponse(
+            'load',
+            xhr.status,
+            action.method === 'HEAD'
+              ? null
+              : getFileFromBlob(onload(xhr.response), filename),
+            headers
+          )
+        );
+      };
+
+      request.onerror = function(xhr) {
+        error(
+          createResponse(
+            'error',
+            xhr.status,
+            onerror(xhr.response) || xhr.statusText,
+            xhr.getAllResponseHeaders()
+          )
+        );
+      };
+
+      request.onheaders = function(xhr) {
+        headers(
+          createResponse(
+            'headers',
+            xhr.status,
+            null,
+            xhr.getAllResponseHeaders()
+          )
+        );
+      };
+
+      request.ontimeout = createTimeoutResponse(error);
+      request.onprogress = progress;
+      request.onabort = abort;
+
+      // should return request
+      return request;
+    };
+  };
+
   var ChunkStatus = {
     QUEUED: 0,
     COMPLETE: 1,
@@ -4980,7 +5052,7 @@
       // send request object
       var request = sendRequest(
         ondata(formData),
-        apiUrl + action.url,
+        buildURL(apiUrl, action.url),
         requestParams
       );
 
@@ -5003,7 +5075,7 @@
     };
 
     var requestTransferOffset = function requestTransferOffset(cb) {
-      var requestUrl = apiUrl + chunkServer.url + state.serverId;
+      var requestUrl = buildURL(apiUrl, chunkServer.url, state.serverId);
 
       var headers =
         typeof action.headers === 'function'
@@ -5109,7 +5181,7 @@
         };
 
       // send request object
-      var requestUrl = apiUrl + chunkServer.url + state.serverId;
+      var requestUrl = buildURL(apiUrl, chunkServer.url, state.serverId);
 
       var headers =
         typeof chunkServer.headers === 'function'
@@ -5346,7 +5418,11 @@
       );
 
       // send request object
-      var request = sendRequest(ondata(formData), apiUrl + action.url, action);
+      var request = sendRequest(
+        ondata(formData),
+        buildURL(apiUrl, action.url),
+        action
+      );
       request.onload = function(xhr) {
         load(
           createResponse(
@@ -5503,7 +5579,7 @@
       }
 
       var progress = runtime / duration;
-      if (progress >= 1) {
+      if (progress >= 1 || document.hidden) {
         cb(1);
         return;
       }
@@ -5540,9 +5616,7 @@
         // we've not yet started the real download, stop here
         // the request might not go through, for instance, there might be some server trouble
         // if state.progress is null, the server does not allow computing progress and we show the spinner instead
-        if (state.duration === 0 || state.progress === null) {
-          return;
-        }
+        if (state.duration === 0 || state.progress === null) return;
 
         // as we're now processing, fire the progress event
         api.fire('progress', api.getProgress());
@@ -5676,7 +5750,7 @@
       state.perceivedPerformanceUpdater.clear();
 
       // abort actual request
-      state.request.abort();
+      if (state.request.abort) state.request.abort();
 
       // if has response object, we've completed the request
       state.complete = true;
@@ -5854,9 +5928,12 @@
       // remember the original item source
       state.source = source;
 
+      // source is known
+      api.fireSync('init');
+
       // file stub is already there
       if (state.file) {
-        fire('load-skip');
+        api.fireSync('load-skip');
         return;
       }
 
@@ -6205,6 +6282,11 @@
         fileType: { get: getFileType },
         fileSize: { get: getFileSize },
         file: { get: getFile },
+        relativePath: {
+          get: function get() {
+            return state.file._relativePath;
+          }
+        },
 
         source: {
           get: function get() {
@@ -6432,14 +6514,17 @@
   ) {
     return function() {
       var _ref =
-          arguments.length > 0 && arguments[0] !== undefined
-            ? arguments[0]
-            : {},
-        query = _ref.query,
+        arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var query = _ref.query,
         _ref$success = _ref.success,
         success = _ref$success === void 0 ? function() {} : _ref$success,
         _ref$failure = _ref.failure,
-        failure = _ref$failure === void 0 ? function() {} : _ref$failure;
+        failure = _ref$failure === void 0 ? function() {} : _ref$failure,
+        options = _objectWithoutProperties(_ref, [
+          'query',
+          'success',
+          'failure'
+        ]);
       var item = getItemByQuery(state.items, query);
       if (!item) {
         failure({
@@ -6450,7 +6535,7 @@
 
         return;
       }
-      itemHandler(item, success, failure);
+      itemHandler(item, success, failure, options || {});
     };
   };
 
@@ -6542,7 +6627,7 @@
                 {
                   query: id,
                   item: item,
-                  ready: function ready(file) {
+                  success: function success(file) {
                     dispatch('DID_PREPARE_OUTPUT', { id: id, file: file });
                   }
                 },
@@ -6594,19 +6679,33 @@
         }, 0);
       },
 
-      SORT: function SORT(_ref4) {
-        var compare = _ref4.compare;
-        sortItems(state, compare);
+      MOVE_ITEM: function MOVE_ITEM(_ref4) {
+        var query = _ref4.query,
+          index = _ref4.index;
+        var item = getItemByQuery(state.items, query);
+        if (!item) return;
+        var currentIndex = state.items.indexOf(item);
+        index = limit(index, 0, state.items.length - 1);
+        if (currentIndex === index) return;
+        state.items.splice(index, 0, state.items.splice(currentIndex, 1)[0]);
       },
 
-      ADD_ITEMS: function ADD_ITEMS(_ref5) {
-        var items = _ref5.items,
-          index = _ref5.index,
-          interactionMethod = _ref5.interactionMethod,
-          _ref5$success = _ref5.success,
-          success = _ref5$success === void 0 ? function() {} : _ref5$success,
-          _ref5$failure = _ref5.failure,
-          failure = _ref5$failure === void 0 ? function() {} : _ref5$failure;
+      SORT: function SORT(_ref5) {
+        var compare = _ref5.compare;
+        sortItems(state, compare);
+        dispatch('DID_SORT_ITEMS', {
+          items: query('GET_ACTIVE_ITEMS')
+        });
+      },
+
+      ADD_ITEMS: function ADD_ITEMS(_ref6) {
+        var items = _ref6.items,
+          index = _ref6.index,
+          interactionMethod = _ref6.interactionMethod,
+          _ref6$success = _ref6.success,
+          success = _ref6$success === void 0 ? function() {} : _ref6$success,
+          _ref6$failure = _ref6.failure,
+          failure = _ref6$failure === void 0 ? function() {} : _ref6$failure;
 
         var currentIndex = index;
 
@@ -6647,17 +6746,17 @@
        * @param index
        * @param interactionMethod
        */
-      ADD_ITEM: function ADD_ITEM(_ref6) {
-        var source = _ref6.source,
-          _ref6$index = _ref6.index,
-          index = _ref6$index === void 0 ? -1 : _ref6$index,
-          interactionMethod = _ref6.interactionMethod,
-          _ref6$success = _ref6.success,
-          success = _ref6$success === void 0 ? function() {} : _ref6$success,
-          _ref6$failure = _ref6.failure,
-          failure = _ref6$failure === void 0 ? function() {} : _ref6$failure,
-          _ref6$options = _ref6.options,
-          options = _ref6$options === void 0 ? {} : _ref6$options;
+      ADD_ITEM: function ADD_ITEM(_ref7) {
+        var source = _ref7.source,
+          _ref7$index = _ref7.index,
+          index = _ref7$index === void 0 ? -1 : _ref7$index,
+          interactionMethod = _ref7.interactionMethod,
+          _ref7$success = _ref7.success,
+          success = _ref7$success === void 0 ? function() {} : _ref7$success,
+          _ref7$failure = _ref7.failure,
+          failure = _ref7$failure === void 0 ? function() {} : _ref7$failure,
+          _ref7$options = _ref7.options,
+          options = _ref7$options === void 0 ? {} : _ref7$options;
 
         // if no source supplied
         if (isEmpty(source)) {
@@ -6790,6 +6889,10 @@
         var id = item.id;
 
         // observe item events
+        item.on('init', function() {
+          dispatch('DID_INIT_ITEM', { id: id });
+        });
+
         item.on('load-init', function() {
           dispatch('DID_START_ITEM_LOAD', { id: id });
         });
@@ -6905,7 +7008,7 @@
                   {
                     query: id,
                     item: item,
-                    ready: function ready(file) {
+                    success: function success(file) {
                       dispatch('DID_PREPARE_OUTPUT', { id: id, file: file });
                       loadComplete();
                     }
@@ -6979,6 +7082,8 @@
             error: null,
             serverFileReference: serverFileReference
           });
+
+          dispatch('DID_DEFINE_VALUE', { id: id, value: serverFileReference });
         });
 
         item.on('process-abort', function() {
@@ -6987,6 +7092,7 @@
 
         item.on('process-revert', function() {
           dispatch('DID_REVERT_ITEM_PROCESSING', { id: id });
+          dispatch('DID_DEFINE_VALUE', { id: id, value: null });
         });
 
         // let view know the item has been inserted
@@ -6999,11 +7105,11 @@
         listUpdated(dispatch, state);
 
         // start loading the source
-        var _ref7 = state.options.server || {},
-          url = _ref7.url,
-          load = _ref7.load,
-          restore = _ref7.restore,
-          fetch = _ref7.fetch;
+        var _ref8 = state.options.server || {},
+          url = _ref8.url,
+          load = _ref8.load,
+          restore = _ref8.restore,
+          fetch = _ref8.fetch;
 
         item.load(
           source,
@@ -7031,12 +7137,21 @@
         );
       },
 
-      REQUEST_PREPARE_OUTPUT: function REQUEST_PREPARE_OUTPUT(_ref8) {
-        var item = _ref8.item,
-          ready = _ref8.ready;
+      REQUEST_PREPARE_OUTPUT: function REQUEST_PREPARE_OUTPUT(_ref9) {
+        var item = _ref9.item,
+          success = _ref9.success,
+          _ref9$failure = _ref9.failure,
+          failure = _ref9$failure === void 0 ? function() {} : _ref9$failure;
+
+        // error response if item archived
+        var err = {
+          error: createResponse('error', 0, 'Item not found'),
+
+          file: null
+        };
 
         // don't handle archived items, an item could have been archived (load aborted) while waiting to be prepared
-        if (item.archived) return;
+        if (item.archived) return failure(err);
 
         // allow plugins to alter the file data
         applyFilterChain('PREPARE_OUTPUT', item.file, {
@@ -7048,17 +7163,17 @@
             item: item
           }).then(function(result) {
             // don't handle archived items, an item could have been archived (load aborted) while being prepared
-            if (item.archived) return;
+            if (item.archived) return failure(err);
 
             // we done!
-            ready(result);
+            success(result);
           });
         });
       },
 
-      COMPLETE_LOAD_ITEM: function COMPLETE_LOAD_ITEM(_ref9) {
-        var item = _ref9.item,
-          data = _ref9.data;
+      COMPLETE_LOAD_ITEM: function COMPLETE_LOAD_ITEM(_ref10) {
+        var item = _ref10.item,
+          data = _ref10.data;
         var success = data.success,
           source = data.source;
 
@@ -7093,6 +7208,11 @@
             serverFileReference: source
           });
 
+          dispatch('DID_DEFINE_VALUE', {
+            id: item.id,
+            value: source
+          });
+
           return;
         }
 
@@ -7105,6 +7225,29 @@
       RETRY_ITEM_LOAD: getItemByQueryFromState(state, function(item) {
         // try loading the source one more time
         item.retryLoad();
+      }),
+
+      REQUEST_ITEM_PREPARE: getItemByQueryFromState(state, function(
+        item,
+        _success,
+        failure
+      ) {
+        dispatch(
+          'REQUEST_PREPARE_OUTPUT',
+          {
+            query: item.id,
+            item: item,
+            success: function success(file) {
+              dispatch('DID_PREPARE_OUTPUT', { id: item.id, file: file });
+              _success({
+                file: item,
+                output: file
+              });
+            },
+            failure: failure
+          },
+          true
+        );
       }),
 
       REQUEST_ITEM_PROCESSING: getItemByQueryFromState(state, function(
@@ -7121,14 +7264,16 @@
 
         // not ready to be processed
         if (!itemCanBeQueuedForProcessing) {
+          var processNow = function processNow() {
+            return dispatch('REQUEST_ITEM_PROCESSING', {
+              query: item,
+              success: success,
+              failure: failure
+            });
+          };
+
           var process = function process() {
-            setTimeout(function() {
-              dispatch('REQUEST_ITEM_PROCESSING', {
-                query: item,
-                success: success,
-                failure: failure
-              });
-            }, 32);
+            return document.hidden ? processNow() : setTimeout(processNow, 32);
           };
 
           // if already done processing or tried to revert but didn't work, try again
@@ -7297,7 +7442,12 @@
         item.release();
       }),
 
-      REMOVE_ITEM: getItemByQueryFromState(state, function(item, success) {
+      REMOVE_ITEM: getItemByQueryFromState(state, function(
+        item,
+        success,
+        failure,
+        options
+      ) {
         var removeFromView = function removeFromView() {
           // get id reference
           var id = item.id;
@@ -7343,6 +7493,22 @@
             }
           );
         } else {
+          // if is requesting revert and can revert need to call revert handler (not calling request_ because that would also trigger beforeRemoveHook)
+          if (
+            options.revert &&
+            item.origin !== FileOrigin.LOCAL &&
+            item.serverId !== null
+          ) {
+            item.revert(
+              createRevertFunction(
+                state.options.server.url,
+                state.options.server.revert
+              ),
+              query('GET_FORCE_REVERT')
+            );
+          }
+
+          // can now safely remove from view
           removeFromView();
         }
       }),
@@ -7421,8 +7587,8 @@
           .catch(function() {});
       }),
 
-      SET_OPTIONS: function SET_OPTIONS(_ref10) {
-        var options = _ref10.options;
+      SET_OPTIONS: function SET_OPTIONS(_ref11) {
+        var options = _ref11.options;
         forin(options, function(key, value) {
           dispatch('SET_' + fromCamels(key, '_').toUpperCase(), {
             value: value
@@ -7773,8 +7939,8 @@
   };
 
   var create$3 = function create(_ref) {
-    var root = _ref.root,
-      props = _ref.props;
+    var root = _ref.root;
+
     // main status
     var main = createElement$1('span');
     main.className = 'filepond--file-status-main';
@@ -7949,6 +8115,11 @@
     return buttonRect.hidden ? null : buttonRect.width + buttonRect.left;
   };
 
+  var calculateButtonWidth = function calculateButtonWidth(root) {
+    var buttonRect = root.ref.buttonAbortItemLoad.rect.element;
+    return buttonRect.width;
+  };
+
   // Force on full pixels so text stays crips
   var calculateFileVerticalCenterOffset = function calculateFileVerticalCenterOffset(
     root
@@ -8111,22 +8282,60 @@
     // allow reverting upload
     var allowRevert = root.query('GET_ALLOW_REVERT');
 
+    // allow processing upload
+    var allowProcess = root.query('GET_ALLOW_PROCESS');
+
     // is instant uploading, need this to determine the icon of the undo button
     var instantUpload = root.query('GET_INSTANT_UPLOAD');
 
     // is async set up
     var isAsync = root.query('IS_ASYNC');
 
+    // should align remove item buttons
+    var alignRemoveItemButton = root.query(
+      'GET_STYLE_BUTTON_REMOVE_ITEM_ALIGN'
+    );
+
     // enabled buttons array
-    var enabledButtons = isAsync
-      ? ButtonKeys.concat()
-      : ButtonKeys.filter(function(key) {
+    var buttonFilter;
+    if (isAsync) {
+      if (allowProcess && !allowRevert) {
+        // only remove revert button
+        buttonFilter = function buttonFilter(key) {
+          return !/RevertItemProcessing/.test(key);
+        };
+      } else if (!allowProcess && allowRevert) {
+        // only remove process button
+        buttonFilter = function buttonFilter(key) {
+          return !/ProcessItem|RetryItemProcessing|AbortItemProcessing/.test(
+            key
+          );
+        };
+      } else if (!allowProcess && !allowRevert) {
+        // remove all process buttons
+        buttonFilter = function buttonFilter(key) {
           return !/Process/.test(key);
-        });
+        };
+      }
+    } else {
+      // no process controls available
+      buttonFilter = function buttonFilter(key) {
+        return !/Process/.test(key);
+      };
+    }
+
+    var enabledButtons = buttonFilter
+      ? ButtonKeys.filter(buttonFilter)
+      : ButtonKeys.concat();
+
+    // update icon and label for revert button when instant uploading
+    if (instantUpload && allowRevert) {
+      Buttons['RevertItemProcessing'].label = 'GET_LABEL_BUTTON_REMOVE_ITEM';
+      Buttons['RevertItemProcessing'].icon = 'GET_ICON_REMOVE';
+    }
 
     // remove last button (revert) if not allowed
     if (isAsync && !allowRevert) {
-      enabledButtons.splice(-1, 1);
       var map = StyleMap['DID_COMPLETE_ITEM_PROCESSING'];
       map.info.translateX = calculateFileHorizontalCenterOffset;
       map.info.translateY = calculateFileVerticalCenterOffset;
@@ -8134,10 +8343,28 @@
       map.processingCompleteIndicator = { opacity: 1, scaleX: 1, scaleY: 1 };
     }
 
-    // update icon and label for revert button when instant uploading
-    if (instantUpload && allowRevert) {
-      Buttons['RevertItemProcessing'].label = 'GET_LABEL_BUTTON_REMOVE_ITEM';
-      Buttons['RevertItemProcessing'].icon = 'GET_ICON_REMOVE';
+    // should align center
+    if (isAsync && !allowProcess) {
+      [
+        'DID_START_ITEM_PROCESSING',
+        'DID_REQUEST_ITEM_PROCESSING',
+        'DID_UPDATE_ITEM_PROCESS_PROGRESS',
+        'DID_THROW_ITEM_PROCESSING_ERROR'
+      ].forEach(function(key) {
+        StyleMap[key].status.translateY = calculateFileVerticalCenterOffset;
+      });
+      StyleMap[
+        'DID_THROW_ITEM_PROCESSING_ERROR'
+      ].status.translateX = calculateButtonWidth;
+    }
+
+    // move remove button to right
+    if (alignRemoveItemButton && allowRevert) {
+      Buttons['RevertItemProcessing'].align = 'BUTTON_REMOVE_ITEM_POSITION';
+      var _map = StyleMap['DID_COMPLETE_ITEM_PROCESSING'];
+      _map.info.translateX = calculateFileInfoOffset;
+      _map.status.translateY = calculateFileVerticalCenterOffset;
+      _map.processingCompleteIndicator = { opacity: 1, scaleX: 1, scaleY: 1 };
     }
 
     // create the button views
@@ -8172,6 +8399,14 @@
       root.ref['button' + key] = buttonView;
     });
 
+    // checkmark
+    root.ref.processingCompleteIndicator = root.appendChildView(
+      root.createChildView(processingCompleteIndicatorView)
+    );
+    root.ref.processingCompleteIndicator.element.dataset.align = root.query(
+      'GET_STYLE_BUTTON_PROCESS_ITEM_POSITION'
+    );
+
     // create file info view
     root.ref.info = root.appendChildView(
       root.createChildView(fileInfo, { id: id })
@@ -8180,14 +8415,6 @@
     // create file status view
     root.ref.status = root.appendChildView(
       root.createChildView(fileStatus, { id: id })
-    );
-
-    // checkmark
-    root.ref.processingCompleteIndicator = root.appendChildView(
-      root.createChildView(processingCompleteIndicatorView)
-    );
-    root.ref.processingCompleteIndicator.element.dataset.align = root.query(
-      'GET_STYLE_BUTTON_PROCESS_ITEM_POSITION'
     );
 
     // add progress indicators
@@ -8265,7 +8492,6 @@
       var control = _ref4.control,
         key = _ref4.key,
         value = _ref4.value;
-
       control[key] = typeof value === 'function' ? value(root) : value;
     });
   };
@@ -8350,29 +8576,16 @@
       root.createChildView(file, { id: props.id })
     );
 
-    // create data container
-    var dataContainer = createElement$1('input');
-    dataContainer.type = 'hidden';
-    dataContainer.name = root.query('GET_NAME');
-    dataContainer.disabled = root.query('GET_DISABLED');
-    root.ref.data = dataContainer;
-    root.appendChild(dataContainer);
-  };
-
-  var didSetDisabled = function didSetDisabled(_ref2) {
-    var root = _ref2.root;
-    root.ref.data.disabled = root.query('GET_DISABLED');
+    // data has moved to data.js
+    root.ref.data = false;
   };
 
   /**
    * Data storage
    */
-  var didLoadItem = function didLoadItem(_ref3) {
-    var root = _ref3.root,
-      action = _ref3.action,
-      props = _ref3.props;
-    root.ref.data.value = action.serverFileReference;
-
+  var didLoadItem = function didLoadItem(_ref2) {
+    var root = _ref2.root,
+      props = _ref2.props;
     // updates the legend of the fieldset so screenreaders can better group buttons
     text(
       root.ref.fileName,
@@ -8380,31 +8593,11 @@
     );
   };
 
-  var didRemoveItem = function didRemoveItem(_ref4) {
-    var root = _ref4.root;
-    root.ref.data.removeAttribute('value');
-  };
-
-  var didCompleteItemProcessing$1 = function didCompleteItemProcessing(_ref5) {
-    var root = _ref5.root,
-      action = _ref5.action;
-    root.ref.data.value = action.serverFileReference;
-  };
-
-  var didRevertItemProcessing = function didRevertItemProcessing(_ref6) {
-    var root = _ref6.root;
-    root.ref.data.removeAttribute('value');
-  };
-
   var fileWrapper = createView({
     create: create$5,
     ignoreRect: true,
     write: createRoute({
-      DID_SET_DISABLED: didSetDisabled,
-      DID_LOAD_ITEM: didLoadItem,
-      DID_REMOVE_ITEM: didRemoveItem,
-      DID_COMPLETE_ITEM_PROCESSING: didCompleteItemProcessing$1,
-      DID_REVERT_ITEM_PROCESSING: didRevertItemProcessing
+      DID_LOAD_ITEM: didLoadItem
     }),
 
     didCreateView: function didCreateView(root) {
@@ -8517,6 +8710,24 @@
     }
   });
 
+  var createDragHelper = function createDragHelper(items) {
+    var itemIds = items.map(function(item) {
+      return item.id;
+    });
+    var prevIndex = undefined;
+    return {
+      setIndex: function setIndex(index) {
+        prevIndex = index;
+      },
+      getIndex: function getIndex() {
+        return prevIndex;
+      },
+      getItemIndex: function getItemIndex(item) {
+        return itemIds.indexOf(item.id);
+      }
+    };
+  };
+
   var ITEM_TRANSLATE_SPRING = {
     type: 'spring',
     stiffness: 0.75,
@@ -8526,6 +8737,24 @@
 
   var ITEM_SCALE_SPRING = 'spring';
 
+  var StateMap = {
+    DID_START_ITEM_LOAD: 'busy',
+    DID_UPDATE_ITEM_LOAD_PROGRESS: 'loading',
+    DID_THROW_ITEM_INVALID: 'load-invalid',
+    DID_THROW_ITEM_LOAD_ERROR: 'load-error',
+    DID_LOAD_ITEM: 'idle',
+    DID_THROW_ITEM_REMOVE_ERROR: 'remove-error',
+    DID_START_ITEM_REMOVE: 'busy',
+    DID_START_ITEM_PROCESSING: 'busy processing',
+    DID_REQUEST_ITEM_PROCESSING: 'busy processing',
+    DID_UPDATE_ITEM_PROCESS_PROGRESS: 'processing',
+    DID_COMPLETE_ITEM_PROCESSING: 'processing-complete',
+    DID_THROW_ITEM_PROCESSING_ERROR: 'processing-error',
+    DID_THROW_ITEM_PROCESSING_REVERT_ERROR: 'processing-revert-error',
+    DID_ABORT_ITEM_PROCESSING: 'cancelled',
+    DID_REVERT_ITEM_PROCESSING: 'idle'
+  };
+
   /**
    * Creates the file view
    */
@@ -8534,7 +8763,7 @@
       props = _ref.props;
 
     // select
-    root.ref.handleClick = function() {
+    root.ref.handleClick = function(e) {
       return root.dispatch('DID_ACTIVATE_ITEM', { id: props.id });
     };
 
@@ -8557,96 +8786,194 @@
 
     // by default not marked for removal
     props.markedForRemoval = false;
-  };
 
-  var StateMap = {
-    DID_START_ITEM_LOAD: 'busy',
-    DID_UPDATE_ITEM_LOAD_PROGRESS: 'loading',
-    DID_THROW_ITEM_INVALID: 'load-invalid',
-    DID_THROW_ITEM_LOAD_ERROR: 'load-error',
-    DID_LOAD_ITEM: 'idle',
-    DID_THROW_ITEM_REMOVE_ERROR: 'remove-error',
-    DID_START_ITEM_REMOVE: 'busy',
-    DID_START_ITEM_PROCESSING: 'busy',
-    DID_REQUEST_ITEM_PROCESSING: 'busy',
-    DID_UPDATE_ITEM_PROCESS_PROGRESS: 'processing',
-    DID_COMPLETE_ITEM_PROCESSING: 'processing-complete',
-    DID_THROW_ITEM_PROCESSING_ERROR: 'processing-error',
-    DID_THROW_ITEM_PROCESSING_REVERT_ERROR: 'processing-revert-error',
-    DID_ABORT_ITEM_PROCESSING: 'cancelled',
-    DID_REVERT_ITEM_PROCESSING: 'idle'
+    // if not allowed to reorder file items, exit here
+    if (!root.query('GET_ALLOW_REORDER')) return;
+
+    // set to idle so shows grab cursor
+    root.element.dataset.dragState = 'idle';
+
+    var grab = function grab(e) {
+      if (!e.isPrimary) return;
+
+      var removedActivateListener = false;
+
+      var origin = {
+        x: e.pageX,
+        y: e.pageY
+      };
+
+      props.dragOrigin = {
+        x: root.translateX,
+        y: root.translateY
+      };
+
+      props.dragCenter = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+
+      var dragState = createDragHelper(root.query('GET_ACTIVE_ITEMS'));
+
+      root.dispatch('DID_GRAB_ITEM', { id: props.id, dragState: dragState });
+
+      var drag = function drag(e) {
+        if (!e.isPrimary) return;
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        props.dragOffset = {
+          x: e.pageX - origin.x,
+          y: e.pageY - origin.y
+        };
+
+        // if dragged stop listening to clicks, will re-add when done dragging
+        var dist =
+          props.dragOffset.x * props.dragOffset.x +
+          props.dragOffset.y * props.dragOffset.y;
+        if (dist > 16 && !removedActivateListener) {
+          removedActivateListener = true;
+          root.element.removeEventListener('click', root.ref.handleClick);
+        }
+
+        root.dispatch('DID_DRAG_ITEM', { id: props.id, dragState: dragState });
+      };
+
+      var drop = function drop(e) {
+        if (!e.isPrimary) return;
+
+        document.removeEventListener('pointermove', drag);
+        document.removeEventListener('pointerup', drop);
+
+        props.dragOffset = {
+          x: e.pageX - origin.x,
+          y: e.pageY - origin.y
+        };
+
+        root.dispatch('DID_DROP_ITEM', { id: props.id, dragState: dragState });
+
+        // start listening to clicks again
+        if (removedActivateListener) {
+          setTimeout(function() {
+            return root.element.addEventListener('click', root.ref.handleClick);
+          }, 0);
+        }
+      };
+
+      document.addEventListener('pointermove', drag);
+      document.addEventListener('pointerup', drop);
+    };
+
+    root.element.addEventListener('pointerdown', grab);
   };
 
   var route$1 = createRoute({
     DID_UPDATE_PANEL_HEIGHT: function DID_UPDATE_PANEL_HEIGHT(_ref2) {
       var root = _ref2.root,
         action = _ref2.action;
-      var height = action.height;
-      root.height = height;
+      root.height = action.height;
     }
   });
 
-  var write$4 = function write(_ref3) {
-    var root = _ref3.root,
-      actions = _ref3.actions,
-      props = _ref3.props,
-      shouldOptimize = _ref3.shouldOptimize;
-
-    // select last state change action
-    var action = actions
-      .concat()
-      .filter(function(action) {
-        return /^DID_/.test(action.type);
-      })
-      .reverse()
-      .find(function(action) {
-        return StateMap[action.type];
-      });
-
-    // no need to set same state twice
-    if (action && action.type !== props.currentState) {
-      // set current state
-      props.currentState = action.type;
-
-      // set state
-      root.element.dataset.filepondItemState =
-        StateMap[props.currentState] || '';
-    }
-
-    // route actions
-    var aspectRatio =
-      root.query('GET_ITEM_PANEL_ASPECT_RATIO') ||
-      root.query('GET_PANEL_ASPECT_RATIO');
-    if (!aspectRatio) {
-      route$1({ root: root, actions: actions, props: props });
-      if (!root.height && root.ref.container.rect.element.height > 0) {
-        root.height = root.ref.container.rect.element.height;
+  var write$4 = createRoute(
+    {
+      DID_GRAB_ITEM: function DID_GRAB_ITEM(_ref3) {
+        var root = _ref3.root,
+          props = _ref3.props;
+        props.dragOrigin = {
+          x: root.translateX,
+          y: root.translateY
+        };
+      },
+      DID_DRAG_ITEM: function DID_DRAG_ITEM(_ref4) {
+        var root = _ref4.root;
+        root.element.dataset.dragState = 'drag';
+      },
+      DID_DROP_ITEM: function DID_DROP_ITEM(_ref5) {
+        var root = _ref5.root,
+          props = _ref5.props;
+        props.dragOffset = null;
+        props.dragOrigin = null;
+        root.element.dataset.dragState = 'drop';
       }
-    } else if (!shouldOptimize) {
-      root.height = root.rect.element.width * aspectRatio;
-    }
+    },
+    function(_ref6) {
+      var root = _ref6.root,
+        actions = _ref6.actions,
+        props = _ref6.props,
+        shouldOptimize = _ref6.shouldOptimize;
 
-    // sync panel height with item height
-    if (shouldOptimize) {
-      root.ref.panel.height = null;
-    }
+      if (root.element.dataset.dragState === 'drop') {
+        if (root.scaleX <= 1) {
+          root.element.dataset.dragState = 'idle';
+        }
+      }
 
-    root.ref.panel.height = root.height;
-  };
+      // select last state change action
+      var action = actions
+        .concat()
+        .filter(function(action) {
+          return /^DID_/.test(action.type);
+        })
+        .reverse()
+        .find(function(action) {
+          return StateMap[action.type];
+        });
+
+      // no need to set same state twice
+      if (action && action.type !== props.currentState) {
+        // set current state
+        props.currentState = action.type;
+
+        // set state
+        root.element.dataset.filepondItemState =
+          StateMap[props.currentState] || '';
+      }
+
+      // route actions
+      var aspectRatio =
+        root.query('GET_ITEM_PANEL_ASPECT_RATIO') ||
+        root.query('GET_PANEL_ASPECT_RATIO');
+      if (!aspectRatio) {
+        route$1({ root: root, actions: actions, props: props });
+        if (!root.height && root.ref.container.rect.element.height > 0) {
+          root.height = root.ref.container.rect.element.height;
+        }
+      } else if (!shouldOptimize) {
+        root.height = root.rect.element.width * aspectRatio;
+      }
+
+      // sync panel height with item height
+      if (shouldOptimize) {
+        root.ref.panel.height = null;
+      }
+
+      root.ref.panel.height = root.height;
+    }
+  );
 
   var item = createView({
     create: create$7,
     write: write$4,
-    destroy: function destroy(_ref4) {
-      var root = _ref4.root,
-        props = _ref4.props;
+    destroy: function destroy(_ref7) {
+      var root = _ref7.root,
+        props = _ref7.props;
       root.element.removeEventListener('click', root.ref.handleClick);
       root.dispatch('RELEASE_ITEM', { query: props.id });
     },
     tag: 'li',
     name: 'item',
     mixins: {
-      apis: ['id', 'interactionMethod', 'markedForRemoval', 'spawnDate'],
+      apis: [
+        'id',
+        'interactionMethod',
+        'markedForRemoval',
+        'spawnDate',
+        'dragCenter',
+        'dragOrigin',
+        'dragOffset'
+      ],
       styles: [
         'translateX',
         'translateY',
@@ -8668,12 +8995,13 @@
 
   var getItemIndexByPosition = function getItemIndexByPosition(
     view,
+    children,
     positionInView
   ) {
     if (!positionInView) return;
 
     var horizontalSpace = view.rect.element.width;
-    var children = view.childViews;
+    // const children = view.childViews;
     var l = children.length;
     var last = null;
 
@@ -8729,6 +9057,27 @@
     }
 
     return l;
+  };
+
+  var dropAreaDimensions = {
+    height: 0,
+    width: 0,
+    get getHeight() {
+      return this.height;
+    },
+    set setHeight(val) {
+      if (this.height === 0 || val === 0) this.height = val;
+    },
+    get getWidth() {
+      return this.width;
+    },
+    set setWidth(val) {
+      if (this.width === 0 || val === 0) this.width = val;
+    },
+    setDimensions: function setDimensions(height, width) {
+      if (this.height === 0 || height === 0) this.height = height;
+      if (this.width === 0 || width === 0) this.width = width;
+    }
   };
 
   var create$8 = function create(_ref) {
@@ -8790,19 +9139,29 @@
     var vy =
       arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
 
-    item.translateX = x;
-    item.translateY = y;
+    // set to null to remove animation while dragging
+    if (item.dragOffset) {
+      item.translateX = null;
+      item.translateY = null;
+      item.translateX = item.dragOrigin.x + item.dragOffset.x;
+      item.translateY = item.dragOrigin.y + item.dragOffset.y;
+      item.scaleX = 1.025;
+      item.scaleY = 1.025;
+    } else {
+      item.translateX = x;
+      item.translateY = y;
 
-    if (Date.now() > item.spawnDate) {
-      // reveal element
-      if (item.opacity === 0) {
-        introItemView(item, x, y, vx, vy);
+      if (Date.now() > item.spawnDate) {
+        // reveal element
+        if (item.opacity === 0) {
+          introItemView(item, x, y, vx, vy);
+        }
+
+        // make sure is default scale every frame
+        item.scaleX = 1;
+        item.scaleY = 1;
+        item.opacity = 1;
       }
-
-      // make sure is default scale every frame
-      item.scaleX = 1;
-      item.scaleY = 1;
-      item.opacity = 1;
     }
   };
 
@@ -8860,12 +9219,140 @@
     view.markedForRemoval = true;
   };
 
+  var getItemHeight = function getItemHeight(child) {
+    return (
+      child.rect.element.height +
+      child.rect.element.marginBottom * 0.5 +
+      child.rect.element.marginTop * 0.5
+    );
+  };
+  var getItemWidth = function getItemWidth(child) {
+    return (
+      child.rect.element.width +
+      child.rect.element.marginLeft * 0.5 +
+      child.rect.element.marginRight * 0.5
+    );
+  };
+
+  var dragItem = function dragItem(_ref4) {
+    var root = _ref4.root,
+      action = _ref4.action;
+    var id = action.id,
+      dragState = action.dragState;
+
+    // reference to item
+    var item = root.query('GET_ITEM', { id: id });
+
+    // get the view matching the given id
+    var view = root.childViews.find(function(child) {
+      return child.id === id;
+    });
+
+    var numItems = root.childViews.length;
+    var oldIndex = dragState.getItemIndex(item);
+
+    // if no view found, exit
+    if (!view) return;
+
+    var dragPosition = {
+      x: view.dragOrigin.x + view.dragOffset.x + view.dragCenter.x,
+      y: view.dragOrigin.y + view.dragOffset.y + view.dragCenter.y
+
+      // get drag area dimensions
+    };
+    var dragHeight = getItemHeight(view);
+    var dragWidth = getItemWidth(view);
+
+    // get rows and columns (There will always be at least one row and one column if a file is present)
+    var cols = Math.floor(root.rect.outer.width / dragWidth);
+    if (cols > numItems) cols = numItems;
+
+    // rows are used to find when we have left the preview area bounding box
+    var rows = Math.floor(numItems / cols + 1);
+
+    dropAreaDimensions.setHeight = dragHeight * rows;
+    dropAreaDimensions.setWidth = dragWidth * cols;
+
+    // get new index of dragged item
+    var location = {
+      y: Math.floor(dragPosition.y / dragHeight),
+      x: Math.floor(dragPosition.x / dragWidth),
+      getGridIndex: function getGridIndex() {
+        if (
+          dragPosition.y > dropAreaDimensions.getHeight ||
+          dragPosition.y < 0 ||
+          dragPosition.x > dropAreaDimensions.getWidth ||
+          dragPosition.x < 0
+        )
+          return oldIndex;
+        return this.y * cols + this.x;
+      },
+      getColIndex: function getColIndex() {
+        var items = root.query('GET_ACTIVE_ITEMS');
+        var visibleChildren = root.childViews.filter(function(child) {
+          return child.rect.element.height;
+        });
+        var children = items.map(function(item) {
+          return visibleChildren.find(function(childView) {
+            return childView.id === item.id;
+          });
+        });
+        var currentIndex = children.findIndex(function(child) {
+          return child === view;
+        });
+        var dragHeight = getItemHeight(view);
+        var l = children.length;
+        var idx = l;
+        var childHeight = 0;
+        var childBottom = 0;
+        var childTop = 0;
+        for (var i = 0; i < l; i++) {
+          childHeight = getItemHeight(children[i]);
+          childTop = childBottom;
+          childBottom = childTop + childHeight;
+          if (dragPosition.y < childBottom) {
+            if (currentIndex > i) {
+              if (dragPosition.y < childTop + dragHeight) {
+                idx = i;
+                break;
+              }
+              continue;
+            }
+            idx = i;
+            break;
+          }
+        }
+        return idx;
+      }
+
+      // get new index
+    };
+    var index = cols > 1 ? location.getGridIndex() : location.getColIndex();
+    root.dispatch('MOVE_ITEM', { query: view, index: index });
+
+    // if the index of the item changed, dispatch reorder action
+    var currentIndex = dragState.getIndex();
+
+    if (currentIndex === undefined || currentIndex !== index) {
+      dragState.setIndex(index);
+
+      if (currentIndex === undefined) return;
+
+      root.dispatch('DID_REORDER_ITEMS', {
+        items: root.query('GET_ACTIVE_ITEMS'),
+        origin: oldIndex,
+        target: index
+      });
+    }
+  };
+
   /**
    * Setup action routes
    */
   var route$2 = createRoute({
     DID_ADD_ITEM: addItemView,
-    DID_REMOVE_ITEM: removeItemView
+    DID_REMOVE_ITEM: removeItemView,
+    DID_DRAG_ITEM: dragItem
   });
 
   /**
@@ -8874,20 +9361,15 @@
    * @param actions
    * @param props
    */
-  var write$5 = function write(_ref4) {
-    var root = _ref4.root,
-      props = _ref4.props,
-      actions = _ref4.actions,
-      shouldOptimize = _ref4.shouldOptimize;
+  var write$5 = function write(_ref5) {
+    var root = _ref5.root,
+      props = _ref5.props,
+      actions = _ref5.actions,
+      shouldOptimize = _ref5.shouldOptimize;
 
     // route actions
     route$2({ root: root, props: props, actions: actions });
     var dragCoordinates = props.dragCoordinates;
-
-    // get index
-    var dragIndex = dragCoordinates
-      ? getItemIndexByPosition(root, dragCoordinates)
-      : null;
 
     // available space on horizontal axis
     var horizontalSpace = root.rect.element.width;
@@ -8908,6 +9390,11 @@
       .filter(function(item) {
         return item;
       });
+
+    // get index
+    var dragIndex = dragCoordinates
+      ? getItemIndexByPosition(root, children, dragCoordinates)
+      : null;
 
     // add index is used to reserve the dropped/added item index till the actual item is rendered
     var addIndex = root.ref.addIndex || null;
@@ -9033,8 +9520,8 @@
     write: write$5,
     tag: 'ul',
     name: 'list',
-    didWriteView: function didWriteView(_ref5) {
-      var root = _ref5.root;
+    didWriteView: function didWriteView(_ref6) {
+      var root = _ref6.root;
       root.childViews
         .filter(function(view) {
           return view.markedForRemoval && view.opacity === 0 && view.resting;
@@ -9182,14 +9669,40 @@
     // set label, we use labelled by as otherwise the screenreader does not read the "browse" text in the label (as it has tabindex: 0)
     attr(root.element, 'aria-labelledby', 'filepond--drop-label-' + props.id);
 
+    // set configurable props
+    setAcceptedFileTypes({
+      root: root,
+      action: { value: root.query('GET_ACCEPTED_FILE_TYPES') }
+    });
+    toggleAllowMultiple({
+      root: root,
+      action: { value: root.query('GET_ALLOW_MULTIPLE') }
+    });
+    toggleDirectoryFilter({
+      root: root,
+      action: { value: root.query('GET_ALLOW_DIRECTORIES_ONLY') }
+    });
+    toggleDisabled({ root: root });
+    toggleRequired({
+      root: root,
+      action: { value: root.query('GET_REQUIRED') }
+    });
+    setCaptureMethod({
+      root: root,
+      action: { value: root.query('GET_CAPTURE_METHOD') }
+    });
+
     // handle changes to the input field
     root.ref.handleChange = function(e) {
       if (!root.element.value) {
         return;
       }
 
-      // extract files
-      var files = Array.from(root.element.files);
+      // extract files and move value of webkitRelativePath path to _relativePath
+      var files = Array.from(root.element.files).map(function(file) {
+        file._relativePath = file.webkitRelativePath;
+        return file;
+      });
 
       // we add a little delay so the OS file select window can move out of the way before we add our file
       setTimeout(function() {
@@ -9200,12 +9713,14 @@
         resetFileInput(root.element);
       }, 250);
     };
+
     root.element.addEventListener('change', root.ref.handleChange);
   };
 
   var setAcceptedFileTypes = function setAcceptedFileTypes(_ref2) {
     var root = _ref2.root,
       action = _ref2.action;
+    if (!root.query('GET_ALLOW_SYNC_ACCEPT_ATTRIBUTE')) return;
     attrToggle(
       root.element,
       'accept',
@@ -9220,18 +9735,23 @@
     attrToggle(root.element, 'multiple', action.value);
   };
 
-  var toggleDisabled = function toggleDisabled(_ref4) {
+  var toggleDirectoryFilter = function toggleDirectoryFilter(_ref4) {
     var root = _ref4.root,
       action = _ref4.action;
+    attrToggle(root.element, 'webkitdirectory', action.value);
+  };
+
+  var toggleDisabled = function toggleDisabled(_ref5) {
+    var root = _ref5.root;
     var isDisabled = root.query('GET_DISABLED');
     var doesAllowBrowse = root.query('GET_ALLOW_BROWSE');
     var disableField = isDisabled || !doesAllowBrowse;
     attrToggle(root.element, 'disabled', disableField);
   };
 
-  var toggleRequired = function toggleRequired(_ref5) {
-    var root = _ref5.root,
-      action = _ref5.action;
+  var toggleRequired = function toggleRequired(_ref6) {
+    var root = _ref6.root,
+      action = _ref6.action;
     // want to remove required, always possible
     if (!action.value) {
       attrToggle(root.element, 'required', false);
@@ -9242,9 +9762,9 @@
     }
   };
 
-  var setCaptureMethod = function setCaptureMethod(_ref6) {
-    var root = _ref6.root,
-      action = _ref6.action;
+  var setCaptureMethod = function setCaptureMethod(_ref7) {
+    var root = _ref7.root,
+      action = _ref7.action;
     attrToggle(
       root.element,
       'capture',
@@ -9253,8 +9773,8 @@
     );
   };
 
-  var updateRequiredStatus = function updateRequiredStatus(_ref7) {
-    var root = _ref7.root;
+  var updateRequiredStatus = function updateRequiredStatus(_ref8) {
+    var root = _ref8.root;
     var element = root.element;
     // always remove the required attribute when more than zero items
     if (root.query('GET_TOTAL_ITEMS') > 0) {
@@ -9277,8 +9797,8 @@
     }
   };
 
-  var updateFieldValidityStatus = function updateFieldValidityStatus(_ref8) {
-    var root = _ref8.root;
+  var updateFieldValidityStatus = function updateFieldValidityStatus(_ref9) {
+    var root = _ref9.root;
     var shouldCheckValidity = root.query('GET_CHECK_VALIDITY');
     if (!shouldCheckValidity) return;
     root.element.setCustomValidity(root.query('GET_LABEL_INVALID_FIELD'));
@@ -9294,8 +9814,8 @@
     },
 
     create: create$a,
-    destroy: function destroy(_ref9) {
-      var root = _ref9.root;
+    destroy: function destroy(_ref10) {
+      var root = _ref10.root;
       root.element.removeEventListener('change', root.ref.handleChange);
     },
     write: createRoute({
@@ -9305,6 +9825,7 @@
 
       DID_SET_DISABLED: toggleDisabled,
       DID_SET_ALLOW_BROWSE: toggleDisabled,
+      DID_SET_ALLOW_DIRECTORIES_ONLY: toggleDirectoryFilter,
       DID_SET_ALLOW_MULTIPLE: toggleAllowMultiple,
       DID_SET_ACCEPTED_FILE_TYPES: setAcceptedFileTypes,
       DID_SET_CAPTURE_METHOD: setCaptureMethod,
@@ -9490,6 +10011,90 @@
     write: write$7
   });
 
+  var create$c = function create(_ref) {
+    var root = _ref.root;
+    return (root.ref.fields = {});
+  };
+
+  var getField = function getField(root, id) {
+    return root.ref.fields[id];
+  };
+
+  var syncFieldPositionsWithItems = function syncFieldPositionsWithItems(root) {
+    root.query('GET_ACTIVE_ITEMS').forEach(function(item) {
+      root.element.appendChild(root.ref.fields[item.id]);
+    });
+  };
+
+  var didReorderItems = function didReorderItems(_ref2) {
+    var root = _ref2.root;
+    return syncFieldPositionsWithItems(root);
+  };
+
+  var didAddItem = function didAddItem(_ref3) {
+    var root = _ref3.root,
+      action = _ref3.action;
+    var dataContainer = createElement$1('input');
+    dataContainer.type = 'hidden';
+    dataContainer.name = root.query('GET_NAME');
+    dataContainer.disabled = root.query('GET_DISABLED');
+    root.appendChild(dataContainer, 0);
+    root.ref.fields[action.id] = dataContainer;
+  };
+
+  var didLoadItem$1 = function didLoadItem(_ref4) {
+    var root = _ref4.root,
+      action = _ref4.action;
+    var field = getField(root, action.id);
+    if (!field || action.serverFileReference === null) return;
+    field.value = action.serverFileReference;
+  };
+
+  var didSetDisabled = function didSetDisabled(_ref5) {
+    var root = _ref5.root;
+    root.element.disabled = root.query('GET_DISABLED');
+  };
+
+  var didRemoveItem = function didRemoveItem(_ref6) {
+    var root = _ref6.root,
+      action = _ref6.action;
+    var field = getField(root, action.id);
+    if (!field) return;
+    field.parentNode.removeChild(field);
+    delete root.ref.fields[action.id];
+  };
+
+  var didDefineValue = function didDefineValue(_ref7) {
+    var root = _ref7.root,
+      action = _ref7.action;
+    var field = getField(root, action.id);
+    if (!field) return;
+    if (action.value === null) {
+      field.removeAttribute('value');
+    } else {
+      field.value = action.value;
+    }
+    syncFieldPositionsWithItems(root);
+  };
+
+  var write$8 = createRoute({
+    DID_SET_DISABLED: didSetDisabled,
+    DID_ADD_ITEM: didAddItem,
+    DID_LOAD_ITEM: didLoadItem$1,
+    DID_REMOVE_ITEM: didRemoveItem,
+    DID_DEFINE_VALUE: didDefineValue,
+    DID_REORDER_ITEMS: didReorderItems,
+    DID_SORT_ITEMS: didReorderItems
+  });
+
+  var data = createView({
+    tag: 'fieldset',
+    name: 'data',
+    create: create$c,
+    write: write$8,
+    ignoreRect: true
+  });
+
   var getRootNode = function getRootNode(element) {
     return 'getRootNode' in element ? element.getRootNode() : document;
   };
@@ -9518,7 +10123,8 @@
     if (text$1.includes(extension)) {
       return 'text/' + extension;
     }
-    return map[extension] || null;
+
+    return map[extension] || '';
   };
 
   var requestDataTransferItems = function requestDataTransferItems(
@@ -9567,7 +10173,6 @@
       if (!promisedFiles.length) {
         // TODO: test for directories (should not be allowed)
         // Use FileReader, problem is that the files property gets lost in the process
-
         resolve(dataTransfer.files ? Array.from(dataTransfer.files) : []);
         return;
       }
@@ -9583,9 +10188,15 @@
 
           // done (filter out empty files)!
           resolve(
-            files.filter(function(file) {
-              return file;
-            })
+            files
+              .filter(function(file) {
+                return file;
+              })
+              .map(function(file) {
+                if (!file._relativePath)
+                  file._relativePath = file.webkitRelativePath;
+                return file;
+              })
           );
         })
         .catch(console.error);
@@ -9653,7 +10264,10 @@
                 fileCounter++;
 
                 entry.file(function(file) {
-                  files.push(correctMissingFileType(file));
+                  var correctedFile = correctMissingFileType(file);
+                  if (entry.fullPath)
+                    correctedFile._relativePath = entry.fullPath;
+                  files.push(correctedFile);
                   fileCounter--;
                   resolveIfDone();
                 });
@@ -10145,7 +10759,7 @@
   /**
    * Creates the file view
    */
-  var create$c = function create(_ref) {
+  var create$d = function create(_ref) {
     var root = _ref.root,
       props = _ref.props;
     root.element.id = 'filepond--assistant-' + props.id;
@@ -10261,7 +10875,7 @@
   };
 
   var assistant = createView({
-    create: create$c,
+    create: create$d,
     ignoreRect: true,
     ignoreRectUpdate: true,
     write: createRoute({
@@ -10331,7 +10945,11 @@
 
   var MAX_FILES_LIMIT = 1000000;
 
-  var create$d = function create(_ref) {
+  var prevent = function prevent(e) {
+    return e.preventDefault();
+  };
+
+  var create$e = function create(_ref) {
     var root = _ref.root,
       props = _ref.props;
 
@@ -10344,9 +10962,14 @@
     // Add className
     var className = root.query('GET_CLASS_NAME');
     if (className) {
-      className.split(' ').forEach(function(name) {
-        root.element.classList.add(name);
-      });
+      className
+        .split(' ')
+        .filter(function(name) {
+          return name.length;
+        })
+        .forEach(function(name) {
+          root.element.classList.add(name);
+        });
     }
 
     // Field label
@@ -10373,6 +10996,11 @@
     // Assistant notifies assistive tech when content changes
     root.ref.assistant = root.appendChildView(
       root.createChildView(assistant, Object.assign({}, props))
+    );
+
+    // Data
+    root.ref.data = root.appendChildView(
+      root.createChildView(data, Object.assign({}, props))
     );
 
     // Measure (tests if fixed height was set)
@@ -10406,9 +11034,18 @@
     // history of updates
     root.ref.previousAspectRatio = null;
     root.ref.updateHistory = [];
+
+    // prevent scrolling and zooming on iOS (only if supports pointer events, for then we can enable reorder)
+    var canHover = window.matchMedia('(pointer: fine) and (hover: hover)')
+      .matches;
+    var hasPointerEvents = 'PointerEvent' in window;
+    if (root.query('GET_ALLOW_REORDER') && hasPointerEvents && !canHover) {
+      root.element.addEventListener('touchmove', prevent, { passive: false });
+      root.element.addEventListener('gesturestart', prevent);
+    }
   };
 
-  var write$8 = function write(_ref3) {
+  var write$9 = function write(_ref3) {
     var root = _ref3.root,
       props = _ref3.props,
       actions = _ref3.actions;
@@ -10671,7 +11308,19 @@
     // get file list reference
     var scrollList = root.ref.list;
     var itemList = scrollList.childViews[0];
-    var children = itemList.childViews;
+    var visibleChildren = itemList.childViews.filter(function(child) {
+      return child.rect.element.height;
+    });
+    var children = root
+      .query('GET_ACTIVE_ITEMS')
+      .map(function(item) {
+        return visibleChildren.find(function(child) {
+          return child.id === item.id;
+        });
+      })
+      .filter(function(item) {
+        return item;
+      });
 
     // no children, done!
     if (children.length === 0) return { visual: visual, bounds: bounds };
@@ -10679,6 +11328,7 @@
     var horizontalSpace = itemList.rect.element.width;
     var dragIndex = getItemIndexByPosition(
       itemList,
+      children,
       scrollList.dragCoordinates
     );
 
@@ -10760,9 +11410,9 @@
     return false;
   };
 
-  var getDragIndex = function getDragIndex(list, position) {
+  var getDragIndex = function getDragIndex(list, children, position) {
     var itemList = list.childViews[0];
-    return getItemIndexByPosition(itemList, {
+    return getItemIndexByPosition(itemList, children, {
       left: position.scopeLeft - itemList.rect.element.left,
       top:
         position.scopeTop -
@@ -10823,9 +11473,26 @@
       );
 
       hopper.onload = function(items, position) {
+        // get item children elements and sort based on list sort
+        var list = root.ref.list.childViews[0];
+        var visibleChildren = list.childViews.filter(function(child) {
+          return child.rect.element.height;
+        });
+        var children = root
+          .query('GET_ACTIVE_ITEMS')
+          .map(function(item) {
+            return visibleChildren.find(function(child) {
+              return child.id === item.id;
+            });
+          })
+          .filter(function(item) {
+            return item;
+          });
+
+        // go
         root.dispatch('ADD_ITEMS', {
           items: items,
-          index: getDragIndex(root.ref.list, position),
+          index: getDragIndex(root.ref.list, children, position),
           interactionMethod: InteractionMethod.DROP
         });
 
@@ -10953,8 +11620,8 @@
         root.ref.measureHeight = root.ref.measure.offsetHeight;
       }
     },
-    create: create$d,
-    write: write$8,
+    create: create$e,
+    write: write$9,
     destroy: function destroy(_ref10) {
       var root = _ref10.root;
       if (root.ref.paster) {
@@ -10963,6 +11630,8 @@
       if (root.ref.hopper) {
         root.ref.hopper.destroy();
       }
+      root.element.removeEventListener('touchmove', prevent);
+      root.element.removeEventListener('gesturestart', prevent);
     },
     mixins: {
       styles: ['height']
@@ -11152,6 +11821,12 @@
           event.progress = data.progress;
         }
 
+        // copy relevant props
+        if (data.hasOwnProperty('origin') && data.hasOwnProperty('target')) {
+          event.origin = data.origin;
+          event.target = data.target;
+        }
+
         return event;
       };
     };
@@ -11163,6 +11838,7 @@
 
       DID_THROW_MAX_FILES: createEvent('warning'),
 
+      DID_INIT_ITEM: createEvent('initfile'),
       DID_START_ITEM_LOAD: createEvent('addfilestart'),
       DID_UPDATE_ITEM_LOAD_PROGRESS: createEvent('addfileprogress'),
       DID_LOAD_ITEM: createEvent('addfile'),
@@ -11194,7 +11870,9 @@
 
       DID_UPDATE_ITEMS: createEvent('updatefiles'),
 
-      DID_ACTIVATE_ITEM: createEvent('activatefile')
+      DID_ACTIVATE_ITEM: createEvent('activatefile'),
+
+      DID_REORDER_ITEMS: createEvent('reorderfiles')
     };
 
     var exposeEvent = function exposeEvent(event) {
@@ -11247,21 +11925,24 @@
     };
 
     var routeActionsToEvents = function routeActionsToEvents(actions) {
-      if (!actions.length) {
-        return;
-      }
-
-      actions.forEach(function(action) {
-        if (!eventRoutes[action.type]) {
-          return;
-        }
-        var routes = eventRoutes[action.type];
-        (Array.isArray(routes) ? routes : [routes]).forEach(function(route) {
-          setTimeout(function() {
-            exposeEvent(route(action.data));
-          }, 0);
+      if (!actions.length) return;
+      actions
+        .filter(function(action) {
+          return eventRoutes[action.type];
+        })
+        .forEach(function(action) {
+          var routes = eventRoutes[action.type];
+          (Array.isArray(routes) ? routes : [routes]).forEach(function(route) {
+            // this isn't fantastic, but because of the stacking of settimeouts plugins can handle the did_load before the did_init
+            if (action.type === 'DID_INIT_ITEM') {
+              exposeEvent(route(action.data));
+            } else {
+              setTimeout(function() {
+                exposeEvent(route(action.data));
+              }, 0);
+            }
+          });
         });
-      });
     };
 
     //
@@ -11273,6 +11954,20 @@
 
     var getFile = function getFile(query) {
       return store.query('GET_ACTIVE_ITEM', query);
+    };
+
+    var prepareFile = function prepareFile(query) {
+      return new Promise(function(resolve, reject) {
+        store.dispatch('REQUEST_ITEM_PREPARE', {
+          query: query,
+          success: function success(item) {
+            resolve(item);
+          },
+          failure: function failure(error) {
+            reject(error);
+          }
+        });
+      });
     };
 
     var addFile = function addFile(source) {
@@ -11289,9 +11984,18 @@
       });
     };
 
-    var removeFile = function removeFile(query) {
+    var removeFile = function removeFile(query, options) {
+      // if only passed options
+      if (typeof query === 'object' && !options) {
+        options = query;
+        query = undefined;
+      }
+
       // request item removal
-      store.dispatch('REMOVE_ITEM', { query: query });
+      store.dispatch(
+        'REMOVE_ITEM',
+        Object.assign({}, options, { query: query })
+      );
 
       // see if item has been removed
       return store.query('GET_ACTIVE_ITEM', query) === null;
@@ -11355,13 +12059,26 @@
       });
     };
 
-    var processFiles = function processFiles() {
+    var prepareFiles = function prepareFiles() {
       for (
         var _len2 = arguments.length, args = new Array(_len2), _key2 = 0;
         _key2 < _len2;
         _key2++
       ) {
         args[_key2] = arguments[_key2];
+      }
+      var queries = Array.isArray(args[0]) ? args[0] : args;
+      var items = queries.length ? queries : getFiles();
+      return Promise.all(items.map(prepareFile));
+    };
+
+    var processFiles = function processFiles() {
+      for (
+        var _len3 = arguments.length, args = new Array(_len3), _key3 = 0;
+        _key3 < _len3;
+        _key3++
+      ) {
+        args[_key3] = arguments[_key3];
       }
       var queries = Array.isArray(args[0]) ? args[0] : args;
       if (!queries.length) {
@@ -11384,13 +12101,22 @@
 
     var removeFiles = function removeFiles() {
       for (
-        var _len3 = arguments.length, args = new Array(_len3), _key3 = 0;
-        _key3 < _len3;
-        _key3++
+        var _len4 = arguments.length, args = new Array(_len4), _key4 = 0;
+        _key4 < _len4;
+        _key4++
       ) {
-        args[_key3] = arguments[_key3];
+        args[_key4] = arguments[_key4];
       }
+
       var queries = Array.isArray(args[0]) ? args[0] : args;
+
+      var options;
+      if (typeof queries[queries.length - 1] === 'object') {
+        options = queries.pop();
+      } else if (Array.isArray(args[0])) {
+        options = args[1];
+      }
+
       var files = getFiles();
 
       if (!queries.length) {
@@ -11410,7 +12136,9 @@
           return query;
         });
 
-      return mappedQueries.map(removeFile);
+      return mappedQueries.map(function(q) {
+        return removeFile(q, options);
+      });
     };
 
     var exports = Object.assign(
@@ -11457,10 +12185,23 @@
         processFile: processFile,
 
         /**
+         * Request prepare output for file with given name
+         * @param query { string, number, null  }
+         */
+        prepareFile: prepareFile,
+
+        /**
          * Removes a file by its name
          * @param query { string, number, null  }
          */
         removeFile: removeFile,
+
+        /**
+         * Moves a file to a new location in the files list
+         */
+        moveFile: function moveFile(query, index) {
+          return store.dispatch('MOVE_ITEM', { query: query, index: index });
+        },
 
         /**
          * Returns all files (wrapped in public api)
@@ -11476,6 +12217,11 @@
          * Clears all files from the files list
          */
         removeFiles: removeFiles,
+
+        /**
+         * Starts preparing output of all files
+         */
+        prepareFiles: prepareFiles,
 
         /**
          * Sort list of files
@@ -11726,6 +12472,7 @@
       '^class$': 'className',
       '^multiple$': 'allowMultiple',
       '^capture$': 'captureMethod',
+      '^webkitdirectory$': 'allowDirectoriesOnly',
 
       // group under single property
       '^server': {
@@ -11973,11 +12720,6 @@
   var hasTiming = function hasTiming() {
     return 'performance' in window;
   }; // iOS 8.x
-  var isBrowser = function isBrowser() {
-    return (
-      typeof window !== 'undefined' && typeof window.document !== 'undefined'
-    );
-  };
 
   var supported = (function() {
     // Runs immidiately and then remembers result for subsequent calls

@@ -1,5 +1,5 @@
 /*!
- * FilePond 4.7.4
+ * FilePond 4.17.1
  * Licensed under MIT, https://opensource.org/licenses/MIT/
  * Please visit https://pqina.nl/filepond/ for details.
  */
@@ -28,6 +28,18 @@
   width: calc(100% - 2em);
   opacity: 0;
   font-size: 0;
+}
+
+.filepond--data {
+  position: absolute;
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  visibility: hidden;
+  pointer-events: none;
+  contain: strict;
 }
 
 .filepond--drip {
@@ -306,6 +318,28 @@
   margin-right: 2.25em;
 }
 
+[data-filepond-item-state~='processing'] .filepond--file-status-sub {
+  opacity: 0;
+}
+
+[data-filepond-item-state~='processing']
+  .filepond--action-abort-item-processing
+  ~ .filepond--file-status
+  .filepond--file-status-sub {
+  opacity: 0.5;
+}
+
+[data-filepond-item-state='processing-error'] .filepond--file-status-sub {
+  opacity: 0;
+}
+
+[data-filepond-item-state='processing-error']
+  .filepond--action-retry-item-processing
+  ~ .filepond--file-status
+  .filepond--file-status-sub {
+  opacity: 0.5;
+}
+
 [data-filepond-item-state='processing-complete']
   .filepond--action-revert-item-processing
   svg {
@@ -313,19 +347,25 @@
   animation: fall 0.5s 0.125s linear both;
 }
 
-[data-filepond-item-state='processing-complete'] .filepond--file-info-sub,
 [data-filepond-item-state='processing-complete'] .filepond--file-status-sub {
+  opacity: 0.5;
+}
+
+[data-filepond-item-state='processing-complete']
+  .filepond--processing-complete-indicator:not([style*='hidden'])
+  ~ .filepond--file-status
+  .filepond--file-status-sub {
+  opacity: 0;
+}
+
+[data-filepond-item-state='processing-complete'] .filepond--file-info-sub {
   opacity: 0;
 }
 
 [data-filepond-item-state='processing-complete']
   .filepond--action-revert-item-processing
   ~ .filepond--file-info
-  .filepond--file-info-sub,
-[data-filepond-item-state='processing-complete']
-  .filepond--action-revert-item-processing
-  ~ .filepond--file-status
-  .filepond--file-status-sub {
+  .filepond--file-info-sub {
   opacity: 0.5;
 }
 
@@ -506,6 +546,28 @@
 .filepond--item > .filepond--panel .filepond--panel-bottom {
   box-shadow: 0 0.0625em 0.125em -0.0625em rgba(0, 0, 0, 0.25);
 }
+.filepond--item > .filepond--file-wrapper,
+.filepond--item > .filepond--panel {
+  transition: opacity 0.15s ease-out;
+}
+.filepond--item[data-drag-state] {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+.filepond--item[data-drag-state] > .filepond--panel {
+  transition: box-shadow 0.125s ease-in-out;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+.filepond--item[data-drag-state='drag'] {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+.filepond--item[data-drag-state='drag'] > .filepond--panel {
+  box-shadow: 0 0.125em 0.3125em rgba(0, 0, 0, 0.325);
+}
+.filepond--item[data-drag-state]:not([data-drag-state='idle']) {
+  z-index: 2;
+}
 
 .filepond--item-panel {
   background-color: #64605e;
@@ -644,6 +706,11 @@
   height: 100%;
 }
 
+.filepond--root[data-style-panel-layout~='compact'] .filepond--drop-label,
+.filepond--root[data-style-panel-layout~='integrated'] .filepond--drop-label {
+  z-index: 7;
+}
+
 .filepond--root[data-style-panel-layout~='circle'] {
   border-radius: 99999rem;
   overflow: hidden;
@@ -659,6 +726,14 @@
 }
 .filepond--root[data-style-panel-layout~='circle'] .filepond--file-status {
   display: none;
+}
+
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+    .filepond--root[data-style-panel-layout~='circle'] {
+      will-change: transform;
+    }
+  }
 }
 
 .filepond--panel-root {
@@ -827,6 +902,12 @@
   font-size: inherit;
 }
 .filepond--root[data-disabled] {
+  pointer-events: none;
+}
+.filepond--root[data-disabled] .filepond--list-scroller {
+  pointer-events: all;
+}
+.filepond--root[data-disabled] .filepond--list {
   pointer-events: none;
 }
 
