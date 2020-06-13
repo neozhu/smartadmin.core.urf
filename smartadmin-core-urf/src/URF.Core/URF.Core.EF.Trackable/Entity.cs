@@ -11,6 +11,7 @@ namespace URF.Core.EF.Trackable
        
         [Key]
         [Display(Name = "主键", Description = "主键")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual int Id { get; set; }
         [NotMapped]
         public virtual TrackingState TrackingState { get; set; }

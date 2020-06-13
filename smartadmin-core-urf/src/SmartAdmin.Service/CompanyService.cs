@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using SmartAdmin.Entity.Models;
+using SmartAdmin.Data.Models;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.Services;
 using System.Linq;

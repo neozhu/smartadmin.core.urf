@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Northwind.Data.Models;
+using SmartAdmin.Data.Models;
 
-namespace Northwind.Data
+namespace SmartAdmin.Data
 {
     public class SmartDbContextFactory : IDesignTimeDbContextFactory<SmartDbContext>
     {

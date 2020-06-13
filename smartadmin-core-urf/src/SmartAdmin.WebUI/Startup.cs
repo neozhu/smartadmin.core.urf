@@ -12,8 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Northwind.Data.Models;
-using SmartAdmin.Entity.Models;
+using SmartAdmin.Data.Models;
+using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
@@ -126,7 +126,7 @@ namespace SmartAdmin.WebUI
       {
         endpoints.MapControllerRoute(
                   "default",
-                  "{controller=Home}/{action=Index}");
+                  "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
       });
     }

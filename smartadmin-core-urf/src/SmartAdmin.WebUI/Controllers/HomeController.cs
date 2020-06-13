@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
-using SmartAdmin.Entity.Models;
+using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;
 

@@ -5,7 +5,7 @@ using TrackableEntities.Common.Core;
 using URF.Core.EF.Trackable;
 
 // Example: extending IRepository<TEntity> and/or ITrackableRepository<TEntity>, scope: application-wide across all IRepositoryX<TEntity>
-namespace Northwind.Repository
+namespace SmartAdmin.Repository
 {
   public class RepositoryX<TEntity> : TrackableRepository<TEntity>, IRepositoryX<TEntity> where TEntity : class, ITrackable
   {

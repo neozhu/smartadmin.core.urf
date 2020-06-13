@@ -247,8 +247,8 @@
 
   .window .window-header .panel-icon {
     left: 5px;
-    margin-top: -6px;
-    margin-left: 3px;
+    margin-top: -8px;
+    margin-left: 2px;
   }
 
   .window .window-header .panel-tool {
@@ -475,11 +475,11 @@
 .dialog-toolbar,
 .dialog-button {
   background: #F4F4F4;
-  border-top: 1px solid #cbcbcb;
+  border-top: 1px solid #e9e9e9;
 }
 
 .dialog-toolbar {
-  border-bottom: 1px solid #cbcbcb;
+  border-bottom: 1px solid #e9e9e9;
 }
 
 .window-thinborder .dialog-toolbar {
@@ -2182,7 +2182,7 @@
 }
 
 .datagrid-mask-msg {
-  border-color: #686868
+  border-color: #e9e9e9;
 }
 
 .datagrid-toolbar,

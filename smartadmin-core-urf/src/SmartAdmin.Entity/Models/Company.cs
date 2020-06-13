@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using URF.Core.EF.Trackable;
 using System.Text;
 
-namespace SmartAdmin.Entity.Models
+namespace SmartAdmin.Data.Models
 {
     public partial class Company : URF.Core.EF.Trackable.Entity
     {

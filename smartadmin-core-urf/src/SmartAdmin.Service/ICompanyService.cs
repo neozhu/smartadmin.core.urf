@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using SmartAdmin.Entity.Models;
+using SmartAdmin.Data.Models;
 using URF.Core.Abstractions.Services;
 
 namespace SmartAdmin.Service

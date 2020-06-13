@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Northwind.Data.Models;
-using SmartAdmin.Entity.Models;
+using SmartAdmin.Data.Models;
+using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using SmartAdmin.WebUI.Models;
+using TrackableEntities.Common.Core;
 using URF.Core.Abstractions;
 using URF.Core.EF;
 
@@ -64,6 +66,125 @@ namespace SmartAdmin.WebUI.Controllers
         }
 
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<JsonResult> Edit(Company company)
+    {
+      if (ModelState.IsValid)
+      {
+        try
+        {
+          this.companyService.Update(company);
+
+          var result = await this.unitOfWork.SaveChangesAsync();
+          return Json(new { success = true, result = result });
+        }
+         catch (Exception e)
+        {
+          return Json(new { success = false, err = e.GetBaseException().Message });
+        }
+      }
+      else
+      {
+        var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
+        return Json(new { success = false, err = modelStateErrors });
+        //DisplayErrorMessage(modelStateErrors);
+      }
+      //return View(work);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+   
+    public async Task<JsonResult> Create([Bind("Name,Code,Address,Contect,PhoneNumber,RegisterDate")] Company company)
+    {
+      if (ModelState.IsValid)
+      {
+        try
+        {
+          this.companyService.Insert(company);
+       await this.unitOfWork.SaveChangesAsync();
+          return Json(new { success = true});
+        }
+        catch (Exception e)
+        {
+          return Json(new { success = false, err = e.GetBaseException().Message });
+        }
+
+        //DisplaySuccessMessage("Has update a Work record");
+        //return RedirectToAction("Index");
+      }
+      else
+       {
+        var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
+        return Json(new { success = false, err = modelStateErrors });
+        //DisplayErrorMessage(modelStateErrors);
+      }
+      //return View(work);
+    }
+    //删除当前记录
+    //GET: Companies/Delete/:id
+    [HttpGet]
+    public async Task<JsonResult> Delete(int id)
+    {
+      try
+      {
+        await this.companyService.DeleteAsync(id);
+        await this.unitOfWork.SaveChangesAsync();
+        return Json(new { success = true });
+      }
      
+      catch (Exception e)
+      {
+        return Json(new { success = false, err = e.GetBaseException().Message });
+      }
+    }
+    //删除选中的记录
+    [HttpPost]
+    public async Task<JsonResult> DeleteChecked(int[] id)
+    {
+      try
+      {
+        foreach (var key in id)
+        {
+          await this.companyService.DeleteAsync(key);
+        }
+        await this.unitOfWork.SaveChangesAsync();
+        return Json(new { success = true });
+      }
+      catch (Exception e)
+      {
+        return Json(new { success = false, err = e.GetBaseException().Message });
+      }
+    }
+    //保存datagrid编辑的数据
+    [HttpPost]
+    public async Task<JsonResult> AcceptChanges(Company[] companies)
+    {
+      if (ModelState.IsValid)
+      {
+        try
+        {
+          foreach (var item in companies)
+          {
+            this.companyService.ApplyChanges(item);
+          }
+          var result = await this.unitOfWork.SaveChangesAsync();
+          return Json(new { success = true, result });
+        }
+        catch (Exception e)
+        {
+          return Json(new { success = false, err = e.GetBaseException().Message });
+        }
+      }
+      else
+      {
+        var modelStateErrors = string.Join(",", ModelState.Keys.SelectMany(key => ModelState[key].Errors.Select(n => n.ErrorMessage)));
+        return Json(new { success = false, err = modelStateErrors });
+      }
+
+    }
+
   }
 }
