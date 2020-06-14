@@ -1,0 +1,415 @@
+﻿@model IEnumerable<SmartAdmin.Data.Models.CodeItem>
+@{
+  ViewBag.Title = "键值对维护";
+  ViewData["PageName"] = "codeitem";
+  ViewData["Heading"] = "<i class='fal fa-code text-primary'></i>  键值对维护";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "当有新增/修改记录后，请执行【更新javascript】才会最终生效";
+}
+@section HeadBlock {
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<div class="row">
+  <div class="col-lg-12 col-xl-12">
+    <div id="panel-1" class="panel">
+      <div class="panel-hdr">
+        <h2>
+          键值对维护
+        </h2>
+        <div class="panel-toolbar">
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
+          @*<button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"><i class="fal fa-times"></i></button>*@
+        </div>
+
+      </div>
+      <div class="panel-container show">
+        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-faded sticky-top">
+          <div class="row  no-gutters align-items-center">
+            <div class="col">
+              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+              <div class="btn-group">
+                <a href="javascript:updatejavascript()" class="btn btn-sm btn-primary"> <i class="fal fa-code-commit"></i> 更新JS脚本 </a>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 新增 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="savebutton" disabled onclick="accept()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span>  取消  </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+              </div>
+              <div class="btn-group btn-group-sm hidden-xs">
+                <button type="button" onclick="importexcel('CodeItem')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()"><span class="fal fa-download"></span> 下载模板 </a>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm ">
+                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  导出 </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+        <div class="panel-content">
+          <div class="table-responsive">
+            <table id="codeitems_datagrid"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<partial name="_ImportWindow" />
+
+@section ScriptsBlock {
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/notifications/toastr/toastr.js"></script>
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script type="text/javascript">
+            var entityname = "CodeItem";
+            //更新javascript
+    function updatejavascript() {
+
+        $.post("/CodeItems/UpdateJavascript", null, function (response) {
+            if (response.success) {
+                $.messager.alert("提示", "更新成功！");
+
+            }
+        }, "json").fail(function (response) {
+            $.messager.alert("错误", "提交错误了！", "error");
+
+        });
+    }
+
+            //下载Excel导入模板
+    function downloadtemplate() {
+        //TODO: 修改下载模板的路径
+        var url = "/ExcelTemplate/Code.xlsx";
+        $.fileDownload(url)
+            .fail(function () { $.messager.alert("错误", "没有找到模板文件! {" + url + "}"); });
+
+    }
+            //打开Excel上传导入
+    function importexcel() {
+        $("#importwindow").window("open");
+    }
+            //执行Excel到处下载
+    function exportexcel() {
+        var filterRules = JSON.stringify($dg.datagrid("options").filterRules);
+        //console.log(filterRules);
+        $.messager.progress({ title: "正在执行导出！" });
+        var formData = new FormData();
+        formData.append("filterRules", filterRules);
+        formData.append("sort", "Id");
+        formData.append("order", "asc");
+        $.postDownload("/CodeItems/ExportExcel", formData, function (fileName) {
+            $.messager.progress("close");
+            console.log(fileName);
+
+        })
+    }
+            //datagrid 增删改查操作
+            var $dg = $("#codeitems_datagrid");
+            var editIndex = undefined;
+    function reload() {
+      $dg.datagrid('uncheckAll');
+      $dg.datagrid('reload');
+    }
+            var prevcodetype = "";
+            var prevdescription = "";
+    function endEditing() {
+        if (editIndex === undefined) { return true; }
+        if ($dg.datagrid("validateRow", editIndex)) {
+            $dg.datagrid("endEdit", editIndex);
+            var row = $dg.datagrid("getRows")[editIndex];
+            prevcodetype = row.CodeType;
+            prevdescription = row.Description;
+            editIndex = undefined;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function onClickCell(index, field) {
+        var _operates = ["_operate1", "_operate2", "_operate3", "ck"];
+        if ($.inArray(field, _operates) >= 0) {
+            return;
+        }
+        if (editIndex !== index) {
+            if (endEditing()) {
+                $dg.datagrid("selectRow", index)
+                    .datagrid("beginEdit", index);
+                var ed = $dg.datagrid("getEditor", { index: index, field: field });
+                if (ed) {
+                    ($(ed.target).data("textbox") ? $(ed.target).textbox("textbox") : $(ed.target)).focus();
+                }
+                editIndex = index;
+            } else {
+                $dg.datagrid("selectRow", editIndex);
+            }
+        }
+    }
+    function append() {
+        if (endEditing()) {
+            //$dg.datagrid("appendRow", { Status: 0 });
+            //editIndex = $dg.datagrid("getRows").length - 1;
+            $dg.datagrid("insertRow", {
+                index: 0,
+                row: { CodeType: prevcodetype, Description: prevdescription, IsDisabled: 0 }
+            });
+            editIndex = 0;
+            $dg.datagrid("selectRow", editIndex)
+                .datagrid("beginEdit", editIndex);
+        }
+    }
+    function removeit() {
+        if (editIndex == undefined) { return }
+        $dg.datagrid("cancelEdit", editIndex)
+            .datagrid("deleteRow", editIndex);
+        editIndex = undefined;
+    }
+    function accept() {
+      if (endEditing()) {
+        if ($dg.datagrid("getChanges").length > 0) {
+          const inserted = $dg.datagrid('getChanges', 'inserted').map(item => {
+            item.TrackingState = 1;
+            return item;
+          });
+          const updated = $dg.datagrid('getChanges', 'updated').map(item => {
+            item.TrackingState = 2
+            return item;
+          });
+          const deleted = $dg.datagrid('getChanges', 'deleted').map(item => {
+            item.TrackingState = 3
+            return item;
+          });
+          //过滤已删除的重复项
+          const changed = inserted.concat(updated.filter(item => {
+            return !deleted.includes(item);
+          })).concat(deleted);
+          $.post("/CodeItems/SaveData", { codeitems: changed }, function (response) {
+            //console.log(response);
+            if (response.success) {
+              toastr.success('保存成功');
+              $dg.datagrid('acceptChanges');
+              reload();
+            } else {
+              $.messager.alert('错误', response.err, 'error');
+            }
+          }, "json").fail(function (response) {
+            $.messager.alert('错误', response.err, 'error');
+          });
+
+        }
+
+
+      }
+    }
+            function reject() {
+                $dg.datagrid("rejectChanges");
+                editIndex = undefined;
+            }
+            function getChanges() {
+                var rows = $dg.datagrid("getChanges");
+                alert(rows.length + " rows are changed!");
+            }
+    //显示帮助信息
+        function dohelp() {
+
+        }
+            //datagrid 开启筛选功能
+    $(function () {
+      $dg.datagrid({
+        rownumbers: true,
+        checkOnSelect: true,
+        selectOnCheck: true,
+        idField: 'Id',
+        sortName: 'Id',
+        sortOrder: 'desc',
+        remoteFilter: true,
+        singleSelect: true,
+        url: '/CodeItems/GetData',
+        method: 'get',
+        onClickCell: onClickCell,
+        pageList: [10, 20, 50, 100, 500],
+        pagination: true,
+        clientPaging: false,
+        striped: true,
+        onBeforeLoad: function () {
+          const that = $(this);
+          document.addEventListener('panel.onfullscreen', () => {
+            setTimeout(() => {
+              that.datagrid('resize');
+            }, 200)
+          })
+        },
+        onLoadSuccess: function (data) {
+          editIndex = undefined;
+           $("button[name*='deletebutton']").prop('disabled', true);
+          $("button[name*='cancelbutton']").prop('disabled', true);
+          $("button[name*='savebutton']").prop('disabled', true);
+          },
+        onBeforeEdit: function (index, row) {
+          $("button[name*='deletebutton']").prop('disabled', false);
+          $("button[name*='cancelbutton']").prop('disabled', false);
+          $("button[name*='savebutton']").prop('disabled', false);
+          row.editing = true;
+          $(this).datagrid('refreshRow', index);
+        },
+        columns: [[
+
+          {
+            field: 'CodeType',
+            width: 140,
+            editor: {
+              type: 'textbox',
+              options: {
+                prompt: '代码名称',
+                required: true,
+                validType: 'regex[\'^[A-Za-z0-9]+$\',\'必须是字母\']'
+              }
+            },
+            sortable: true,
+            resizable: true,
+            title: '@Html.DisplayNameFor(model => model.CodeType)'
+          },
+          {
+            field: 'Code',
+            width: 140,
+            editor: {
+              type: 'textbox',
+              options: {
+                prompt: '值',
+                required: true,
+                validType: 'length[0,50]'
+              }
+            },
+            sortable: true,
+            resizable: true,
+            title: '@Html.DisplayNameFor(model => model.Code)'
+          },
+          {
+            field: 'Text',
+            width: 140,
+            editor: {
+              type: 'textbox',
+              options: {
+                prompt: '显示',
+                required: true,
+                validType: 'length[0,50]'
+              }
+            },
+            sortable: true,
+            resizable: true,
+            title: '@Html.DisplayNameFor(model => model.Text)'
+          },
+          {
+            field: 'Multiple',
+            width: 140,
+            editor: {
+              type: 'checkboxeditor',
+              options: {
+                id:'edit_Multiple',
+                prompt: '是否支持多选',
+                required: true
+              }
+            },
+            sortable: true,
+            resizable: true,
+            formatter: booleanformatter,
+            title: '@Html.DisplayNameFor(model => model.Multiple)'
+          },
+          {
+            field: 'Description',
+            width: 140,
+            editor: {
+              type: 'textbox',
+              options: {
+                prompt: '描述',
+                required: true,
+                validType: 'length[0,80]'
+              }
+            },
+            sortable: true,
+            resizable: true,
+            title: '@Html.DisplayNameFor(model => model.Description)'
+          },
+          {
+            field: 'IsDisabled',
+            width: 100, align: 'right',
+            editor: {
+              type: 'isdisablededitor',
+              options: {
+                prompt: '是否禁用',
+                required: true
+              }
+            },
+            sortable: true,
+            resizable: true,
+            formatter: isdisabledformatter,
+            title: '@Html.DisplayNameFor(model => model.IsDisabled)'
+          }
+        ]]
+
+      });
+      $dg.datagrid("enableFilter", [
+
+        {
+          field: "Id",
+          type: "numberbox",
+          op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
+        },
+        {
+          field: "IsDisabled",
+          type: "isdisabledfilter",
+
+        },
+        {
+          field: "Multiple",
+          type: "booleanfilter",
+
+        }
+
+
+
+
+
+
+      ]);
+    });
+
+
+
+
+
+  </script>
+
+}
+
+

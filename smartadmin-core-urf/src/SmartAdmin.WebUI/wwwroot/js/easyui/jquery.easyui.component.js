@@ -123,22 +123,16 @@ $.extend($.fn.datagrid.defaults.editors, {
                       </div>
                     </div>`;
       var input = $(checked).appendTo(container);
-
       return input;
     },
     destroy: function (target) {
 
     },
     getValue: function (target) {
-      //console.log('getValue', $(target[0]).find(':checkbox').prop('checked'));
       return $(target[0]).find(':checkbox').prop('checked');
     },
     setValue: function (target, value) {
-
       $(target[0]).find(':checkbox').prop('checked', value);
-
-
-
     },
     resize: function (target, width) {
 

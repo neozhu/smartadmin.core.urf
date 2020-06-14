@@ -13,6 +13,7 @@ namespace SmartAdmin.Data.Models
     }
     #region 基础框架
     public DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
+    public DbSet<CodeItem> CodeItems { get; set; }
     #endregion
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }
@@ -47,6 +48,13 @@ namespace SmartAdmin.Data.Models
       modelBuilder.Entity<DataTableImportMapping>(entity =>
       {
         entity.HasIndex(e => new { e.EntitySetName, e.FieldName })
+                      .IsUnique()
+                      .HasFilter(null);
+
+      });
+      modelBuilder.Entity<CodeItem>(entity =>
+      {
+        entity.HasIndex(e => new { e.CodeType, e.Code })
                       .IsUnique()
                       .HasFilter(null);
 
