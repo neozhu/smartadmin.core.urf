@@ -84,42 +84,43 @@ namespace SmartAdmin
 
       var sheet = workbook.GetSheetAt(0); // zero-based index of your target sheet
 
-        var dt = new DataTable(sheet.SheetName);
+      var dt = new DataTable(sheet.SheetName);
 
-        // write header row
-        var headerRow = sheet.GetRow(0);
-        foreach (ICell headerCell in headerRow)
+      // write header row
+      var headerRow = sheet.GetRow(0);
+      foreach (ICell headerCell in headerRow)
+      {
+        dt.Columns.Add(headerCell.ToString().Trim());
+      }
+
+      // write the rest
+      var rowIndex = 0;
+      foreach (IRow row in sheet)
+      {
+        // skip header row
+        if (rowIndex++ == 0)
         {
-          dt.Columns.Add(headerCell.ToString().Trim());
+          continue;
         }
 
-        // write the rest
-        var rowIndex = 0;
-        foreach (IRow row in sheet)
+        var dataRow = dt.NewRow();
+        var array = new string[dt.Columns.Count];
+        for (var i = 0; i < dt.Columns.Count; i++)
         {
-          // skip header row
-          if (rowIndex++ == 0)
-          {
-            continue;
-          }
-
-          var dataRow = dt.NewRow();
-          var array = new string[dt.Columns.Count];
-          for (var i = 0; i < dt.Columns.Count; i++)
-          {
-            var cell = row.GetCell(i);
-            var val = cell.GetFormattedCellValue(eval);
-            array[i] = val;
-          }
-          dataRow.ItemArray = array;
-          dt.Rows.Add(dataRow);
+          var cell = row.GetCell(i);
+          var val = cell.GetFormattedCellValue(eval);
+          array[i] = val;
         }
+        dataRow.ItemArray = array;
+        dt.Rows.Add(dataRow);
+      }
 
-        return dt;
-      
+      return dt;
+
     });
 
-    public static Task<MemoryStream> ExportExcelAsync<T>(string name, List<T> list, ExpColumnOpts[] colopts) => Task.Run(() => {
+    public static Task<MemoryStream> ExportExcelAsync<T>(string name, List<T> list, ExpColumnOpts[] colopts) => Task.Run(() =>
+    {
       //var ignoredColumns = colopts.Where(x => x.IgnoredColumn == true);
       //var columns= colopts.Where(x => x.IgnoredColumn == false);
       var stream = new MemoryStream();
@@ -144,13 +145,17 @@ namespace SmartAdmin
       {
         var fieldname = PropertyInfos[i].Name;
         var fieldtype = PropertyInfos[i].PropertyType;
-        if (colopts!=null && colopts.Where(n=> n.FieldName==fieldname && n.IgnoredColumn==false).Any())
+        if (colopts != null &&
+        (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
+        !colopts.Any(x => x.FieldName == fieldname)
+        )
+        )
         {
           continue;
         }
-        var displayname = colopts.Where(x=>  x.FieldName==fieldname).FirstOrDefault()?.SourceFieldName;
+        var displayname = colopts.Where(x => x.FieldName == fieldname).FirstOrDefault()?.SourceFieldName;
         var cell = headerRow.CreateCell(col++);
-        cell.SetCellValue(displayname?? fieldname);
+        cell.SetCellValue(displayname ?? fieldname);
         cell.CellStyle = headstyle;
 
       }
@@ -168,7 +173,11 @@ namespace SmartAdmin
         {
           var fieldname = PropertyInfos[l].Name;
           var fieldtype = PropertyInfos[l].PropertyType;
-          if (colopts!=null && colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any())
+          if (colopts != null &&
+       (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
+       !colopts.Any(x => x.FieldName == fieldname)
+       )
+       )
           {
             continue;
           }
@@ -205,7 +214,8 @@ namespace SmartAdmin
             {
               cell.SetCellValue(Convert.ToDouble(val));
             }
-          } else if (fieldtype == typeof(int) || fieldtype == typeof(Nullable<int>))
+          }
+          else if (fieldtype == typeof(int) || fieldtype == typeof(Nullable<int>))
           {
             if (val != null)
             {
@@ -232,9 +242,9 @@ namespace SmartAdmin
       var byteArray = bookstream.ToArray();
       stream.Write(byteArray, 0, byteArray.Length);
       stream.Seek(0, SeekOrigin.Begin);
-      return  stream;
+      return stream;
     });
   }
 
-  
+
 }
