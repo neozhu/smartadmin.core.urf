@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Data;
+using System.IO;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using SmartAdmin.Data.Models;
 using URF.Core.Abstractions.Services;
 
@@ -10,5 +13,8 @@ namespace SmartAdmin.Service
   {
     // Example: adding synchronous Single method, scope: ICustomerService
     Company Single(Expression<Func<Company, bool>> predicate);
+
+    Task ImportDataTableAsync(DataTable datatable,string username);
+    Task<Stream> ExportExcelAsync(string filterRules = "", string sort = "Id", string order = "asc");
   }
 }

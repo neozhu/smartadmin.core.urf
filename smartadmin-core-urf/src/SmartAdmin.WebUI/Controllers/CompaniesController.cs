@@ -181,23 +181,8 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpPost]
     public async Task<IActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
     {
-      var fileName = "companies_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
-      var filters = PredicateBuilder.FromFilter<Company>(filterRules);
-      var rows = (await this.companyService
-                             .Query(filters)
-                           .OrderBy(n => n.OrderBy(sort, order))
-                           .SelectAsync())
-                           .Select(n => new
-                           {
-                             Id = n.Id,
-                             Name = n.Name,
-                             Code = n.Code,
-                             Address = n.Address,
-                             Contect = n.Contect,
-                             PhoneNumber = n.PhoneNumber,
-                             RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
-                           }).ToList();
-      var stream = new System.IO.MemoryStream();
+      var fileName = "compnay" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+      var stream = await this.companyService.ExportExcelAsync(filterRules, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
   }
