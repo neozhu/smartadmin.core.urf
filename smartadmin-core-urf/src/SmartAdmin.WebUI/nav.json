@@ -2,18 +2,11 @@
   "version": "4.5",
   "lists": [
     {
-      "title": "Application Intel",
-      "icon": "fal fa-info-circle",
-      "roles": [],
-      "items": [
-        {
-          "title": "Analytics Dashboard",
-          "showOnSeed": false,
-          "href": "intel_analytics_dashboard.html",
-          "roles": []
-        }
-
-      ]
+      "title": "首页",
+      "icon": "fal fa-home",
+      "href": "Home_Index.html",
+      "roles": []
+       
     },
     {
       "title": "组织架构",
