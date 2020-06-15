@@ -9,7 +9,7 @@ namespace SmartAdmin.Data.Models
   public partial class CodeItem : Entity
   {
     [MaxLength(50),
-      Display(Name = "值",Description = "值",Prompt = "值"),
+      Display(Name = "值", Description = "值", Prompt = "值"),
       Required(ErrorMessage = "必填")]
     public string Code { get; set; }
     [MaxLength(50),

@@ -15,6 +15,7 @@ namespace SmartAdmin.Data.Models
     public DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
     public DbSet<CodeItem> CodeItems { get; set; }
     public DbSet<Log> Logs { get; set; }
+    public DbSet<MenuItem> MenuItems { get; set; }
     #endregion
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }

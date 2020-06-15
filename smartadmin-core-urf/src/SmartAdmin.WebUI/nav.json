@@ -28,6 +28,12 @@
       "roles": [],
       "items": [
         {
+          "title": "导航栏配置",
+          "showOnSeed": false,
+          "href": "MenuItems_Index.html",
+          "roles": []
+        },
+        {
           "title": "导入&导出配置",
           "showOnSeed": false,
           "href": "DataTableImportMappings_Index.html",

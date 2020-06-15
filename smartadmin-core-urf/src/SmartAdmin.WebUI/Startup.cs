@@ -84,6 +84,8 @@ namespace SmartAdmin.WebUI
       services.AddScoped<ICodeItemService, CodeItemService>();
       services.AddScoped<ITrackableRepository<Log>, TrackableRepository<Log>>();
       services.AddScoped<ILogService, LogService>();
+      services.AddScoped<ITrackableRepository<MenuItem>, TrackableRepository<MenuItem>>();
+      services.AddScoped<IMenuItemService, MenuItemService>();
 
       services.AddTransient<IEmailSender, EmailSender>();
 

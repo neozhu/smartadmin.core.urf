@@ -1,0 +1,614 @@
+﻿@model SmartAdmin.Data.Models.MenuItem
+@{
+  ViewBag.Title = "导航栏配置";
+  ViewData["PageName"] = "menuitems_index";
+  ViewData["Heading"] = "<i class='fal fa-sitemap text-primary'></i>  导航栏配置";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "";
+}
+@section HeadBlock {
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader-theme-dragdrop.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/plugin/jquery.fileuploader/font/font-fileuploader.css" rel="stylesheet" asp-append-version="true" />
+}
+<div class="row">
+  <div class="col-lg-12 col-xl-12">
+    <div id="panel-1" class="panel">
+      <div class="panel-hdr">
+        <h2>
+          导航菜单
+        </h2>
+        <div class="panel-toolbar">
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
+          @*<button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"><i class="fal fa-times"></i></button>*@
+        </div>
+
+      </div>
+      <div class="panel-container show">
+        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-faded bg-subtlelight-fade sticky-top">
+          <div class="row no-gutters align-items-center">
+            <div class="col">
+              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+              <div class="btn-group btn-group-sm">
+                <a href="javascript:createWithController()" class="btn btn-sm btn-primary"> <i class=" fal fa-sitemap mr-1"></i> 生成菜单 </a>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 新增 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="savebutton" disabled onclick="accept()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span> 取消 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+              </div>
+              <div class="btn-group btn-group-sm hidden-xs">
+                <button type="button" onclick="importexcel('MenuItem')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()"><span class="fal fa-download"></span> 下载模板  </a>
+                </div>
+              </div>
+              <div class="btn-group btn-group-sm ">
+                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  导出 </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="panel-content">
+          <div class="table-responsive">
+            <table id="menuitems_datagrid"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<partial name="_ImportWindow" />
+<partial name="_PopupDetailFormView" model="new SmartAdmin.Data.Models.MenuItem()" />
+
+@section ScriptsBlock {
+
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/notifications/toastr/toastr.js"></script>
+  <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script type="text/javascript">
+      var entityname = "MenuItem";
+        var menuitem = {};
+//生成菜单
+      function createWithController() {
+        $.messager.progress({ title: '正在处理请耐心等待！' });
+        $.post('/MenuItems/CreateWithController').done(res => {
+
+          $.messager.progress('close');
+          if (res.success) {
+            $.messager.alert("提示", "成功创建菜单！", 'info', function () {
+              $dg.datagrid('reload');
+            });
+          } else {
+            $.messager.alert("错误", "生成异常！" + res.err, 'error', function () {
+
+            });
+          }
+
+        });
+
+      }
+      //下载Excel导入模板
+      function downloadtemplate() {
+             //默认模板路径存放位置
+          var url = "/ExcelTemplate/MenuItem.xlsx";
+          $.fileDownload(url)
+           .done(() => {
+                    console.log('file download a success!');
+                })
+           .fail(() => {
+               $.messager.alert("错误","没有找到模板文件! {" + url + "}","error");
+            });
+       }
+
+	   //执行导出下载Excel
+	   function exportexcel() {
+				var filterRules = JSON.stringify($dg.datagrid("options").filterRules);
+				//console.log(filterRules);
+				$.messager.progress({ title: "正在执行导出!" });
+				var formData = new FormData();
+				formData.append("filterRules", filterRules);
+				formData.append("sort", "Id");
+				formData.append("order", "asc");
+				$.postDownload("/MenuItems/ExportExcel", formData).then(res => {
+                    $.messager.progress("close");
+                }).catch(err => {
+                    //console.log(err);
+                    $.messager.progress("close");
+                    $.messager.alert("错误", err.statusText, "error");
+                });
+
+		}
+        //显示帮助信息
+        function dohelp() {
+
+        }
+        var editIndex = undefined;
+        //选中记录
+       function onSelect(index, row) {
+          menuitem = row;
+       }
+       //重新加载数据
+      function reload() {
+        if (endEditing()) {
+          $dg.datagrid("reload");
+          $dg.datagrid("uncheckAll");
+          $dg.datagrid("unselectAll");
+        }
+      }
+    //关闭编辑状态
+    function endEditing() {
+        if (editIndex === undefined) {
+          return true;
+        }
+        if ($dg.datagrid("validateRow", editIndex)) {
+          $dg.datagrid("endEdit", editIndex);
+          return true;
+        } else {
+          return false;
+        }
+      }
+    //单击列开启编辑功能
+      function onClickCell(index, field) {
+        menuitem = $dg.datagrid('getRows')[index];
+        var _operates = ["_operate1", "_operate2", "_operate3", "ck"];
+        if ($.inArray(field, _operates) >= 0) {
+          return;
+        }
+        if (editIndex !== index) {
+          if (endEditing()) {
+            $dg.datagrid("selectRow", index)
+              .datagrid("beginEdit", index);
+            //editIndex = index;
+            var ed = $dg.datagrid("getEditor", { index: index, field: field });
+            if (ed) {
+              ($(ed.target).data("textbox") ? $(ed.target).textbox("textbox") : $(ed.target)).focus();
+            }
+          } else {
+            $dg.datagrid("selectRow", editIndex);
+          }
+        }
+      }
+    //新增记录
+      function append() {
+        if (endEditing()) {
+          //对必填字段进行默认值初始化
+          $dg.datagrid("insertRow",
+            {
+              index: 0,
+              row: {
+                Url: '#',
+                Controller: '#',
+                Action: '#',
+                IconCls: '',
+                IsEnabled:true,
+
+              }
+            });
+          //editIndex = 0;
+          $dg.datagrid("beginEdit", 0);
+        }
+      }
+    //删除编辑的行
+      function removeit() {
+
+          deletechecked();
+
+
+      }
+    //删除选中的行
+      function deletechecked() {
+        var rows = $dg.datagrid("getChecked");
+        if (rows.length > 0) {
+          var id = rows.map(item => {
+            return item.Id;
+          });
+          $.messager.confirm("确认", `你确定要删除这 <span class='badge badge-danger badge-pill'>${id.length} </span> 行记录?`, result => {
+            if (result) {
+              $.post("/MenuItems/DeleteChecked", { id: id })
+                .done(response => {
+                  if (response.success) {
+                    reload();
+                  } else {
+                    $.messager.alert("错误", response.err, "error");
+                  }
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                  //console.log(errorThrown);
+                  $.messager.alert("错误", "提交错误了!" + errorThrown, "error");
+                });
+            }
+          });
+        } else {
+          $.messager.alert("提示", "请先选择要删除的记录!");
+        }
+      }
+    //提交保存后台数据库
+    function accept() {
+      if (endEditing()) {
+        if ($dg.datagrid("getChanges").length) {
+          const inserted = $dg.datagrid('getChanges', 'inserted').map(item => {
+            item.TrackingState = 1;
+            return item;
+          });
+          const updated = $dg.datagrid('getChanges', 'updated').map(item => {
+            item.TrackingState = 2
+            return item;
+          });
+          const deleted = $dg.datagrid('getChanges', 'deleted').map(item => {
+            item.TrackingState = 3
+            return item;
+          });
+          //过滤已删除的重复项
+          const changed = inserted.concat(updated.filter(item => {
+            return !deleted.includes(item);
+          })).concat(deleted);
+          $.post("/MenuItems/AcceptChanges", { menuitems: changed })
+            .done(response => {
+              if (response.success) {
+                $.messager.alert("提示", "提交成功!");
+                $dg.datagrid("acceptChanges");
+                reload();
+              } else {
+                $.messager.alert("错误", response.err, "error");
+              }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+              //console.log(errorThrown);
+              $.messager.alert("错误", "提交错误了!" + errorThrown, "error");
+            });
+        }
+      }
+    }
+	function reject() {
+			$dg.datagrid("rejectChanges");
+			editIndex = undefined;
+	}
+	function getChanges() {
+			var rows = $dg.datagrid("getChanges");
+			console.log(rows.length + " rows are changed!");
+	}
+    //弹出明细信息
+    function showdetailswindow(id) {
+      //console.log(index, row);
+      $.get("/MenuItems/PopupEdit/" + id)
+        .done(data => {
+          //console.log(data);
+          loadData(id, data);
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          $.messager.alert("错误", "获取数据异常!" + errorThrown, "error");
+        });
+    }
+
+    //初始化定义datagrid
+    var $dg = $("#menuitems_datagrid");
+      $(() => {
+        //定义datagrid结构
+        $dg.datagrid({
+          rownumbers: true,
+          checkOnSelect: false,
+          selectOnCheck: false,
+          idField: 'Id',
+          sortName: 'Id',
+          sortOrder: 'desc',
+          remoteFilter: true,
+          clientPaging: false,
+          singleSelect: false,
+          method: 'get',
+          onClickCell: onClickCell,
+          pagination: true,
+          striped: true,
+          pageList: [10, 20, 50, 100, 500],
+          onBeforeLoad: function () {
+            const that = $(this);
+            document.addEventListener('panel.onfullscreen', () => {
+              setTimeout(() => {
+                that.datagrid('resize');
+              }, 200)
+            })
+          },
+          onLoadError: function () {
+            console.log('error')
+          },
+          onLoadSuccess: function (data) {
+            editIndex = undefined;
+          },
+          onSelect: function (index, row) {
+            menuitem = row;
+          },
+          onCheck: function (index,row) {
+             $("button[name*='deletebutton']").prop('disabled', false);
+            menuitem = row;
+          },
+          onBeginEdit: function (index, row) {
+            editIndex = index;
+          },
+          onEndEdit: function (index, row) {
+            var ed = $(this).datagrid("getEditor", { index: editIndex, field: "ParentId" });
+            var parenttitle = $(ed.target).combobox("getText");
+            var parentid = $(ed.target).combobox("getValue");
+            row["ParentTitle"] = parenttitle;
+            row["ParentId"] = parentid;
+            editIndex = undefined;
+          },
+          onBeforeEdit: function (index, row) {
+            $("button[name*='deletebutton']").prop('disabled', false);
+            $("button[name*='cancelbutton']").prop('disabled', false);
+          $("button[name*='savebutton']").prop('disabled', false);
+            row.editing = true;
+            $(this).datagrid('refreshRow', index);
+          },
+          onAfterEdit: function (index, row) {
+            row.editing = false;
+            $(this).datagrid('refreshRow', index);
+          },
+          onCancelEdit: function (index, row) {
+            row.editing = false;
+            $(this).datagrid('refreshRow', index);
+            editIndex = index;
+          },
+          columns: [[
+            /*开启CheckBox选择功能*/
+            { field: 'ck', checkbox: true },
+            {
+              field: '_operate1',
+              title: '操作',
+              width: 50,
+              sortable: false,
+              resizable: true,
+              formatter: function showdetailsformatter(value, row, index) {
+                if (!row.editing) {
+                  return `<div class="btn-group">\
+                            <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-file-alt"></i> </button>\
+                        </div>`;
+                } else {
+                  return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
+                }
+              }
+            },
+            {
+              field: 'Title',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.Title)</span>',
+              width: 160,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Title)', required: true, validType: 'length[0,50]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'Description',
+              title: '@Html.DisplayNameFor(model => model.Description)',
+              width: 160,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Description)', required: true, validType: 'length[0,100]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'LineNum',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.LineNum)</span>',
+              width: 80,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.LineNum)', required: true, validType: 'length[0,20]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'ParentId',
+              title: '@Html.DisplayNameFor(model => model.ParentId)',
+              width: 140,
+              sortable: true,
+              resizable: true,
+              formatter: function (value, row) {
+                return row.ParentTitle;
+              },
+              editor: {
+                type: 'combobox',
+                options: {
+                  prompt: '@Html.DescriptionFor(model => model.ParentId)',
+                  mode: 'remote',
+                  valueField: 'Id',
+                  textField: 'Title',
+                  method: 'get',
+                  url: '/MenuItems/GetMenuItems',
+                  required: false
+                }
+              }
+            },
+            {
+              field: 'Url',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.Url)</span>',
+              width: 200,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Url)', required: true, validType: 'length[0,100]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'Controller',
+              title: '@Html.DisplayNameFor(model => model.Controller)',
+              width: 160,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Controller)', required: false, validType: 'length[0,100]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'Action',
+              title: '@Html.DisplayNameFor(model => model.Action)',
+              width: 140,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Action)', required: false, validType: 'length[0,100]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'Icon',
+              title: '@Html.DisplayNameFor(model => model.Icon)',
+              width: 160,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Icon)', required: false }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'IsEnabled',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.IsEnabled)</span>',
+              width: 120,
+              align: 'center',
+              editor: {
+                type: 'booleaneditor',
+                options: {
+                  prompt: '@Html.DescriptionFor(model => model.IsEnabled)',
+                  required: true
+                }
+              },
+              formatter: booleanformatter,
+              sortable: true,
+              resizable: true
+            },
+
+          ]]
+        })
+        .datagrid("enableFilter", [
+          {
+            field: "IsEnabled",
+            type: "booleanfilter"
+          },
+          {
+            field: "ParentId",
+            type: "combobox",
+            options: {
+              valueField: "Id",
+              textField: "Title",
+              method: "get",
+              url: "/MenuItems/GetMenuItems",
+              onChange: function (value) {
+                if (value === "" || value === null) {
+                  $dg.datagrid("removeFilterRule", "ParentId");
+                } else {
+                  $dg.datagrid("addFilterRule", {
+                    field: "ParentId",
+                    op: "equal",
+                    value: value
+                  });
+                }
+                $dg.datagrid("doFilter");
+              }
+            }
+          }
+        ])
+          .datagrid('load','/MenuItems/GetData',);
+      });
+  </script>
+  <partial name="_menuitemdatagridjsview" model="new SmartAdmin.Data.Models.MenuItem()"/>
+ 
+  <script type="text/javascript">
+    //load data by foreign key
+    var menuitemid = 0;
+
+    function loadData(id, data) {
+      $("#detailswindow").window("open");
+      menuitemid = id;
+      $('#menuitem_form').form('load', data);
+      var url = '/MenuItems/GetDataByParentId?parentid=' + id;
+      $menuitemsdg.datagrid('load', url);
+      $menuitemsdg.datagrid('resize');
+    }
+    var $editform = $('#menuitem_form');
+    // save item
+    function saveitem() {
+      if ($editform.form('enableValidation').form('validate')) {
+        var menuitem = $editform.serializeJSON();
+        var token = $('input[name="__RequestVerificationToken"]', $editform).val();
+        $.ajax({
+          type: "POST",
+          url: "/MenuItems/Edit",
+          data: {
+            __RequestVerificationToken: token,
+            menuitem: menuitem
+          },
+          dataType: 'json',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8'
+        })
+          .done(response => {
+            if (response.success) {
+              $dg.datagrid('reload');
+              $.messager.alert("提示", "保存成功！");
+              $('#detailswindow').window("close");
+            } else {
+              $.messager.alert("错误", "保存失败！" + response.err, "error");
+            }
+          })
+          .fail((jqXHR, textStatus, errorThrown) => {
+            $.messager.alert("错误", "保存失败！" + errorThrown, "error");
+          });
+      }
+    }
+    // close window
+    function closewindow() {
+      $('#detailswindow').window('close');
+    }
+    // print form
+    function printitem() {
+      console.log('print.....');
+    }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var target = $(e.target).attr("href");
+      if (target === "#tab-menuitems")
+        $menuitemsdg.datagrid("resize");
+    });
+
+  </script>
+
+}
+
+
