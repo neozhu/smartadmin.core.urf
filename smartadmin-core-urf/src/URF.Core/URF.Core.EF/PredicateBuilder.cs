@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace URF.Core.EF
 {
-  public class filteritem
+  internal class filteritem
   {
     public string field { get; set; }
     public string op { get; set; }
