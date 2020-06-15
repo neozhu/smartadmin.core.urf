@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace URF.Core.EF
 {
-  internal class filteritem
+  internal class filter
   {
     public string field { get; set; }
     public string op { get; set; }
@@ -24,7 +24,7 @@ namespace URF.Core.EF
       Expression<Func<T, bool>> any = x => true;
       if (!string.IsNullOrEmpty(filtergroup))
       {
-        var filters = JsonSerializer.Deserialize<filteritem[]>(filtergroup);
+        var filters = JsonSerializer.Deserialize<filter[]>(filtergroup);
 
           foreach (var filter in filters)
           {
