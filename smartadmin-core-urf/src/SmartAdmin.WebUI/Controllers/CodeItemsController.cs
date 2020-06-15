@@ -62,14 +62,22 @@ namespace SmartAdmin.WebUI.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> UpdateJavascript()
+    public async Task<IActionResult> UpdateJavascript()
     {
       var jsfile = Path.Combine(this._webHostEnvironment.WebRootPath, "js", "jquery.extend.formatter.js");
       await this._codeItemService.UpdateJavascriptAsync(jsfile);
       return Json(new { success = true });
     }
 
-
+    public async Task<IActionResult> DeleteChecked(int[] id)
+    {
+      foreach (var key in id)
+      {
+        await this._codeItemService.DeleteAsync(key);
+      }
+      await this._unitOfWork.SaveChangesAsync();
+      return Json(new { success = true } );
+    }
 
     [HttpPost]
     public async Task<ActionResult> SaveData(CodeItem[] codeitems)

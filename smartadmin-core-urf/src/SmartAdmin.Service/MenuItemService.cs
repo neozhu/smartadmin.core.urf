@@ -120,27 +120,11 @@ namespace SmartAdmin.Service
                SourceFieldName = x.SourceFieldName
              }).ToArrayAsync();
 
-      var menuitems = (await this.Query(filters)
+      var menuitems = await this.Query(filters)
          .Include(p => p.Parent)
          .OrderBy(n => n.OrderBy(sort, order))
-         .SelectAsync())
-         .Select(n => new
-         {
-
-           ParentTitle = (n.Parent == null ? "" : n.Parent.Title),
-           Id = n.Id,
-           Title = n.Title,
-           Description = n.Description,
-           LineNum = n.LineNum,
-           Url = n.Url,
-           Controller = n.Controller,
-           Action = n.Action,
-           Icon = n.Icon,
-           n.Roles,
-           n.Target,
-           IsEnabled = n.IsEnabled,
-           ParentId = n.ParentId
-         }).ToList();
+         .SelectAsync();
+        
 
       return await NPOIHelper.ExportExcelAsync("系统导航栏", menuitems, expcolopts);
 

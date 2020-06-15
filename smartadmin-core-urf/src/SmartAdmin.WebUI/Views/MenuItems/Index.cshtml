@@ -79,7 +79,7 @@
 </div>
 
 <partial name="_ImportWindow" />
-<partial name="_PopupDetailFormView" model="new SmartAdmin.Data.Models.MenuItem()" />
+
 
 @section ScriptsBlock {
 
@@ -384,22 +384,6 @@
             /*开启CheckBox选择功能*/
             { field: 'ck', checkbox: true },
             {
-              field: '_operate1',
-              title: '操作',
-              width: 50,
-              sortable: false,
-              resizable: true,
-              formatter: function showdetailsformatter(value, row, index) {
-                if (!row.editing) {
-                  return `<div class="btn-group">\
-                            <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-file-alt"></i> </button>\
-                        </div>`;
-                } else {
-                  return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
-                }
-              }
-            },
-            {
               field: 'Title',
               title: '<span class="required">@Html.DisplayNameFor(model => model.Title)</span>',
               width: 160,
@@ -548,66 +532,7 @@
           .datagrid('load','/MenuItems/GetData',);
       });
   </script>
-  <partial name="_menuitemdatagridjsview" model="new SmartAdmin.Data.Models.MenuItem()"/>
- 
-  <script type="text/javascript">
-    //load data by foreign key
-    var menuitemid = 0;
-
-    function loadData(id, data) {
-      $("#detailswindow").window("open");
-      menuitemid = id;
-      $('#menuitem_form').form('load', data);
-      var url = '/MenuItems/GetDataByParentId?parentid=' + id;
-      $menuitemsdg.datagrid('load', url);
-      $menuitemsdg.datagrid('resize');
-    }
-    var $editform = $('#menuitem_form');
-    // save item
-    function saveitem() {
-      if ($editform.form('enableValidation').form('validate')) {
-        var menuitem = $editform.serializeJSON();
-        var token = $('input[name="__RequestVerificationToken"]', $editform).val();
-        $.ajax({
-          type: "POST",
-          url: "/MenuItems/Edit",
-          data: {
-            __RequestVerificationToken: token,
-            menuitem: menuitem
-          },
-          dataType: 'json',
-          contentType: 'application/x-www-form-urlencoded; charset=utf-8'
-        })
-          .done(response => {
-            if (response.success) {
-              $dg.datagrid('reload');
-              $.messager.alert("提示", "保存成功！");
-              $('#detailswindow').window("close");
-            } else {
-              $.messager.alert("错误", "保存失败！" + response.err, "error");
-            }
-          })
-          .fail((jqXHR, textStatus, errorThrown) => {
-            $.messager.alert("错误", "保存失败！" + errorThrown, "error");
-          });
-      }
-    }
-    // close window
-    function closewindow() {
-      $('#detailswindow').window('close');
-    }
-    // print form
-    function printitem() {
-      console.log('print.....');
-    }
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      var target = $(e.target).attr("href");
-      if (target === "#tab-menuitems")
-        $menuitemsdg.datagrid("resize");
-    });
-
-  </script>
+   
 
 }
 

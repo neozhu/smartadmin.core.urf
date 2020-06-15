@@ -119,7 +119,7 @@ namespace SmartAdmin
 
     });
 
-    public static Task<MemoryStream> ExportExcelAsync<T>(string name, List<T> list, ExpColumnOpts[] colopts) => Task.Run(() =>
+    public static Task<MemoryStream> ExportExcelAsync<T>(string name, IEnumerable<T> list, ExpColumnOpts[] colopts) => Task.Run(() =>
     {
       //var ignoredColumns = colopts.Where(x => x.IgnoredColumn == true);
       //var columns= colopts.Where(x => x.IgnoredColumn == false);
@@ -159,10 +159,12 @@ namespace SmartAdmin
         cell.CellStyle = headstyle;
 
       }
-      for (var i = 0; i < list.Count; i++)
+      var index = 0;
+      //for (var i = 0; i < list.Count(); i++)
+      foreach(var item in list)
       {
-        var row = sheet.CreateRow(i + 1);
-        var item = list[i];
+        var row = sheet.CreateRow(index++);
+        //var item = list;
         col = 0;
         var style = workbook.CreateCellStyle();
         style.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
