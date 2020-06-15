@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
@@ -14,13 +15,17 @@ namespace SmartAdmin.WebUI.Controllers
   {
     private readonly ICompanyService  _companyService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<HomeController> logger;
 
     public HomeController(
         ICompanyService companyService,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<HomeController> logger)
     {
       _companyService = companyService;
       _unitOfWork = unitOfWork;
+      this.logger = logger;
+      this.logger.LogInformation("test");
     }
 
     public IActionResult Index() => View();

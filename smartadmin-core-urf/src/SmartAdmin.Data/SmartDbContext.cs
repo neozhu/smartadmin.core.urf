@@ -14,6 +14,7 @@ namespace SmartAdmin.Data.Models
     #region 基础框架
     public DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
     public DbSet<CodeItem> CodeItems { get; set; }
+    public DbSet<Log> Logs { get; set; }
     #endregion
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }
