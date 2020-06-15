@@ -194,8 +194,9 @@ namespace URF.Core.EF
 
     private static Expression<Func<T, bool>> Includes<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression ,Type type)
     {
-      var typeName = Nullable.GetUnderlyingType(type) == null ? type.Name : Nullable.GetUnderlyingType(type).Name;
-      switch (typeName.ToLower())
+      var safetype= Nullable.GetUnderlyingType(type) ?? type;
+
+      switch (safetype.Name.ToLower())
       {
         case  "string":
           var strlist = (IEnumerable<string>)fieldValue;
@@ -215,7 +216,15 @@ namespace URF.Core.EF
           var intmethod = typeof(List<int>).GetMethod("Contains", new Type[] { typeof(int) });
           var intcallexp = Expression.Call(Expression.Constant(intlist.ToList()), intmethod, memberExpression);
           return Expression.Lambda<Func<T, bool>>(intcallexp, parameterExpression);
-
+        case "float":
+          var floatlist = (IEnumerable<float>)fieldValue;
+          if (floatlist == null || floatlist.Count() == 0)
+          {
+            return x => true;
+          }
+          var floatmethod = typeof(List<int>).GetMethod("Contains", new Type[] { typeof(int) });
+          var floatcallexp = Expression.Call(Expression.Constant(floatlist.ToList()), floatmethod, memberExpression);
+          return Expression.Lambda<Func<T, bool>>(floatcallexp, parameterExpression);
         default:
           return x => true;
       }
@@ -223,8 +232,9 @@ namespace URF.Core.EF
     }
     private static Expression<Func<T, bool>> Between<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression, Type type)
     {
-      var typeName = Nullable.GetUnderlyingType(type) == null ? type.Name : Nullable.GetUnderlyingType(type).Name;
-      switch (typeName.ToLower())
+      
+      var safetype = Nullable.GetUnderlyingType(type) ?? type;
+      switch (safetype.Name.ToLower())
       {
         case "datetime":
           var datearray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
@@ -251,6 +261,14 @@ namespace URF.Core.EF
           var dminthen = Expression.LessThan(memberExpression, Expression.Constant(dmax, type));
           return Expression.Lambda<Func<T, bool>>(dmaxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(dminthen, parameterExpression));
+        case "float":
+          var farray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+          var fmin = Convert.ToDecimal(farray[0], CultureInfo.CurrentCulture);
+          var fmax = Convert.ToDecimal(farray[1], CultureInfo.CurrentCulture);
+          var fmaxthen = Expression.GreaterThan(memberExpression, Expression.Constant(fmin, type));
+          var fminthen = Expression.LessThan(memberExpression, Expression.Constant(fmax, type));
+          return Expression.Lambda<Func<T, bool>>(fmaxthen, parameterExpression)
+            .And(Expression.Lambda<Func<T, bool>>(fminthen, parameterExpression));
         case "string":
           var strarray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var smin = strarray[0];
