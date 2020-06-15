@@ -21,7 +21,7 @@ namespace SmartAdmin.Data.Models
     public string Message { get; set; }
     [Display(Name = "异常信息", Description = "异常信息")]
     public string Exception { get; set; }
-    [Display(Name = "请求IP地址", Description = "请求IP地址")]
+    [Display(Name = "请求IP", Description = "请求IP")]
     [MaxLength(32)]
     public string RequestIp { get; set; }
     [Display(Name = "事件属性", Description = "事件属性")]

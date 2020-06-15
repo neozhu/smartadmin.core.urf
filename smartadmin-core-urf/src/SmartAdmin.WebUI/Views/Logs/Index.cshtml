@@ -52,10 +52,6 @@
               <div class="btn-group btn-group-sm">
                 <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 刷新 </button>
               </div>
-
-              <div class="btn-group btn-group-sm ">
-                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span> 导出 </button>
-              </div>
             </div>
 
           </div>
@@ -124,7 +120,7 @@
           return value;
       }
     }
-    //for datagrid   Level  field filter 
+    //for datagrid   Level  field filter
     $.extend($.fn.datagrid.defaults.filters, {
       levelfilter: {
         init: function (container, options) {
@@ -320,7 +316,7 @@
         onClickRow: onClickRow,
         method: 'get',
         pagination: true,
-        clientPaging:false,
+        clientPaging: false,
         striped: true,
         pageList: [10, 20, 50, 100, 500],
         filterRules: [{
@@ -437,16 +433,30 @@
             sortable: true,
             resizable: true
           },
-
           {    /*事件属性*/
-            field: 'Properties',
-            title: '@Html.DisplayNameFor(model => model.Properties)',
-            width: 260,
+            field: 'RequestForm',
+            title: '@Html.DisplayNameFor(model => model.RequestForm)',
+            width: 160,
             hidden: false,
             sortable: true,
             resizable: true
           },
-
+          {    /*事件属性*/
+            field: 'Properties',
+            title: '@Html.DisplayNameFor(model => model.Properties)',
+            width: 160,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {    /*网站*/
+            field: 'SiteName',
+            title: '@Html.DisplayNameFor(model => model.SiteName)',
+            width: 130,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
           {    /*日志*/
             field: 'Logger',
             title: '@Html.DisplayNameFor(model => model.Logger)',
@@ -466,7 +476,49 @@
 
         ]]
       })
-     .datagrid('enableFilter', [
+        .datagrid('enableFilter', [
+          {
+            field: 'Level',
+            type: 'combobox',
+            options: {
+              data: [
+                { value: 'Info', text: 'Info' },
+                { value: 'Trace', text: 'Trace' },
+                { value: 'Debug', text: 'Debug' },
+                { value: 'Warn', text: 'Warn' },
+                { value: 'Error', text: 'Error' },
+                { value: 'Fatal', text: 'Fatal' }
+              ],
+              onChange: value => {
+                $dg.datagrid('addFilterRule', {
+                  field: 'Level',
+                  op: 'equal',
+                  value: value
+                });
+
+                $dg.datagrid('doFilter');
+              }
+          }
+          },
+          {
+            field: 'Resolved',
+            type: 'combobox',
+            options: {
+              data: [
+                { value: 'false', text: '未处理' },
+                { value: 'true', text: '已处理' }
+              ],
+              onChange: value => {
+                $dg.datagrid('addFilterRule', {
+                  field: 'Resolved',
+                  op: 'equal',
+                  value: value
+                });
+
+                $dg.datagrid('doFilter');
+              }
+            }
+          },
        {     /*注册日期*/
          field: 'Logged',
          type: 'dateRange',
