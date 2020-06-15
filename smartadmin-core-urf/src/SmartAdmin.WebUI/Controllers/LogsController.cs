@@ -45,14 +45,8 @@ namespace SmartAdmin.WebUI.Controllers
     }
     //GET: Logs/Index
     //[OutputCache(Duration = 60, VaryByParam = "none")]
-    public async Task<ActionResult> Index()
-    {
-
-
-
-
-      return View();
-    }
+    public ActionResult Index()=>  View();
+  
 
     //Get :Logs/GetData
     //For Index View datagrid datasource url
@@ -65,8 +59,6 @@ namespace SmartAdmin.WebUI.Controllers
       await this.unitOfWork.SaveChangesAsync();
       return Json(new { success = true });
     }
-    [HttpGet]
-    public ActionResult Notify() => this.PartialView("_notifications");
     [HttpGet]
     public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {

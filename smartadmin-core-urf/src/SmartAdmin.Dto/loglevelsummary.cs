@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SmartAdmin.Service.Dto
+namespace SmartAdmin.Dto
 {
  public class loglevelsummary
   {
