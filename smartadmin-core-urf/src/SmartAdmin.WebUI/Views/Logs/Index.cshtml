@@ -1,0 +1,496 @@
+﻿@model SmartAdmin.Data.Models.Log
+@{
+  /**/
+
+  ViewData["Title"] = "系统日志";
+  ViewData["PageName"] = "logs_index";
+  ViewData["Heading"] = "<i class='fal fa-ballot-check text-primary'></i>  系统日志";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "";
+}
+@section HeadBlock {
+  <link href="~/css/statistics/chartjs/chartjs.css" rel="stylesheet" />
+  <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" />
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+  <style>
+    #test-container {
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
+  </style>
+}
+<div class="row mb-2">
+  <div class="col-sm-12 col-md-8" style="position: relative;height:230px">
+    <canvas id='timebar' style="height: 100%;"></canvas>
+  </div>
+  <div class="col-sm-12 col-md-4" style="position: relative;height:230px">
+    <canvas id='levelpie' class="m-auto" style="height: 100%;"></canvas>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12 col-xl-12">
+    <div id="panel-1" class="panel">
+      <div class="panel-hdr">
+        <h2>
+          系统日志
+        </h2>
+        <div class="panel-toolbar">
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
+          @*<button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"><i class="fal fa-times"></i></button>*@
+        </div>
+
+      </div>
+      <div class="panel-container show">
+        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-faded bg-subtlelight-fade ">
+          <div class="row no-gutters align-items-center">
+            <div class="col">
+              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+
+              <div class="btn-group btn-group-sm">
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 刷新 </button>
+              </div>
+
+              <div class="btn-group btn-group-sm ">
+                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span> 导出 </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="panel-content">
+          <div class="table-responsive">
+            <table id="logs_datagrid"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@section ScriptsBlock {
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
+  <script src="~/js/notifications/toastr/toastr.js"></script>
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script src="~/js/statistics/chartjs/chartjs.bundle.js"></script>
+  <script type="text/javascript">
+
+    //-------NLogLevel---------//
+    var levelfiltersource = [{ value: '', text: 'All' }];
+    var leveldatasource = [];
+    levelfiltersource.push({ value: 'Debug', text: 'Debug' });
+    leveldatasource.push({ value: 'Debug', text: 'Debug' });
+    levelfiltersource.push({ value: 'Error', text: 'Error' });
+    leveldatasource.push({ value: 'Error', text: 'Error' });
+    levelfiltersource.push({ value: 'Fatal', text: 'Fatal' });
+    leveldatasource.push({ value: 'Fatal', text: 'Fatal' });
+    levelfiltersource.push({ value: 'Info', text: 'Info' });
+    leveldatasource.push({ value: 'Info', text: 'Info' });
+    levelfiltersource.push({ value: 'Trace', text: 'Trace' });
+    leveldatasource.push({ value: 'Trace', text: 'Trace' });
+    levelfiltersource.push({ value: 'Warn', text: 'Warn' });
+    leveldatasource.push({ value: 'Warn', text: 'Warn' });
+    //for datagrid Level field  formatter
+    function levelformatter(value, row, index) {
+      let multiple = false;
+      if (value === null || value === '' || value === undefined) {
+        return "";
+      }
+      if (multiple) {
+        let valarray = value.split(',');
+        let result = leveldatasource.filter(item => valarray.includes(item.value));
+        let textarray = result.map(x => x.text);
+        if (textarray.length > 0)
+          return textarray.join(",");
+        else
+          return value;
+      } else {
+        let result = leveldatasource.filter(x => x.value == value);
+        if (result.length > 0)
+          return result[0].text;
+        else
+          return value;
+      }
+    }
+    //for datagrid   Level  field filter 
+    $.extend($.fn.datagrid.defaults.filters, {
+      levelfilter: {
+        init: function (container, options) {
+          var input = $('<select class="easyui-combobox" >').appendTo(container);
+          var myoptions = {
+            panelHeight: 'auto',
+            editable: false,
+            data: levelfiltersource,
+            onChange: function () {
+              input.trigger('combobox.filter');
+            }
+          };
+          $.extend(options, myoptions);
+          input.combobox(options);
+          input.combobox('textbox').bind('keydown', function (e) {
+            if (e.keyCode === 13) {
+              $(e.target).emulateTab();
+            }
+          });
+          return input;
+        },
+        destroy: function (target) {
+
+        },
+        getValue: function (target) {
+          return $(target).combobox('getValue');
+        },
+        setValue: function (target, value) {
+          $(target).combobox('setValue', value);
+        },
+        resize: function (target, width) {
+          $(target).combobox('resize', width);
+        }
+      }
+    });
+    //获取图表数据
+    $(async () => {
+      var data = await $.get('/Logs/GetChartData');
+      //console.log(data.map(item => item.total));
+      var ctx = document.getElementById('timebar').getContext('2d');
+      var timebarchart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.list.map(item=>item.time),
+          datasets: [{
+            label:'记录',
+            data: data.list.map(item=>item.total),
+            backgroundColor: color.success._500,
+            borderColor: "rgba(179,181,198,1)",
+            pointBorderColor: "#fff",
+            pointBackgroundColor: "rgba(179,181,198,1)",
+
+          }]
+        },
+        options: {
+          legend: { display: false },
+          maintainAspectRatio: false,
+          responsive: true,
+          title: {
+            display: true,
+            text: '最近3天志情况',
+          },
+          scales: {
+            xAxes: [{
+              type: "time",
+              time: {
+                displayFormats: {
+                  'hour': 'H',
+                }
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                stepSize: 1
+              }
+            }]
+          }
+        }
+      });
+
+
+      new Chart(document.getElementById("levelpie").getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: data.group.map(item=>item.level),
+          datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["#1dc9b7", "#2196f3", "#868e96", "#ffc241", "#fe6bb0", "#e7026e"],
+            data: data.group.map(item=>item.total)
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          responsive: false,
+          legend: {
+            display: true,
+            position:'bottom'},
+          title: {
+            display: true,
+            text: '日志分类'
+          }
+        }
+      });
+    })
+
+
+      //是否强制从后台取值
+      const REQUIRBACKEND = false;
+      //是否开启行内编辑
+      const EDITINLINE = true;
+      //上传导入参数设定
+      const entityname = "Log";
+      var log = {};
+
+
+
+	   //执行导出下载Excel
+	   function exportexcel() {
+				const filterRules = JSON.stringify($dg.datagrid('options').filterRules);
+				//console.log(filterRules);
+				$.messager.progress({ title: '正在执行导出!' });
+				let formData = new FormData();
+				formData.append('filterRules', filterRules);
+				formData.append('sort', 'Id');
+				formData.append('order', 'asc');
+				$.postDownload('/Logs/ExportExcel', formData).then(res => {
+                    $.messager.progress('close');
+                    toastr.success('导出成功!');
+                }).catch(err => {
+                    //console.log(err);
+                    $.messager.progress('close');
+                    $.messager.alert('失败', err.statusText, 'error');
+                });
+
+		}
+
+       var editIndex = undefined;
+       //重新加载数据
+	   function reload() {
+          $dg.datagrid('uncheckAll');
+			    $dg.datagrid('reload');
+	   }
+
+
+    function onClickRow(index, row) {
+      if (row.Resolved == false) {
+        $.get(`/Logs/SetLogState?id=${row.Id}`).done(res => {
+          if (res.success) {
+            console.log(res);
+            row.IsNew = 1;
+            row.IsNotification = 1;
+            $dg.datagrid('updateRow', {
+              index: index,
+              row: {
+                Resolved: true,
+              }
+            });
+            $dg.datagrid('refreshRow', index);
+
+          }
+
+        })
+      }
+      if (row.Exception) {
+        bootbox.alert({
+          title: row.Level,
+          message: `${row.Message}  <div id="test-container" class="p-3 rounded bg-warning-700 text-white mt-3">
+                                  ${row.Exception}
+                                  </div>`
+        });
+      } else {
+        bootbox.alert({
+          title: row.Level,
+          message: `${row.Message}`
+        });
+      }
+    }
+
+    //初始化定义datagrid
+    var $dg = $('#logs_datagrid');
+    $(() => {
+      //定义datagrid结构
+      $dg.datagrid({
+        rownumbers: true,
+        checkOnSelect: false,
+        selectOnCheck: true,
+        idField: 'Id',
+        sortName: 'Id',
+        sortOrder: 'desc',
+        remoteFilter: true,
+        singleSelect: true,
+        onClickRow: onClickRow,
+        method: 'get',
+        pagination: true,
+        clientPaging:false,
+        striped: true,
+        pageList: [10, 20, 50, 100, 500],
+        filterRules: [{
+          field: 'Resolved',
+          op: 'equal',
+          value: 'false'
+        }],
+        onHeaderContextMenu: function (e, field) {
+          e.preventDefault();
+          $(this).datagrid('columnMenu').menu('show', {
+            left: e.pageX,
+            top: e.pageY
+          });
+        },
+        onBeforeLoad: function () {
+          //datagrid resize when jarvisWidgets resized.
+          const that = $(this);
+          document.addEventListener('panel.onfullscreen', () => {
+            setTimeout(() => {
+              that.datagrid('resize');
+            }, 200)
+          })
+        },
+        columns: [[
+          { /*Id*/
+            field: 'Id',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Id)</span>',
+            width: 120,
+            sortable: true,
+            resizable: true,
+            hidden: true
+          },
+          {    /*主机名*/
+            field: 'MachineName',
+            title: '@Html.DisplayNameFor(model => model.MachineName)',
+            width: 160,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {   /*时间*/
+            field: 'Logged',
+            title: '@Html.DisplayNameFor(model => model.Logged)',
+            width: 160,
+            align: 'right',
+            hidden: false,
+            formatter: datetimeformatter,
+            sortable: true,
+            resizable: true
+          },
+          {    /*级别*/
+            field: 'Level',
+            title: '@Html.DisplayNameFor(model => model.Level)',
+            width: 80,
+            hidden: false,
+            sortable: true,
+            resizable: true,
+            align: 'center',
+            formatter: function (v) {
+              if (v == 'Info') {
+                return `<span class="badge badge-info">${v}</span>`
+              } else if (v == 'Debug') {
+                return `<span class="badge badge-secondary">${v}</span>`
+              } else if (v == 'Trace') {
+                return `<span class="badge badge-primary">${v}</span>`
+              } else if (v == 'Warn') {
+                return `<span class="badge badge-warning">${v}</span>`
+              } else if (v == 'Error' || v == 'Fatal') {
+                return `<span class="badge badge-danger">${v}</span>`
+              } else {
+                return `<span class="badge badge-light">${v}</span>`
+              }
+            }
+          },
+          {    /*信息*/
+            field: 'Message',
+            title: '@Html.DisplayNameFor(model => model.Message)',
+            width: 360,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {    /*异常信息*/
+            field: 'RequestIp',
+            title: '@Html.DisplayNameFor(model => model.RequestIp)',
+            width: 120,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {    /*使用账号*/
+            field: 'Identity',
+            title: '@Html.DisplayNameFor(model => model.Identity)',
+            width: 160,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {  /*已处理*/
+            field: 'Resolved',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Resolved)</span>',
+            width: 120,
+            align: 'center',
+            hidden: false,
+            formatter: booleanformatter,
+            sortable: true,
+            resizable: true
+          },
+          {    /*异常信息*/
+            field: 'Exception',
+            title: '@Html.DisplayNameFor(model => model.Exception)',
+            width: 260,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+
+          {    /*事件属性*/
+            field: 'Properties',
+            title: '@Html.DisplayNameFor(model => model.Properties)',
+            width: 260,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+
+          {    /*日志*/
+            field: 'Logger',
+            title: '@Html.DisplayNameFor(model => model.Logger)',
+            width: 130,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+          {    /*站点*/
+            field: 'Callsite',
+            title: '@Html.DisplayNameFor(model => model.Callsite)',
+            width: 300,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
+
+        ]]
+      })
+     .datagrid('enableFilter', [
+       {     /*注册日期*/
+         field: 'Logged',
+         type: 'dateRange',
+         options: {
+           onChange: value => {
+             $dg.datagrid('addFilterRule', {
+               field: 'RegisterDate',
+               op: 'between',
+               value: value
+             });
+
+             $dg.datagrid('doFilter');
+           }
+         }
+       },
+     ])
+        .datagrid('load','/Logs/GetData');
+
+
+    });
+
+
+
+
+  </script>
+
+}

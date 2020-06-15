@@ -194,7 +194,8 @@ namespace URF.Core.EF
 
     private static Expression<Func<T, bool>> Includes<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression ,Type type)
     {
-      switch (type.Name.ToLower())
+      var typeName = Nullable.GetUnderlyingType(type) == null ? type.Name : Nullable.GetUnderlyingType(type).Name;
+      switch (typeName.ToLower())
       {
         case  "string":
           var strlist = (IEnumerable<string>)fieldValue;
@@ -222,7 +223,8 @@ namespace URF.Core.EF
     }
     private static Expression<Func<T, bool>> Between<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression, Type type)
     {
-      switch (type.Name.ToLower())
+      var typeName = Nullable.GetUnderlyingType(type) == null ? type.Name : Nullable.GetUnderlyingType(type).Name;
+      switch (typeName.ToLower())
       {
         case "datetime":
           var datearray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
@@ -232,6 +234,7 @@ namespace URF.Core.EF
           var less = Expression.LessThan(memberExpression, Expression.Constant(end, type));
           return Expression.Lambda<Func<T, bool>>(greater, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(less, parameterExpression));
+        case "int":
         case "int32":
           var intarray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var min = Convert.ToInt32(intarray[0] , CultureInfo.CurrentCulture);

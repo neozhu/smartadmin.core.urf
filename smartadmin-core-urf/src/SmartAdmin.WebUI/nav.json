@@ -38,8 +38,13 @@
           "showOnSeed": false,
           "href": "CodeItems_Index.html",
           "roles": []
+        },
+        {
+          "title": "系统日志",
+          "showOnSeed": false,
+          "href": "logs_index.html",
+          "roles": []
         }
-
       ]
     }
     

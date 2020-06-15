@@ -11,9 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
+using SmartAdmin.Service.Helper;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
 using SmartAdmin.WebUI.Models;
+using SqlSugar;
 using URF.Core.Abstractions;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.EF;
@@ -70,8 +72,8 @@ namespace SmartAdmin.WebUI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-   
 
+      services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
       services.AddScoped<DbContext, SmartDbContext>();
       services.AddScoped<IUnitOfWork, UnitOfWork>();
       services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
@@ -80,6 +82,9 @@ namespace SmartAdmin.WebUI
       services.AddScoped<IDataTableImportMappingService, DataTableImportMappingService>();
       services.AddScoped<ITrackableRepository<CodeItem>, TrackableRepository<CodeItem>>();
       services.AddScoped<ICodeItemService, CodeItemService>();
+      services.AddScoped<ITrackableRepository<Log>, TrackableRepository<Log>>();
+      services.AddScoped<ILogService, LogService>();
+
       services.AddTransient<IEmailSender, EmailSender>();
 
       services
