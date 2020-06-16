@@ -7,16 +7,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Web;
 using System.Text.Json;
+using SmartAdmin.Dto;
 
-
-namespace URF.Core.EF
+namespace SmartAdmin
 {
-  internal class filter
-  {
-    public string field { get; set; }
-    public string op { get; set; }
-    public string value { get; set; }
-  }
+ 
   public static class PredicateBuilder
   {
 
