@@ -23,7 +23,6 @@ namespace SmartAdmin.Data.Models
     #region 基础框架
     public DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
     public DbSet<CodeItem> CodeItems { get; set; }
-    public DbSet<Log> Logs { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<RoleMenu> RoleMenus { get; set; }

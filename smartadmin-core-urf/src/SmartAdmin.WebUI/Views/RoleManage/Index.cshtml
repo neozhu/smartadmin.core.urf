@@ -108,14 +108,16 @@
           locale:'zh_CN' ,
           size: "small",
           maxlength: 30,
-          pattern: '^[a-zA-Z0-9_-]{2,30}$',
+          pattern: '^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$',
           placeholder: '新角色',
           required: true,
           title: "添加新角色",
           callback: function (result) {
-            $.get(`/RoleManage/CreateRole?name=${result}`).done(() => {
-              location.reload();
-            });
+            if (result != null) {
+              $.get(`/RoleManage/CreateRole?name=${result}`).done(() => {
+                location.reload();
+              });
+            }
           }
         })
 
@@ -136,6 +138,8 @@
       console.log(value);
       bootbox.prompt({
         title: "分配角色",
+        locale: 'zh_CN',
+        size: "small",
         value: value,
         inputType: 'checkbox',
         inputOptions: [
@@ -151,9 +155,11 @@
           
          ],
         callback: function (result) {
-          $.post('/RoleManage/AddToRoles', { userName: userName, roles: result }).done(() => {
-            location.reload();
-          });
+          if (result != null) {
+            $.post('/RoleManage/AddToRoles', { userName: userName, roles: result }).done(() => {
+              location.reload();
+            });
+          }
         }
       });
     }

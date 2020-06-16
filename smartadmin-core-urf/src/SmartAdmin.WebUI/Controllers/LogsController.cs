@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
-using SmartAdmin.Service;
-using URF.Core.Abstractions;
-using URF.Core.EF;
+using SmartAdmin.Dto;
+using SmartAdmin.WebUI.Data;
+using SmartAdmin.WebUI.Data.Models;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -30,18 +30,19 @@ namespace SmartAdmin.WebUI.Controllers
   [Authorize]
   public class LogsController : Controller
   {
-    private readonly ILogService logService;
-    private readonly IUnitOfWork unitOfWork;
+
     private readonly ILogger<LogsController> logger;
+    private readonly SqlSugar.ISqlSugarClient db;
+    private readonly ApplicationDbContext dbContext;
     public LogsController(
-      ILogService logService,
-      IUnitOfWork unitOfWork,
+      ApplicationDbContext dbContext,
+      SqlSugar.ISqlSugarClient db,
       ILogger<LogsController> logger
       )
     {
-      this.logService = logService;
-      this.unitOfWork = unitOfWork;
+      this.db = db;
       this.logger = logger;
+      this.dbContext = dbContext;
     }
     //GET: Logs/Index
     //[OutputCache(Duration = 60, VaryByParam = "none")]
@@ -55,46 +56,79 @@ namespace SmartAdmin.WebUI.Controllers
     public async Task<IActionResult> SetLogState(int id)
     {
 
-      await this.logService.Resolved(id);
-      await this.unitOfWork.SaveChangesAsync();
-      return Json(new { success = true });
+      var log = await this.dbContext.Logs.FindAsync(id);
+      log.Resolved = true;
+      await this.dbContext.SaveChangesAsync();
+      return Ok();
     }
     [HttpGet]
-    public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
+    public async Task<IActionResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {
       var filters = PredicateBuilder.FromFilter<Log>(filterRules);
-      var total = await this.logService
-                        .Query(filters).CountAsync();
-      var pagerows = ( await this.logService
-                                 .Query(filters)
-                                 .OrderBy(n => n.OrderBy(sort, order))
-                                  .Skip(page - 1).Take(rows).SelectAsync())
-                                 .Select(n => new
-                                 {
-
-                                   Id = n.Id,
-                                   MachineName = n.MachineName,
-                                   Logged = n.Logged?.ToString("yyyy-MM-dd HH:mm:ss"),
-                                   Level = n.Level,
-                                   RequestIp = n.RequestIp,
-                                   Message = n.Message,
-                                   Exception = n.Exception,
-                                   Properties = n.Properties,
-                                   Identity = n.Identity,
-                                   Logger = n.Logger,
-                                   Callsite = n.Callsite,
-                                   n.RequestForm,
-                                   n.SiteName,
-                                   Resolved = n.Resolved
-                                 }).ToList();
+      var total = await this.dbContext.Logs
+                        .Where(filters)
+                        .CountAsync();
+      var pagerows = await this.dbContext
+                                 .Logs
+                                 .Where(filters)
+                                 .OrderBy(sort, order)
+                                 .Skip(page - 1).Take(rows)
+                                 .ToListAsync();
+                                 
       var pagelist = new { total = total, rows = pagerows };
       return this.Json(pagelist);
     }
     //easyui datagrid post acceptChanges 
-    public async Task<JsonResult> GetChartData()
+    public async Task<IActionResult> GetChartData()
     {
-      var data = await this.logService.GetSummaryData();
-      return Json(new { list = data.Item1, group = data.Item2 });
+      var sql = @"SELECT
+       CONVERT(Datetime,format(min(Logged),'yyyy-MM-dd HH:00:00')) AS [time],
+       COUNT(*) AS total
+FROM AspNetLogs
+where DATEDIFF(D, GETDATE(), Logged)> -3
+GROUP BY CAST(Logged as date),
+       DATEPART(hour, Logged)
+order by  CAST(Logged as date),
+       DATEPART(hour, Logged)";
+      var data = await this.db.Ado.SqlQueryAsync<logtimesummary>(sql);
+      var date = DateTime.Now.AddDays(-2).Date;
+      var today = DateTime.Now.AddDays(1).Date;
+      var list = new List<dynamic>();
+      while ((date = date.AddHours(1)) < today)
+      {
+        var item = data.Where(x => x.time == date).FirstOrDefault();
+        if (item != null)
+        {
+          list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), total = item.total });
+        }
+        else
+        {
+          list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), total = 0 });
+
+        }
+
+      }
+      var sql1 = @"select Level [level],count(*) total
+FROM AspNetLogs
+where DATEDIFF(D, GETDATE(), Logged)> -3
+group by Level";
+      var array = await this.db.Ado.SqlQueryAsync<loglevelsummary>(sql1);
+      var levels = new string[] { "Info", "Trace", "Debug", "Warn", "Error", "Fatal" };
+      var group = new List<dynamic>();
+      foreach (var level in levels)
+      {
+        var item = array.Where(x => x.level == level).FirstOrDefault();
+        if (item != null)
+        {
+          group.Add(new { level, item.total });
+        }
+        else
+        {
+          group.Add(new { level, total = 0 });
+
+        }
+      }
+      return Json(new { list = list, group = group });
     }
   }
 }

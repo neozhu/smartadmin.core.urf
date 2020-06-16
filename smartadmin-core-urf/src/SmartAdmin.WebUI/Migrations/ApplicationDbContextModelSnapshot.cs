@@ -15,7 +15,7 @@ namespace SmartAdmin.WebUI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -234,6 +234,64 @@ namespace SmartAdmin.WebUI.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("SmartAdmin.WebUI.Data.Models.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Callsite")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("Exception")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Identity")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
+
+                    b.Property<DateTime?>("Logged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Logger")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("MachineName")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestForm")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestIp")
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<bool>("Resolved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SiteName")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AspNetLogs");
                 });
 
             modelBuilder.Entity("SmartAdmin.WebUI.Data.Models.Tenant", b =>

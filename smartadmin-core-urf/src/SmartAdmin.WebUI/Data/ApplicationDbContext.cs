@@ -15,5 +15,6 @@ namespace SmartAdmin.WebUI.Data
         }
 
         public DbSet<Tenant> Tenants { get; set; }
-    }
+    public DbSet<Log> Logs { get; set; }
+  }
 }

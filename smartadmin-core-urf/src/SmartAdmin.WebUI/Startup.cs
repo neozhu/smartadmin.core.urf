@@ -81,8 +81,6 @@ namespace SmartAdmin.WebUI
       services.AddScoped<IDataTableImportMappingService, DataTableImportMappingService>();
       services.AddScoped<ITrackableRepository<CodeItem>, TrackableRepository<CodeItem>>();
       services.AddScoped<ICodeItemService, CodeItemService>();
-      services.AddScoped<ITrackableRepository<Log>, TrackableRepository<Log>>();
-      services.AddScoped<ILogService, LogService>();
       services.AddScoped<ITrackableRepository<MenuItem>, TrackableRepository<MenuItem>>();
       services.AddScoped<IMenuItemService, MenuItemService>();
       services.AddScoped<ITrackableRepository<Notification>, TrackableRepository<Notification>>();
