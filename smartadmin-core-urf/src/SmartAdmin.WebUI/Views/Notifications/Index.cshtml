@@ -34,22 +34,22 @@
             <div class="col">
               <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
               <div class="btn-group btn-group-sm">
-                <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> @Html.L("Add") </button>
+                <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 发布新消息 </button>
               </div>
               <div class="btn-group btn-group-sm">
-                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> @Html.L("Delete") </button>
+                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
               </div>
               <div class="btn-group btn-group-sm">
-                <button name="savebutton" disabled onclick="accept()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> @Html.L("Save") </button>
+                <button name="savebutton" disabled onclick="accept()" class="btn btn-default"> <span class="fal fa-save mr-1"></span>  保存 </button>
               </div>
               <div class="btn-group btn-group-sm">
-                <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span> @Html.L("Cancel") </button>
+                <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span> 取消 </button>
               </div>
               <div class="btn-group btn-group-sm">
-                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> @Html.L("Refresh") </button>
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
               </div>
               <div class="btn-group btn-group-sm ">
-                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  @Html.L("Export") </button>
+                <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span> 导出 </button>
               </div>
 
             </div>
@@ -94,7 +94,7 @@
       var notification = {};
 
 
-     
+
 	   //执行导出下载Excel
 	   function exportexcel() {
 				const filterRules = JSON.stringify($dg.datagrid('options').filterRules);
@@ -168,8 +168,8 @@
         Read: false,
         From: '',
         To: 'ALL',
-        Group: 0,
-        Created: new Date(),
+        Group: '通知',
+        PublishDate: new Date(),
       };
 
       if (endEditing()) {
@@ -321,11 +321,10 @@
         sortOrder: 'desc',
         remoteFilter: true,
         singleSelect: false,
-        url: '/Notifications/GetDataAsync',
         method: 'get',
         onClickCell: onClickCell,
         pagination: true,
-         clientPaging: false,
+        clientPaging: false,
         striped: true,
         onHeaderContextMenu: function (e, field) {
           e.preventDefault();
@@ -344,9 +343,9 @@
         },
         onLoadSuccess: function (data) {
           editIndex = undefined;
-             $("button[name*='deletebutton']").prop("disabled", true);
-      $("button[name*='savebutton']").prop("disabled", true);
-      $("button[name*='cancelbutton']").prop("disabled", true);
+          $("button[name*='deletebutton']").prop("disabled", true);
+          $("button[name*='savebutton']").prop("disabled", true);
+          $("button[name*='cancelbutton']").prop("disabled", true);
         },
         onCheck: function () {
           $("button[name*='deletebutton']").prop("disabled", false);
@@ -385,32 +384,31 @@
         frozenColumns: [[
           /*开启CheckBox选择功能*/
           { field: 'ck', checkbox: true },
-          {
-            field: 'action',
-            title: '@Html.L("Command")',
-            width: 85,
-            sortable: false,
-            resizable: true,
-            formatter: function showdetailsformatter(value, row, index) {
-              if (!row.editing) {
-                return `<div class="btn-group">\
-                            <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-file-edit "></i> </button>\
-                            <button onclick="deleteRow('${row.Id}',${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed " title="删除记录" ><i class="fal fa-times"></i> </button>\
-                        </div>`;
-              } else {
-                return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-file-edit"></i> </button>`;
-              }
-            }
-          }
+         
         ]],
         columns: [[
-          { /*Id*/
-            field: 'Id',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Id)</span>',
-            width: 120,
+           {     /*类型*/
+            field: 'Group',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.Group)</span>',
+            width: 100,
+            align: 'right',
+            hidden: false,
+            editor: {
+              type: 'combobox',
+              options: {
+                prompt: '@Html.DescriptionFor(model => model.Group)',
+                required: true,
+                data: [
+                  { value: '通知', text: '通知' },
+                  { value: '任务', text: '任务' },
+                  { value: '新闻', text: '新闻' },
+                  { value: '公告', text: '公告' }
+                ],
+
+              }
+            },
             sortable: true,
-            resizable: true,
-            hidden: true
+            resizable: true
           },
           {    /*主题*/
             field: 'Title',
@@ -489,72 +487,66 @@
             sortable: true,
             resizable: true
           },
-          {     /*类型*/
-            field: 'Group',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Group)</span>',
-            width: 100,
-            align: 'right',
-            hidden: false,
-            editor: {
-              type: 'notifygroupeditor',
-              options: {
-                prompt: '@Html.DescriptionFor(model => model.Group)',
-                required: true,
 
-
-              }
-            },
-            formatter: notifygroupformatter,
-            sortable: true,
-            resizable: true
-          },
           {   /*发出时间*/
-            field: 'Created',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Created)</span>',
+            field: 'PublishDate',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.PublishDate)</span>',
             width: 160,
             align: 'right',
             hidden: false,
             editor: {
               type: 'datetimebox',
-              options: { prompt: '@Html.DescriptionFor(model => model.Created)', required: true, showSeconds: true }
+              options: { prompt: '@Html.DescriptionFor(model => model.PublishDate)', required: true, showSeconds: true }
             },
             formatter: datetimeformatter,
             sortable: true,
             resizable: true
           },
         ]]
-      });
+      })
+        .datagrid('enableFilter', [
+          {   /*类型*/
+            field: 'Group',
+            type: 'combobox',
+            options: {
+              data: [
+                { value: '通知', text: '通知' },
+                { value: '任务', text: '任务' },
+                { value: '新闻', text: '新闻' },
+                { value: '公告', text: '公告' }
+              ],
+              onChange: value => {
+                $dg.datagrid('addFilterRule', {
+                  field: 'Group',
+                  op: 'equal',
+                  value: value
+                });
 
-      $dg.datagrid('enableFilter', [
-        {   /*Id*/
-          field: 'Id',
-          type: 'numberbox',
-          op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
-        },
-        {   /*类型*/
-          field: 'Group',
-          type: 'notifygroupfilter'
-        },
-        {     /*发出时间*/
-          field: 'Created',
-          type: 'dateRange',
-          options: {
-            onChange: value => {
-              $dg.datagrid('addFilterRule', {
-                field: 'Created',
-                op: 'between',
-                value: value
-              });
-
-              $dg.datagrid('doFilter');
+                $dg.datagrid('doFilter');
+              }
             }
-          }
-        },
-        {   /*已读*/
-          field: 'Read',
-          type: 'booleanfilter'
-        },
-      ]);
+          },
+          {     /*发出时间*/
+            field: 'PublishDate',
+            type: 'dateRange',
+            options: {
+              onChange: value => {
+                $dg.datagrid('addFilterRule', {
+                  field: 'PublishDate',
+                  op: 'between',
+                  value: value
+                });
+
+                $dg.datagrid('doFilter');
+              }
+            }
+          },
+          {   /*已读*/
+            field: 'Read',
+            type: 'booleanfilter'
+          },
+        ])
+        .datagrid('load', '/Notifications/GetData');
     });
 
   </script>

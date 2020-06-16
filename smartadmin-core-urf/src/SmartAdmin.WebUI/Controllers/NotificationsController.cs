@@ -74,7 +74,7 @@ namespace SmartAdmin.WebUI.Controllers
     }
     //GET: Notifications/Index
     //[OutputCache(Duration = 60, VaryByParam = "none")]
-    [Route("Index", Name = "消息推送", Order = 1)]
+ 
     public ActionResult Index() => this.View();
 
     //Get :Notifications/GetData
