@@ -20,10 +20,10 @@
         <form id="js-login" method="post">
             <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
             <div class="form-group">
-                <label class="form-label" asp-for="Input.Email">用户名</label>
-                <input type="email" asp-for="Input.Email" class="form-control" placeholder="Email for verification" value="demo@email.com" required="required" />
-                <span class="invalid-feedback" asp-validation-for="Input.Email">请输入有效的邮件地址.</span>
-                <div class="help-block">注册的邮件地址</div>
+                <label class="form-label" asp-for="Input.UserName">用户名或邮件</label>
+                <input type="text" asp-for="Input.UserName" class="form-control" placeholder="Email for verification" value="demo@email.com" required="required" />
+                <span class="invalid-feedback" asp-validation-for="Input.UserName">请输入用户名或邮件地址.</span>
+                <div class="help-block">注册的用户名或邮件地址</div>
             </div>
             <div class="form-group">
                 <label class="form-label" asp-for="Input.Password">密码</label>

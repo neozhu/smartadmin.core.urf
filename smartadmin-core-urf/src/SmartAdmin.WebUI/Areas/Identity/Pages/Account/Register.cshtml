@@ -1,87 +1,104 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["PageName"] = "register";
+  ViewData["PageName"] = "register";
 }
 
 @section PageHeading {
-    <div class="col-xl-12">
-        <h2 class="fs-xxl fw-500 text-white text-center">
-            Register now, its free!
-            <small class="h3 fw-300 mt-3 mb-5 text-white opacity-60 hidden-sm-down">
-                Your registration is free for a limited time. Enjoy SmartAdmin on your mobile, desktop or tablet.
-                <br>It is ready to go wherever you go!
-            </small>
-        </h2>
-    </div>
+  <div class="col-xl-12">
+    <h2 class="fs-xxl fw-500 text-white text-center">
+      注册新用户
+      <small class="h3 fw-300 mt-3 mb-5 text-white opacity-60 hidden-sm-down">
+        您的注册在有限的时间内是免费的. 可以在您的移动，桌面或平板电脑上流畅的使用所有功能.
+        <br>无论你去哪里,它都准备好了!
+      </small>
+    </h2>
+  </div>
 }
 
 <div class="col-xl-6 ml-auto mr-auto">
-    <div class="card p-4 rounded-plus bg-faded">
-        <form id="js-login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
-            <div class="form-group row">
-                <label class="col-xl-12 form-label">Your first and last name (optional)</label>
-                <div class="col-6 pr-1">
-                    <input type="text" asp-for="Input.FirstName" class="form-control" placeholder="First Name" />
-                    <span class="invalid-feedback" asp-validation-for="Input.FirstName">Sorry, you missed this one.</span>
-                </div>
-                <div class="col-6 pl-1">
-                    <input type="text" asp-for="Input.LastName" class="form-control" placeholder="First Name" />
-                    <span class="invalid-feedback" asp-validation-for="Input.LastName">Sorry, you missed this one.</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label" asp-for="Input.Email">Email will be needed for verification and account recovery</label>
-                <input type="email" asp-for="Input.Email" class="form-control" placeholder="Email for verification" value="drlantern@gotbootstrap.com" required="required" />
-                <span class="invalid-feedback" asp-validation-for="Input.Email">Sorry, you missed this one.</span>
-                <div class="help-block">Your email will also be your username</div>
-            </div>
-            <div class="form-group">
-                <label class="form-label" asp-for="Input.Password">Please pick a password</label>
-                <input type="password" asp-for="Input.Password" class="form-control" placeholder="Email for verification (minimum 6 characters)" value="Password123!" required="required" />
-                <span class="invalid-feedback" asp-validation-for="Input.Password">Sorry, you missed this one.</span>
-                <div class="help-block">Your password must be 6-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emojis.</div>
-            </div>
-            <div class="form-group">
-                <label class="form-label" asp-for="Input.ConfirmPassword">Please confirm your password</label>
-                <input type="password" asp-for="Input.ConfirmPassword" class="form-control" placeholder="Email for verification (minimum 6 characters)" value="Password123!" required="required" />
-                <span class="invalid-feedback" asp-validation-for="Input.ConfirmPassword">Sorry, you missed this one.</span>
-            </div>
-            <div class="form-group demo">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" asp-for="Input.AgreeToTerms" />
-                    <label class="custom-control-label" asp-for="Input.AgreeToTerms">I agree to terms & conditions</label>
-                    <span class="invalid-feedback" asp-validation-for="Input.AgreeToTerms">You must agree before proceeding.</span>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" asp-for="Input.SignUp" />
-                    <label class="custom-control-label" asp-for="Input.SignUp">Sign up for newsletters (don't worry, we won't send that many)</label>
-                </div>
-            </div>
-            <div class="row no-gutters">
-                <div class="col-md-6 ml-auto text-right">
-                    <button id="js-login-btn" type="submit" class="btn btn-block btn-danger btn-lg mt-3">Send verification</button>
-                </div>
-            </div>
-        </form>
-    </div>
+  <div class="card p-4 rounded-plus bg-faded">
+    <form id="js-login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+      <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
+      <div class="form-group row">
+
+        <div class="col-6 pr-1">
+          <label class="col-xl-12 form-label">用户名</label>
+          <input type="text" asp-for="Input.UserName" class="form-control" placeholder="登录用户名" />
+          <span class="invalid-feedback" asp-validation-for="Input.UserName">请输入有效的用户名.</span>
+        </div>
+        <div class="col-6 pl-1">
+          <label class="col-xl-12 form-label">昵称</label>
+          <input type="text" asp-for="Input.GivenName" class="form-control" placeholder="登录后显示的名称" />
+          <span class="invalid-feedback" asp-validation-for="Input.GivenName">请输入正确的昵称.</span>
+        </div>
+      </div>
+      <div class="form-group  row">
+        <div class="col-6 pr-1">
+          <label class="form-label" asp-for="Input.Email">电子邮件</label>
+          <input type="email" asp-for="Input.Email" class="form-control" placeholder="电子邮件" value="" required="required" />
+          <span class="invalid-feedback" asp-validation-for="Input.Email">请输入有效的电子邮件.</span>
+          <div class="help-block">你常用的电子邮件</div>
+        </div>
+        <div class="col-6 pl-1">
+          <label class="col-xl-12 form-label">手机号码</label>
+          <input type="text" asp-for="Input.PhoneNumber" class="form-control" placeholder="手机号码" />
+          <span class="invalid-feedback" asp-validation-for="Input.PhoneNumber">请输入正确的手机号码.</span>
+          <div class="help-block">你的手机号码</div>
+        </div>
+        
+      </div>
+      <div class="form-group row">
+        <div class="col-6 pr-1">
+          <label class="form-label" asp-for="Input.TenantId">租户</label>
+          <select   asp-for="Input.TenantId" asp-items="@(new SelectList(Model.Tenants, "Id", "Name"))" class="form-control" placeholder="选择默认租户" value="" required="required"></select>
+          <span class="invalid-feedback" asp-validation-for="Input.TenantId">请选择租户.</span>
+
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" asp-for="Input.Password">密码</label>
+        <input type="password" asp-for="Input.Password" class="form-control" placeholder="密码(至少6位)" value="" required="required" />
+        <span class="invalid-feedback" asp-validation-for="Input.Password">请输入有效的密码.</span>
+        <div class="help-block">密码必须在6-20位之间.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" asp-for="Input.ConfirmPassword">确认密码</label>
+        <input type="password" asp-for="Input.ConfirmPassword" class="form-control" placeholder="再输入一次密码" value="" required="required" />
+        <span class="invalid-feedback" asp-validation-for="Input.ConfirmPassword">请输入有效的密码.</span>
+      </div>
+
+      <div class="form-group demo">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" asp-for="Input.AgreeToTerms" />
+          <label class="custom-control-label" asp-for="Input.AgreeToTerms">我同意条款及细则</label>
+          <span class="invalid-feedback" asp-validation-for="Input.AgreeToTerms">你必须同意.</span>
+        </div>
+
+      </div>
+      <div class="row no-gutters">
+        <div class="col-md-6 ml-auto text-right">
+          <button id="js-login-btn" type="submit" class="btn btn-block btn-danger btn-lg mt-3"> 注册 </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        $("#js-login-btn").click(function (event) {
-            // Fetch form to apply custom Bootstrap validation
-            var form = $("#js-login");
+  <partial name="_ValidationScriptsPartial" />
+  <script>
+    $("#js-login-btn").click(function (event) {
+      // Fetch form to apply custom Bootstrap validation
+      var form = $("#js-login");
 
-            if (form[0].checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
+      if (form[0].checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
-            form.addClass('was-validated');
-            // Perform ajax submit here...
-        });
-    </script>
+      form.addClass('was-validated');
+      // Perform ajax submit here...
+    });
+  </script>
 }

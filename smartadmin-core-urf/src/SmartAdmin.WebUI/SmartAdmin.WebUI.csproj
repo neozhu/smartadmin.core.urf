@@ -39,6 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\AccountManage\Index.cshtml" />
+    <None Include="Views\AccountManage\Tenant.cshtml" />
+    <None Include="Views\AccountManage\_RegisterFormPartial.cshtml" />
+    <None Include="Views\AccountManage\_ResetPasswordPartial.cshtml" />
     <None Include="Views\Notifications\Index.cshtml" />
   </ItemGroup>
 

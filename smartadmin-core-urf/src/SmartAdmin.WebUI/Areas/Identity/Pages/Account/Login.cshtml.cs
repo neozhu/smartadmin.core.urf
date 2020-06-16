@@ -37,8 +37,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
     public class InputModel
     {
       [Required]
-      [EmailAddress]
-      public string Email { get; set; }
+      public string UserName { get; set; }
 
       [Required]
       [DataType(DataType.Password)]
@@ -71,12 +70,14 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
       if (ModelState.IsValid)
       {
+        //var valid = new EmailAddressAttribute().IsValid(Input.UserName);
+      
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+        var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: true);
         if (result.Succeeded)
         {
-          _logger.LogInformation("User logged in.");
+          _logger.LogInformation($"{Input.UserName}:登录成功");
           return LocalRedirect(returnUrl);
         }
         if (result.RequiresTwoFactor)
@@ -85,12 +86,13 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         }
         if (result.IsLockedOut)
         {
-          _logger.LogWarning("User account locked out.");
-          return RedirectToPage("./Lockout");
+          _logger.LogInformation($"{Input.UserName}:账号被锁定");
+          ModelState.AddModelError(string.Empty, "账号被锁定");
+          return Page();
         }
         else
         {
-          ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+          ModelState.AddModelError(string.Empty, "登录失败" );
           return Page();
         }
       }

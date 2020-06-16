@@ -28,6 +28,18 @@
       "roles": [],
       "items": [
         {
+          "title": "租户管理",
+          "showOnSeed": false,
+          "href": "accountmanage_tenant.html",
+          "roles": []
+        },
+        {
+          "title": "登录账号管理",
+          "showOnSeed": false,
+          "href": "accountmanage_index.html",
+          "roles": []
+        },
+        {
           "title": "导航栏配置",
           "showOnSeed": false,
           "href": "MenuItems_Index.html",

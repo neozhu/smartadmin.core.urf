@@ -25,6 +25,7 @@ namespace SmartAdmin.WebUI.Data.Models
 
         [Display(Name = "租户")]
         public int TenantId { get; set; }
+ 
     }
 
 
@@ -43,6 +44,9 @@ namespace SmartAdmin.WebUI.Data.Models
         public string Description { get; set; }
         [Display(Name = "是否禁用", Description = "是否禁用")]
         public bool Disabled { get; set; }
-      
+    [NotMapped]
+    public int TrackingState { get; set; }
+
+
     }
 }
