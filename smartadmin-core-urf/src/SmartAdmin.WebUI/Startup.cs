@@ -74,10 +74,9 @@ namespace SmartAdmin.WebUI
 
 
       services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
+      #region infrastructure framework
       services.AddScoped<DbContext, SmartDbContext>();
       services.AddScoped<IUnitOfWork, UnitOfWork>();
-      services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
-      services.AddScoped<ICompanyService, CompanyService>();
       services.AddScoped<ITrackableRepository<DataTableImportMapping>, TrackableRepository<DataTableImportMapping>>();
       services.AddScoped<IDataTableImportMappingService, DataTableImportMappingService>();
       services.AddScoped<ITrackableRepository<CodeItem>, TrackableRepository<CodeItem>>();
@@ -88,7 +87,13 @@ namespace SmartAdmin.WebUI
       services.AddScoped<IMenuItemService, MenuItemService>();
       services.AddScoped<ITrackableRepository<Notification>, TrackableRepository<Notification>>();
       services.AddScoped<INotificationService, NotificationService>();
+      services.AddScoped<ITrackableRepository<RoleMenu>, TrackableRepository<RoleMenu>>();
+      services.AddScoped<IRoleMenuService, RoleMenuService>();
+      #endregion 
 
+
+      services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
+      services.AddScoped<ICompanyService, CompanyService>();
 
       services.AddTransient<IEmailSender, EmailSender>();
 

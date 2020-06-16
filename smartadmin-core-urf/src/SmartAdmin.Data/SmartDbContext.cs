@@ -17,6 +17,7 @@ namespace SmartAdmin.Data.Models
     public DbSet<Log> Logs { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<RoleMenu> RoleMenus { get; set; }
     #endregion
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }
@@ -55,9 +56,18 @@ namespace SmartAdmin.Data.Models
                       .HasFilter(null);
 
       });
+
       modelBuilder.Entity<CodeItem>(entity =>
       {
         entity.HasIndex(e => new { e.CodeType, e.Code })
+                      .IsUnique()
+                      .HasFilter(null);
+
+      });
+
+      modelBuilder.Entity<RoleMenu>(entity =>
+      {
+        entity.HasIndex(e => new { e.RoleName, e.MenuId })
                       .IsUnique()
                       .HasFilter(null);
 

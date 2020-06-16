@@ -34,6 +34,12 @@
           "roles": []
         },
         {
+          "title": "角色授权",
+          "showOnSeed": false,
+          "href": "rolemenus_index.html",
+          "roles": []
+        },
+        {
           "title": "导入&导出配置",
           "showOnSeed": false,
           "href": "DataTableImportMappings_Index.html",

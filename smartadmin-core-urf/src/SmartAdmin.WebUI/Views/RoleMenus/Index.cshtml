@@ -1,0 +1,329 @@
+﻿@model SmartAdmin.Data.Models.RoleMenu
+@{
+  ViewData["Title"] = "角色授权";
+  ViewData["PageName"] = "rolemenus_index";
+  ViewData["Heading"] = "<i class='fal fa-users text-primary'></i>  角色授权";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "";
+}
+@section HeadBlock {
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card border  m-auto m-lg-0">
+      <div class="card-header bg-trans-gradient py-2 pr-2 d-flex align-items-center flex-wrap">
+        <!-- we wrap header title inside a span tag with utility padding -->
+        <div class="card-title text-white">角色</div>
+
+      </div>
+      <ul class="list-group list-group-flush ">
+        @foreach (var item in ViewBag.Roles)
+        {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="mr-auto align-self-center">@item.RoleName</div>
+            <div class="mr-3 align-self-center"><span class="badge badge-icon badge-pill">@item.Count</span></div>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="card border  m-auto m-lg-0">
+      <div class="card-header bg-trans-gradient py-2 pr-2 d-flex align-items-center flex-wrap">
+        <!-- we wrap header title inside a span tag with utility padding -->
+        <div class="card-title text-white">角色</div>
+        <button id="savebutton"
+                class="btn btn-sm btn-primary ml-auto waves-effect waves-themed">
+          <span class="fal fa-save mr-1"></span>
+          保存
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="menu-tree" style="width:auto;height:auto"
+                 data-options="
+                                            iconCls: 'icon-ok',
+                                            rownumbers: true,
+                                            animate: true,
+                                            singleSelect: false,
+                                            fitColumns: true,
+                                            url: '/RoleMenus/GetMenuList',
+                                            method: 'get',
+                                            idField: 'Id',
+                                            treeField: 'Title',
+                                            pagination: false,
+                                            checkOnSelect: true,
+                                            onSelect:onSelect,
+                                            onUnselect:onUnselect
+                                            ">
+            <thead>
+              <tr>
+                <th data-options="field:'ck',checkbox: true ">选择</th>
+                <th data-options="field:'Title',width:180">Title</th>
+                <th data-options="field:'Code',width:80">Code</th>
+                <th data-options="field:'Url',width:120">Url</th>
+                <th data-options="field:'Create',width:80, align: 'center' "  formatter="formatcreatecheckbox">新增</th>
+                <th data-options="field:'Edit',width:80 , align: 'center'" formatter="formateditcheckbox">编辑</th>
+                <th data-options="field:'Delete',width:80, align: 'center' " formatter="formatdeletecheckbox">删除</th>
+                <th data-options="field:'Import',width:80, align: 'center' " formatter="formatimportcheckbox">导入</th>
+                <th data-options="field:'Export',width:80, align: 'center' " formatter="formatexportcheckbox">导出</th>
+                <th data-options="field:'FunctionPoint1',width:80 , align: 'center'" formatter="formatpoint1checkbox">功能点1</th>
+                <th data-options="field:'FunctionPoint2',width:80 , align: 'center'" formatter="formatpoint2checkbox">功能点2</th>
+                <th data-options="field:'FunctionPoint3',width:80 , align: 'center'" formatter="formatpoint3checkbox">功能点3</th>
+
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@section ScriptsBlock {
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/notifications/toastr/toastr.js"></script>
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script type="text/javascript">
+    //上传导入参数设定
+    var selectedrole = {};
+    function formatcreatecheckbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+
+      var checked = val == true && row.Url != "#" ? 'checked ' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'create',this)  >";
+    }
+    function formateditcheckbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != "#" ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'edit',this)  >";
+    }
+    function formatimportcheckbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != "#" ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'import',this)  >";
+    }
+    function formatdeletecheckbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != '#' ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'delete',this)  >";
+    }
+
+    function formatexportcheckbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != '#' ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'export',this)  >";
+    }
+
+    function formatpoint1checkbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != '#' ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'point1',this)  >";
+    }
+
+    function formatpoint2checkbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != '#' ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'point2',this)  >";
+    }
+
+    function formatpoint3checkbox(val, row) {
+      var disabled = row.Url == "#" ? 'disabled ' : '';
+      var checked = val == true && row.Url != '#' ? 'checked' : '';
+
+      return "<input type=\"checkbox\"  name=\"op\"   value=" + val + " " + checked + disabled + " onClick=ckClick(" + JSON.stringify(row) + ",'point3',this)  >";
+    }
+
+    function ckClick(row, name, element) {
+      if (name == 'create') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            Create: element.checked,
+          }
+        });
+      }
+      if (name == 'edit') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            Edit: element.checked,
+          }
+        });
+      }
+      if (name == 'delete') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            Delete: element.checked,
+          }
+        });
+      }
+      if (name == 'import') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            Import: element.checked,
+          }
+        });
+      }
+
+      if (name == 'export') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            Export: element.checked,
+          }
+        });
+      }
+
+      if (name == 'point1') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            FunctionPoint1: element.checked,
+          }
+        });
+      }
+      if (name == 'point2') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            FunctionPoint2: element.checked,
+          }
+        });
+      }
+      if (name == 'point3') {
+        $('#menu-tree').treegrid('update', {
+          id: row.Id,
+          row: {
+            FunctionPoint3: element.checked,
+          }
+        });
+      }
+
+    }
+    function onUnselect(row) {
+      var data = $('#menu-tree').treegrid('getChildren', row.Id);
+      $.each(data, function (index, row) {
+        $('#menu-tree').treegrid('unselect', row.Id);
+      })
+    }
+    function onSelect(row) {
+      var data = $('#menu-tree').treegrid('getChildren', row.Id);
+      $.each(data, function (index, row) {
+        $('#menu-tree').treegrid('select', row.Id);
+      })
+      //var parent = $('#menu-tree').treegrid('getParent', row.Id);
+      //var selections = $('#menu-tree').treegrid('getSelections');
+      //$('#menu-tree').treegrid('select', parent.Id);
+    }
+    $(function () {
+      //$('#savebutton').attr('disabled', true);
+
+      $('#menu-tree').treegrid();
+
+
+      $('.list-group-item').click(function () {
+        $('.list-group-item').removeClass('active');
+        $(this).addClass('active');
+        $currenitem = $(this);
+        //console.log($currenitem.children("div:eq(0)"));
+        selectedrole = $(this).children("div:eq(0)").text();
+        //console.log($(this).children("span:eq(1)").text());
+        $.get('/RoleMenus/GetMenus', { roleName: selectedrole }, function (data, status, q) {
+          $('#menu-tree').treegrid('uncheckAll');
+
+
+          $.each(data, function (index, item) {
+            $('#savebutton').attr('disabled', false);
+
+            $('#menu-tree').treegrid('checkRow', item.MenuId);
+
+            $('#menu-tree').treegrid('update', {
+              id: item.MenuId,
+              row: {
+                Import: item.Import,
+                Create: item.Create,
+                Edit: item.Edit,
+                Delete: item.Delete,
+
+                Export: item.Export,
+                FunctionPoint1: item.FunctionPoint1,
+                FunctionPoint2: item.FunctionPoint2,
+                FunctionPoint3: item.FunctionPoint3
+
+              }
+            });
+          })
+
+        });
+
+      });
+
+      function save() {
+        $.messager.progress({
+          title: '请等待',
+          msg: '正在保存数据...'
+        });
+        var selectednodes = $('#menu-tree').treegrid('getSelections');
+        var list = [];
+        $.each(selectednodes, function (i, data) {
+          if (selectedrole.length > 0) {
+            var item = {
+              'RoleName': selectedrole,
+              'MenuId': data.Id,
+              'Create': data.Create,
+              'Edit': data.Edit,
+              'Delete': data.Delete,
+              'Import': data.Import,
+              'Export': data.Export,
+              'FunctionPoint1': data.FunctionPoint1,
+              'FunctionPoint2': data.FunctionPoint2,
+              'FunctionPoint3': data.FunctionPoint3,
+
+
+            };
+            list.push(item);
+          }
+        });
+
+        //console.log(list);
+        if (selectedrole.length > 0 && list.length > 0) {
+          $.post('/RoleMenus/Submit', { selectmenus: list }, function (data, status, q) {
+            $.messager.progress('close');
+            //$('#savebutton').attr('disabled', true);
+            $.messager.alert('提示', '保存成功<br>', 'info', function () {
+              location.reload();
+            });
+
+            //console.log(data);
+          });
+        }
+      }
+
+      $('#savebutton').click(function () {
+        save();
+      })
+
+
+    });
+
+
+
+  </script>
+}
+
