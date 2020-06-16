@@ -72,7 +72,7 @@ namespace SmartAdmin.WebUI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
       #region infrastructure framework
       services.AddScoped<DbContext, SmartDbContext>();

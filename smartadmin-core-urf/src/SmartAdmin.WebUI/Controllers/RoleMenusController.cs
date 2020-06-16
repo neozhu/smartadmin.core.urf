@@ -47,9 +47,6 @@ namespace SmartAdmin.WebUI.Controllers
     // GET: RoleMenus/Index
     public async Task<ActionResult> Index()
     {
-
-      var rolemenus = await _roleMenuService.Queryable().Include(r => r.MenuItem).ToListAsync();
-      var menus = await _menuItemService.Queryable().Include(x => x.Children).Where(x => x.IsEnabled && x.Parent == null).ToListAsync();
       var roles = await this.roleManager.Roles.ToListAsync();
       var roleview = new List<RoleView>();
       foreach (var role in roles)
@@ -60,7 +57,6 @@ namespace SmartAdmin.WebUI.Controllers
         r.Count = mymenus.Count();
         roleview.Add(r);
       }
-      ViewBag.Menus = menus;
       ViewBag.Roles = roleview;
       return View();
     }

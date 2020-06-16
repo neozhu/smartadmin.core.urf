@@ -10,7 +10,7 @@ namespace SmartAdmin.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder<SmartDbContext>();
             optionsBuilder.UseSqlServer("Server=(LocalDb)\\MSSQLLocalDB;Database=SmartDb;Trusted_Connection=True;");
-            return new SmartDbContext(optionsBuilder.Options);
+            return new SmartDbContext(optionsBuilder.Options,null);
         }
     }
 }

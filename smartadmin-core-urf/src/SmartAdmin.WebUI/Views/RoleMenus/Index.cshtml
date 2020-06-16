@@ -34,7 +34,7 @@
       <div class="card-header bg-trans-gradient py-2 pr-2 d-flex align-items-center flex-wrap">
         <!-- we wrap header title inside a span tag with utility padding -->
         <div class="card-title text-white">角色</div>
-        <button id="savebutton"
+        <button id="savebutton" 
                 class="btn btn-sm btn-primary ml-auto waves-effect waves-themed">
           <span class="fal fa-save mr-1"></span>
           保存
@@ -232,27 +232,23 @@
       //$('#menu-tree').treegrid('select', parent.Id);
     }
     $(function () {
-      //$('#savebutton').attr('disabled', true);
+      $('#savebutton').attr('disabled', true);
 
       $('#menu-tree').treegrid();
-
-
       $('.list-group-item').click(function () {
         $('.list-group-item').removeClass('active');
         $(this).addClass('active');
         $currenitem = $(this);
         //console.log($currenitem.children("div:eq(0)"));
         selectedrole = $(this).children("div:eq(0)").text();
+        $('#savebutton').attr("disabled", false)
         //console.log($(this).children("span:eq(1)").text());
+        $('#menu-tree').treegrid('loading')
         $.get('/RoleMenus/GetMenus', { roleName: selectedrole }, function (data, status, q) {
           $('#menu-tree').treegrid('uncheckAll');
-
-
           $.each(data, function (index, item) {
             $('#savebutton').attr('disabled', false);
-
             $('#menu-tree').treegrid('checkRow', item.MenuId);
-
             $('#menu-tree').treegrid('update', {
               id: item.MenuId,
               row: {
@@ -260,7 +256,6 @@
                 Create: item.Create,
                 Edit: item.Edit,
                 Delete: item.Delete,
-
                 Export: item.Export,
                 FunctionPoint1: item.FunctionPoint1,
                 FunctionPoint2: item.FunctionPoint2,
@@ -269,16 +264,13 @@
               }
             });
           })
-
+          $('#menu-tree').treegrid('loaded')
         });
 
       });
 
       function save() {
-        $.messager.progress({
-          title: '请等待',
-          msg: '正在保存数据...'
-        });
+        
         var selectednodes = $('#menu-tree').treegrid('getSelections');
         var list = [];
         $.each(selectednodes, function (i, data) {
@@ -303,15 +295,18 @@
 
         //console.log(list);
         if (selectedrole.length > 0 && list.length > 0) {
+          $.messager.progress({
+            title: '请等待',
+            msg: '正在保存数据...'
+          });
           $.post('/RoleMenus/Submit', { selectmenus: list }, function (data, status, q) {
             $.messager.progress('close');
-            //$('#savebutton').attr('disabled', true);
-            $.messager.alert('提示', '保存成功<br>', 'info', function () {
+            $.messager.alert('提示', '保存成功', 'info', function () {
               location.reload();
             });
-
-            //console.log(data);
           });
+        } else {
+          $.messager.alert('提示', '请选择需要授权的角色');
         }
       }
 

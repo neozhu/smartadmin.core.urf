@@ -1,15 +1,24 @@
 ﻿using System;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using SmartAdmin.Data.Models;
+using URF.Core.EF.Trackable;
 
 namespace SmartAdmin.Data.Models
 {
   public partial class SmartDbContext : DbContext
   {
-    public SmartDbContext(DbContextOptions options) : base(options)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public SmartDbContext(
+      DbContextOptions options,
+      IHttpContextAccessor httpContextAccessor) : base(options)
     {
-
+      _httpContextAccessor = httpContextAccessor;
     }
     #region 基础框架
     public DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
@@ -22,6 +31,41 @@ namespace SmartAdmin.Data.Models
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }
 
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+       
+      var currentDateTime = DateTime.Now;
+      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext.User.Identity;
+      var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
+      var tenantid = Convert.ToInt32(tenantclaim?.Value);
+      foreach (var auditableEntity in this.ChangeTracker.Entries<Entity>())
+      {
+        if (auditableEntity.State == EntityState.Added || auditableEntity.State == EntityState.Modified)
+        {
+          //auditableEntity.Entity.LastModifiedDate = currentDateTime;
+          switch (auditableEntity.State)
+          {
+            case EntityState.Added:
+              auditableEntity.Property("LastModifiedDate").IsModified = false;
+              auditableEntity.Property("LastModifiedBy").IsModified = false;
+              auditableEntity.Entity.CreatedDate = currentDateTime;
+              auditableEntity.Entity.CreatedBy = claimsidentity.Name;
+              auditableEntity.Entity.TenantId = tenantid;
+              break;
+            case EntityState.Modified:
+              auditableEntity.Property("CreatedDate").IsModified = false;
+              auditableEntity.Property("CreatedBy").IsModified = false;
+              auditableEntity.Entity.LastModifiedDate = currentDateTime;
+              auditableEntity.Entity.LastModifiedBy = claimsidentity.Name;
+              auditableEntity.Entity.TenantId = tenantid;
+
+              break;
+          }
+        }
+      }
+
+      return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
