@@ -44,6 +44,12 @@
     <None Include="Views\AccountManage\_RegisterFormPartial.cshtml" />
     <None Include="Views\AccountManage\_ResetPasswordPartial.cshtml" />
     <None Include="Views\Notifications\Index.cshtml" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.all.js" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.all.min.js" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.js" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.locales.js" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.locales.min.js" />
+    <None Include="wwwroot\js\plugin\bootbox\bootbox.min.js" />
   </ItemGroup>
 
 </Project>

@@ -39,8 +39,40 @@ namespace SmartAdmin.WebUI.Controllers
       }
       ViewBag.roles = roles;
       ViewBag.userinroles = userinroles;
-
+      
       return View();
+    }
+    //新增角色
+    public async Task<IActionResult> CreateRole(string name) {
+      var exist = await _roleManager.RoleExistsAsync(name);
+      if (!exist) {
+        await _roleManager.CreateAsync(new IdentityRole(name));
+       }
+      return Ok();
+    }
+    //删除角色
+    public async Task<IActionResult> RemoveRole(string name)
+    {
+      var exist = await _roleManager.FindByNameAsync(name);
+      if (exist!=null)
+      {
+        await _roleManager.DeleteAsync(exist);
+      }
+      return Ok();
+    }
+    //分配角色
+    public async Task<IActionResult> AddToRoles(string userName, string[] roles) {
+      var user = await _userManager.FindByNameAsync(userName);
+      var myroles = await _userManager.GetRolesAsync(user);
+      var result1=await _userManager.RemoveFromRolesAsync(user,myroles);
+      var result2= await _userManager.AddToRolesAsync(user, roles);
+      return Ok();
+    }
+    //移除角色
+    public async Task<IActionResult> RemoveFromRole(string userName, string role) {
+      var user = await _userManager.FindByNameAsync(userName);
+      var result1 = await _userManager.RemoveFromRoleAsync(user, role);
+      return Ok();
     }
   }
 }

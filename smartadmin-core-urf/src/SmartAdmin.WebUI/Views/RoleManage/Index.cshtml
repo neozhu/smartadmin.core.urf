@@ -5,6 +5,20 @@
   ViewData["Category1"] = "系统管理";
   ViewData["PageDescription"] = "";
 }
+@section HeadBlock{
+<style>
+  .badge {
+    font-size: 100%;
+  }
+  .badge .close {
+    margin-left: 0.25rem;
+    color: inherit;
+    font-size: 100%;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+ }
 <div class="row">
   <div class="col-md-3">
     <div class="card border  m-auto m-lg-0">
@@ -22,7 +36,7 @@
         {
           <li class="list-group-item d-flex">
             <div class="flex-grow-1 align-self-center"> @role.Name </div>
-            <a href="javascript:void(0);" class="btn btn-danger btn-sm btn-icon waves-effect waves-themed">
+            <a href="javascript:removeRole('@role.Name');" class="btn btn-danger btn-sm btn-icon waves-effect waves-themed">
               <i class="fal fa-times"></i>
             </a>
           </li>
@@ -44,7 +58,6 @@
             <thead>
               <tr>
                 <th>账号</th>
-                <th>昵称</th>
                 <th>所属角色</th>
                 <th>添加角色</th>
               </tr>
@@ -53,23 +66,22 @@
               @foreach (var user in ViewBag.userinroles)
               {
                 <tr>
-                  <td>@user.UserName</td>
-                  <td>@user.GivenName</td>
+                  <td>@user.UserName (@user.GivenName)</td>
                   <td class="text-center align-middle">
                     @foreach (var role in user.Roles)
                     {
                       <span class="badge badge-primary">
                         @role
-                        <button type="button" class="close" aria-label="Dismiss">
+                        <a href="javascript:removeFromRole('@user.UserName','@role')"  title="删除角色" class="close" aria-label="Dismiss">
                           <span aria-hidden="true">&times;</span>
-                        </button>
+                        </a>
                       </span>
                     }
 
 
                   </td>
                   <td class="text-center align-middle">
-                    <a href="javascript:void(0);" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed">
+                    <a href="javascript:addInRole('@user.UserName','@string.Join(",", user.Roles)');" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed">
                       <i class="fal fa-plus"></i>
                     </a>
 
@@ -86,17 +98,24 @@
 </div>
 
 @section ScriptsBlock {
+  <script src="~/js/plugin/bootbox/bootbox.locales.min.js"></script>
   <script>
     $(document).ready(function () {
 
       $('#addrolesbutton').click(() => {
+
         bootbox.prompt({
+          locale:'zh_CN' ,
           size: "small",
-          placeholder:'新角色',
-          required:true,
+          maxlength: 30,
+          pattern: '^[a-zA-Z0-9_-]{2,30}$',
+          placeholder: '新角色',
+          required: true,
           title: "添加新角色",
           callback: function (result) {
-            console.log(result)
+            $.get(`/RoleManage/CreateRole?name=${result}`).done(() => {
+              location.reload();
+            });
           }
         })
 
@@ -104,6 +123,47 @@
       })
 
     })
+    //删除角色
+    function removeRole(roleName) {
+      $.get(`/RoleManage/RemoveRole?name=${roleName}`).done(() => {
+        location.reload();
+      });
+    }
+    //添加角色
+    function addInRole(userName, roles) {
+ 
+      const value = roles.split(',');
+      console.log(value);
+      bootbox.prompt({
+        title: "分配角色",
+        value: value,
+        inputType: 'checkbox',
+        inputOptions: [
+          @foreach(var role in ViewBag.roles)
+          {
+            <text>
+          {
+            text: '@role',
+            value: '@role',
+          },
+            </text>
+          }
+          
+         ],
+        callback: function (result) {
+          $.post('/RoleManage/AddToRoles', { userName: userName, roles: result }).done(() => {
+            location.reload();
+          });
+        }
+      });
+    }
+    //移除角色
+    function removeFromRole(userName, role) {
+
+      $.post('/RoleManage/RemoveFromRole', { userName: userName, role: role }).done(() => {
+        location.reload();
+      });
+    }
   </script>
 
 }
