@@ -27,7 +27,7 @@ namespace SmartAdmin.Data.Models
     [Required]
     public string LineNum { get; set; }
     [Display(Name = "url", Description = "url")]
-    [MaxLength(100)]
+    [MaxLength(256)]
     [Required]
     public string Url { get; set; }
     [Display(Name = "controller", Description = "controller")]

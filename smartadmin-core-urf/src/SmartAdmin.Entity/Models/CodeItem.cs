@@ -20,7 +20,7 @@ namespace SmartAdmin.Data.Models
       Display(Name = "代码名称", Description = "代码名称", Prompt = "代码名称"),
       Required(ErrorMessage = "必填")]
     public string CodeType { get; set; }
-    [MaxLength(80), Display(Name = "描述", Description = "描述", Prompt = "描述"), Required(ErrorMessage = "必填")]
+    [MaxLength(128), Display(Name = "描述", Description = "描述", Prompt = "描述"), Required(ErrorMessage = "必填")]
     public string Description { get; set; }
     [Display(Name = "是否禁用", Description = "是否禁用", Prompt = "是否禁用")]
     public int IsDisabled { get; set; }

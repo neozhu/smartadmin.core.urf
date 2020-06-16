@@ -50,6 +50,12 @@
           "showOnSeed": false,
           "href": "logs_index.html",
           "roles": []
+        },
+        {
+          "title": "消息推送",
+          "showOnSeed": false,
+          "href": "notifications_index.html",
+          "roles": []
         }
       ]
     }

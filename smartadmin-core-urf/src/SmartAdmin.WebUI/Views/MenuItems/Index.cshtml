@@ -151,10 +151,7 @@
                 });
 
 		}
-        //显示帮助信息
-        function dohelp() {
 
-        }
         var editIndex = undefined;
         //选中记录
        function onSelect(index, row) {
@@ -296,22 +293,8 @@
 			$dg.datagrid("rejectChanges");
 			editIndex = undefined;
 	}
-	function getChanges() {
-			var rows = $dg.datagrid("getChanges");
-			console.log(rows.length + " rows are changed!");
-	}
-    //弹出明细信息
-    function showdetailswindow(id) {
-      //console.log(index, row);
-      $.get("/MenuItems/PopupEdit/" + id)
-        .done(data => {
-          //console.log(data);
-          loadData(id, data);
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-          $.messager.alert("错误", "获取数据异常!" + errorThrown, "error");
-        });
-    }
+ 
+ 
 
     //初始化定义datagrid
     var $dg = $("#menuitems_datagrid");
@@ -389,7 +372,7 @@
               width: 160,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Title)', required: true, validType: 'length[0,50]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Title)', required: true, validType: 'length[0,38]' }
               },
               sortable: true,
               resizable: true
@@ -400,7 +383,7 @@
               width: 160,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Description)', required: true, validType: 'length[0,100]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Description)', required: true, validType: 'length[0,128]' }
               },
               sortable: true,
               resizable: true
@@ -411,7 +394,7 @@
               width: 80,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.LineNum)', required: true, validType: 'length[0,20]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.LineNum)', required: true, validType: 'length[0,5]' }
               },
               sortable: true,
               resizable: true
@@ -444,7 +427,7 @@
               width: 200,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Url)', required: true, validType: 'length[0,100]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Url)', required: true, validType: 'length[0,256]' }
               },
               sortable: true,
               resizable: true
@@ -455,7 +438,7 @@
               width: 160,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Controller)', required: false, validType: 'length[0,100]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Controller)', required: false, validType: 'length[0,128]' }
               },
               sortable: true,
               resizable: true
@@ -466,7 +449,7 @@
               width: 140,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Action)', required: false, validType: 'length[0,100]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Action)', required: false, validType: 'length[0,128]' }
               },
               sortable: true,
               resizable: true
@@ -477,7 +460,7 @@
               width: 160,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Icon)', required: false }
+                options: { prompt: '@Html.DescriptionFor(model => model.Icon)', required: false, validType: 'length[0,30]' }
               },
               sortable: true,
               resizable: true

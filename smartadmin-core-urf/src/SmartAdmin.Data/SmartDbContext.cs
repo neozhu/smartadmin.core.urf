@@ -16,6 +16,7 @@ namespace SmartAdmin.Data.Models
     public DbSet<CodeItem> CodeItems { get; set; }
     public DbSet<Log> Logs { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
     #endregion
     public DbSet<Company> Companies { get; set; }
     public DbSet<Category>  Categories { get; set; }

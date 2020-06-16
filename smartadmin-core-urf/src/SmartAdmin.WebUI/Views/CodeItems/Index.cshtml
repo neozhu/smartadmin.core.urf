@@ -277,14 +277,13 @@
     $(function () {
       $dg.datagrid({
         rownumbers: true,
-        checkOnSelect: true,
-        selectOnCheck: true,
+        checkOnSelect: false,
+        selectOnCheck: false,
         idField: 'Id',
         sortName: 'Id',
         sortOrder: 'desc',
         remoteFilter: true,
         singleSelect: true,
-        url: '/CodeItems/GetData',
         method: 'get',
         onClickCell: onClickCell,
         pageList: [10, 20, 50, 100, 500],
@@ -328,7 +327,7 @@
               options: {
                 prompt: '代码名称',
                 required: true,
-                validType: 'regex[\'^[A-Za-z0-9]+$\',\'必须是字母\']'
+                validType: ['length[0,20]', 'regex[\'^[A-Za-z0-9]+$\',\'必须是字母\']']
               }
             },
             sortable: true,
@@ -389,7 +388,7 @@
               options: {
                 prompt: '描述',
                 required: true,
-                validType: 'length[0,80]'
+                validType: 'length[0,128]'
               }
             },
             sortable: true,
@@ -413,14 +412,8 @@
           }
         ]]
 
-      });
-      $dg.datagrid("enableFilter", [
-
-        {
-          field: "Id",
-          type: "numberbox",
-          op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
-        },
+      })
+      .datagrid("enableFilter", [
         {
           field: "IsDisabled",
           type: "isdisabledfilter",
@@ -431,13 +424,8 @@
           type: "booleanfilter",
 
         }
-
-
-
-
-
-
-      ]);
+      ])
+        .datagrid('load',  '/CodeItems/GetData');
     });
 
 
