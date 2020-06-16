@@ -1,0 +1,109 @@
+﻿@{
+  ViewData["Title"] = "角色管理";
+  ViewData["PageName"] = "rolemanage_index";
+  ViewData["Heading"] = "<i class='fal fa-users text-primary'></i>  角色管理";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "";
+}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card border  m-auto m-lg-0">
+      <div class="card-header bg-trans-gradient py-2 pr-2 d-flex align-items-center flex-wrap">
+        <!-- we wrap header title inside a span tag with utility padding -->
+        <div class="card-title text-white">角色</div>
+        <div class="d-flex position-relative ml-auto">
+          <button id="addrolesbutton" type="button" class="btn  btn-info ml-2 waves-effect waves-themed">
+            <i class="fal fa-users"></i> 新增
+          </button>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @foreach (var role in ViewBag.roles)
+        {
+          <li class="list-group-item d-flex">
+            <div class="flex-grow-1 align-self-center"> @role.Name </div>
+            <a href="javascript:void(0);" class="btn btn-danger btn-sm btn-icon waves-effect waves-themed">
+              <i class="fal fa-times"></i>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+
+  </div>
+  <div class="col-md-9">
+    <div class="card border  m-auto m-lg-0">
+      <div class="card-header bg-trans-gradient py-2 pr-2 d-flex align-items-center flex-wrap">
+        <!-- we wrap header title inside a span tag with utility padding -->
+        <div class="card-title text-white">分配角色</div>
+
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>账号</th>
+                <th>昵称</th>
+                <th>所属角色</th>
+                <th>添加角色</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var user in ViewBag.userinroles)
+              {
+                <tr>
+                  <td>@user.UserName</td>
+                  <td>@user.GivenName</td>
+                  <td class="text-center align-middle">
+                    @foreach (var role in user.Roles)
+                    {
+                      <span class="badge badge-primary">
+                        @role
+                        <button type="button" class="close" aria-label="Dismiss">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </span>
+                    }
+
+
+                  </td>
+                  <td class="text-center align-middle">
+                    <a href="javascript:void(0);" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed">
+                      <i class="fal fa-plus"></i>
+                    </a>
+
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@section ScriptsBlock {
+  <script>
+    $(document).ready(function () {
+
+      $('#addrolesbutton').click(() => {
+        bootbox.prompt({
+          size: "small",
+          placeholder:'新角色',
+          required:true,
+          title: "添加新角色",
+          callback: function (result) {
+            console.log(result)
+          }
+        })
+
+
+      })
+
+    })
+  </script>
+
+}

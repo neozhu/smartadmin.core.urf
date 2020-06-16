@@ -34,9 +34,15 @@
           "roles": []
         },
         {
-          "title": "登录账号管理",
+          "title": "账号管理",
           "showOnSeed": false,
           "href": "accountmanage_index.html",
+          "roles": []
+        },
+        {
+          "title": "角色管理",
+          "showOnSeed": false,
+          "href": "rolemanage_index.html",
           "roles": []
         },
         {
