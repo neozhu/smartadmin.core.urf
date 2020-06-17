@@ -94,12 +94,12 @@ namespace SmartAdmin.WebUI
       services.AddScoped<INotificationService, NotificationService>();
       services.AddScoped<ITrackableRepository<RoleMenu>, TrackableRepository<RoleMenu>>();
       services.AddScoped<IRoleMenuService, RoleMenuService>();
-      #endregion 
+      #endregion
 
-
+      #region 注入业务服务
       services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
       services.AddScoped<ICompanyService, CompanyService>();
-
+      #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
       services

@@ -27,9 +27,13 @@ namespace SmartAdmin.Data.Models
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<RoleMenu> RoleMenus { get; set; }
     #endregion
+    #region 业务领域
     public DbSet<Company> Companies { get; set; }
-    public DbSet<Category>  Categories { get; set; }
-
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+    #endregion
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
        
@@ -76,6 +80,7 @@ namespace SmartAdmin.Data.Models
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+      #region 业务表
       modelBuilder.Entity<Company>(entity =>
       {
         entity.HasIndex(e => e.Name)
@@ -85,13 +90,30 @@ namespace SmartAdmin.Data.Models
                       .IsUnique()
                       .HasFilter("[Code] IS NOT NULL");
       });
-      modelBuilder.Entity<Category>(entity =>
+      modelBuilder.Entity<Product>(entity =>
       {
-        entity.HasIndex(e => e.Name)
+        entity.HasIndex(e => new { e.Name })
                       .IsUnique()
                       .HasFilter(null);
-        
+
       });
+      modelBuilder.Entity<Customer>(entity =>
+      {
+        entity.HasIndex(e => new { e.Name })
+                      .IsUnique()
+                      .HasFilter(null);
+
+      });
+      modelBuilder.Entity<Order>(entity =>
+      {
+        entity.HasIndex(e => new { e.OrderNo })
+                      .IsUnique()
+                      .HasFilter(null);
+
+      });
+      #endregion
+
+      #region infrastructure
       modelBuilder.Entity<DataTableImportMapping>(entity =>
       {
         entity.HasIndex(e => new { e.EntitySetName, e.FieldName })
@@ -107,7 +129,7 @@ namespace SmartAdmin.Data.Models
                       .HasFilter(null);
 
       });
-
+  
       modelBuilder.Entity<RoleMenu>(entity =>
       {
         entity.HasIndex(e => new { e.RoleName, e.MenuId })
@@ -115,6 +137,7 @@ namespace SmartAdmin.Data.Models
                       .HasFilter(null);
 
       });
+      #endregion
     }
   }
 }
