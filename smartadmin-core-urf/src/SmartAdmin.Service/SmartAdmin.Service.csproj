@@ -17,4 +17,8 @@
     <ProjectReference Include="..\URF.Core\URF.Core.Services\URF.Core.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="QueryObject\" />
+  </ItemGroup>
+
 </Project>
