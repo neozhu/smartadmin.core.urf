@@ -33,7 +33,9 @@
         public string AppName { get; set; }
         public string AppFlavor { get; set; }
         public string AppFlavorSubscript { get; set; }
-        public Theme Theme { get; set; }
+    public string Logo { get; set; }
+    public string LogoM { get; set; }
+    public Theme Theme { get; set; }
         public Features Features { get; set; }
     }
 
