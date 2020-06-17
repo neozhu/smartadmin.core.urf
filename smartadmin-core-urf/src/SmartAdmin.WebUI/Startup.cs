@@ -213,6 +213,13 @@ namespace SmartAdmin.WebUI
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+      //Use the EF Core DB Context Service to automatically migrate database changes
+      //dataContext.Database.Migrate();
+      using (var serviceScope = app.ApplicationServices.CreateScope())
+      {
+        var context = serviceScope.ServiceProvider.GetService<SmartDbContext>();
+        context.Database.Migrate();
+      }
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();

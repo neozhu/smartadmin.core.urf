@@ -22,7 +22,7 @@ namespace SmartAdmin.Data.Models
         [Required]
         public string Code { get; set; }
         [Display(Name = "地址", Description = "地址")]
-        [MaxLength(50)]
+        [MaxLength(128)]
         [DefaultValue("-")]
         public string Address { get; set; }
         [Display(Name = "联系人", Description = "联系人")]
