@@ -18,16 +18,17 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
     [BindProperty]
     public InputModel Input { get; set; }
+    [ViewData]
     public string UserName { get; set; }
+    [ViewData]
     public string GivenName { get; set; }
     public class InputModel
     {
       [Required]
       [DataType(DataType.Password)]
       public string Password { get; set; }
+      [Required]
       public string UserName { get; set; }
-      public string GivenName { get; set; }
-      public string Avatars { get; set; }
     }
 
     public LockoutModel(
@@ -42,14 +43,17 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
     public async Task OnGetAsync()
     {
-      var user =await _userManager.FindByNameAsync(this.User.Identity.Name);
-      await _signInManager.SignOutAsync();
-      Input = new InputModel()
+      if (this.User.Identity.IsAuthenticated)
       {
-        GivenName = user.GivenName,
-        UserName = user.UserName,
-        Avatars = user.Avatars
-      };
+        var user = await _userManager.FindByNameAsync(this.User.Identity.Name);
+        this.PageContext.HttpContext.Response.Cookies.Append("UserName", user.UserName);
+        this.PageContext.HttpContext.Response.Cookies.Append("GivenName", user.GivenName);
+        this.PageContext.HttpContext.Response.Cookies.Append("Avatars", user.Avatars);
+       
+        }
+      
+      await _signInManager.SignOutAsync();
+       
     }
 
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -75,11 +79,12 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         if (result.IsLockedOut)
         {
           _logger.LogInformation($"{userName}:账号被锁定");
-          return RedirectToPage("./Lockout");
+          ModelState.AddModelError(string.Empty, "账号被锁定,15分钟后再试.");
+          return Page();
         }
         else
         {
-          ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+          ModelState.AddModelError(string.Empty, "密码不准确.");
           return Page();
         }
       }

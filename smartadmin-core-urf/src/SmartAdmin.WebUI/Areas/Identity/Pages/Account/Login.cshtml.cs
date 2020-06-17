@@ -87,12 +87,12 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         if (result.IsLockedOut)
         {
           _logger.LogInformation($"{Input.UserName}:账号被锁定");
-          ModelState.AddModelError(string.Empty, "账号被锁定");
+          ModelState.AddModelError(string.Empty, "账号被锁定,15分钟后再试.");
           return Page();
         }
         else
         {
-          ModelState.AddModelError(string.Empty, "登录失败" );
+          ModelState.AddModelError(string.Empty, "用户名或密码不正确" );
           return Page();
         }
       }

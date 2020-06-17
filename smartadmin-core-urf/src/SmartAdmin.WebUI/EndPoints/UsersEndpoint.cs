@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartAdmin.WebUI.Data;
+using SmartAdmin.WebUI.Data.Models;
 using SmartAdmin.WebUI.Extensions;
 using SmartAdmin.WebUI.Models;
 
@@ -16,10 +17,12 @@ namespace SmartAdmin.WebUI.EndPoints
     public class UsersEndpoint : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _manager;
+        private readonly UserManager<ApplicationUser> _manager;
         private readonly SmartSettings _settings;
 
-        public UsersEndpoint(ApplicationDbContext context, UserManager<IdentityUser> manager, SmartSettings settings)
+        public UsersEndpoint(ApplicationDbContext context,
+          UserManager<ApplicationUser> manager,
+          SmartSettings settings)
         {
             _context = context;
             _manager = manager;
@@ -28,7 +31,7 @@ namespace SmartAdmin.WebUI.EndPoints
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<IdentityUser>>> Get()
+        public async Task<ActionResult<IEnumerable<ApplicationUser>>> Get()
         {
             var users = await _manager.Users.AsNoTracking().ToListAsync();
 
@@ -37,11 +40,11 @@ namespace SmartAdmin.WebUI.EndPoints
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IdentityUser>> Get([FromRoute]string id) => Ok(await _manager.FindByIdAsync(id));
+        public async Task<ActionResult<ApplicationUser>> Get([FromRoute]string id) => Ok(await _manager.FindByIdAsync(id));
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create([FromForm]IdentityUser model)
+        public async Task<IActionResult> Create([FromForm]ApplicationUser model)
         {
             model.Id = Guid.NewGuid().ToString();
             model.UserName = model.Email;
@@ -65,7 +68,7 @@ namespace SmartAdmin.WebUI.EndPoints
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Update([FromForm]IdentityUser model)
+        public async Task<IActionResult> Update([FromForm]ApplicationUser model)
         {
             var result = await _context.UpdateAsync(model, model.Id);
 
@@ -79,7 +82,7 @@ namespace SmartAdmin.WebUI.EndPoints
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete([FromForm]IdentityUser model)
+        public async Task<IActionResult> Delete([FromForm]ApplicationUser model)
         {
             // HACK: The code below is just for demonstration purposes!
             // Please use a different method of preventing the currently logged in user from being removed
@@ -88,7 +91,7 @@ namespace SmartAdmin.WebUI.EndPoints
                 return BadRequest(SmartError.Failed("Please do not delete the main user! =)"));
             }
 
-            var result = await _context.DeleteAsync<IdentityUser>(model.Id);
+            var result = await _context.DeleteAsync<ApplicationUser>(model.Id);
 
             if (result.Succeeded)
             {

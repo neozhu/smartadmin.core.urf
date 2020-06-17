@@ -8,8 +8,8 @@
 	<a href="#" class="menu-item btn" data-toggle="tooltip" data-placement="left" title="Scroll Top">
 		<i class="@(Settings.Theme.IconPrefix) fa-arrow-up"></i>
 	</a>
-	<a href="/page/login" class="menu-item btn" data-toggle="tooltip" data-placement="left" title="Logout">
-		<i class="@(Settings.Theme.IconPrefix) fa-sign-out"></i>
+	<a asp-area="Identity" asp-page="/account/lockout"  class="menu-item btn" data-toggle="tooltip" data-placement="left" title="Lockout">
+		<i class="@(Settings.Theme.IconPrefix) fa-user-lock"></i>
 	</a>
 	<a href="#" class="menu-item btn" data-action="app-fullscreen" data-toggle="tooltip" data-placement="left" title="Full Screen">
 		<i class="@(Settings.Theme.IconPrefix) fa-expand"></i>

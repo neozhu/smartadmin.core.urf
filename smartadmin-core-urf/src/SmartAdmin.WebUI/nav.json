@@ -80,6 +80,12 @@
           "showOnSeed": false,
           "href": "notifications_index.html",
           "roles": []
+        },
+        {
+          "title": "WebApi",
+          "showOnSeed": false,
+          "href": "swagger/index.html",
+          "roles": []
         }
       ]
     }
