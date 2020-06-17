@@ -1,0 +1,20 @@
+﻿@page
+@model AccessDeniedModel
+@{
+  ViewData["Title"] = "Access denied";
+}
+
+  <div class="col-xl-6 ml-auto mr-auto">
+    <div class="p-4 text-center text-white">
+      <h3>您不能访问此资源.</h3>
+      <p>您可以向管理员申请授权.</p>
+    </div>
+    <div class="row no-gutters">
+      <div class="col-md-4 ml-auto text-left pr-1">
+        <a class="btn btn-block btn-primary mt-3 btn-link text-white ml-auto border-0" asp-area="Identity" asp-page="/account/login">
+          <i class="fal fa-shield-check fs-lg mr-1"></i> 重新登录
+        </a>
+      </div>
+       
+    </div>
+  </div>

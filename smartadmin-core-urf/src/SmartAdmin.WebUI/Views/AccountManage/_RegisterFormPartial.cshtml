@@ -10,36 +10,36 @@
 
       </div>
       <div class="modal-body">
-        <form id="registuser_form" class="needs-validation" novalidate>
+        <form id="regist_form" class="needs-validation" novalidate>
           <div class="form-row form-group">
             <div class="col-md-6">
-              <label class="form-label" for="newusername">用户名</label>
-              <input type="text" class="form-control" id="newusername" name="newusername" required>
+              <label class="form-label" for="userName">用户名</label>
+              <input type="text" class="form-control" id="userName" name="userName" pattern="^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$" required>
               <div class="invalid-feedback">
-                请输入用户名
+                请输入有效的用户名
               </div>
             </div>
             <div class="col-md-6">
 
-              <label class="form-label" for="fullname">昵称</label>
-              <input type="text" class="form-control" id="fullname" name="fullname" required>
+              <label class="form-label" for="givenName">昵称</label>
+              <input type="text" class="form-control" id="givenName" name="givenName" pattern="^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$" required>
               <div class="invalid-feedback">
-                请输入昵称
+                请输入有效的昵称
               </div>
 
             </div>
           </div>
           <div class="form-row form-group">
             <div class="col-md-6">
-              <label class="form-label" for="newpassword">新密码</label>
-              <input type="password" class="form-control" id="newpassword" name="newpassword" required minlength="4">
+              <label class="form-label" for="password">新密码</label>
+              <input type="password" class="form-control" id="password" name="password" required minlength="4">
               <div class="invalid-feedback">
                 请输入新密码
               </div>
             </div>
             <div class="col-md-6">
-              <label class="form-label" for="newpasswordConfirm">再输入新密码</label>
-              <input type="password" class="form-control" id="newpasswordConfirm" name="newpasswordConfirm" required minlength="4">
+              <label class="form-label" for="passwordConfirm">再输入新密码</label>
+              <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" required minlength="4">
               <div class="invalid-feedback">
                 请输入正确的密码
               </div>
@@ -76,8 +76,8 @@
             'use strict';
             window.addEventListener('load', function () {
               // Fetch all the forms we want to apply custom Bootstrap validation styles to
-              var txtPassword = document.getElementById("newpassword");
-              var txtConfirmPassword = document.getElementById("newpasswordConfirm");
+              var txtPassword = document.getElementById("password");
+              var txtConfirmPassword = document.getElementById("passwordConfirm");
               txtPassword.onchange = ConfirmPassword;
               txtConfirmPassword.onkeyup = ConfirmPassword;
               function ConfirmPassword() {
@@ -111,20 +111,20 @@
     $('#registermodal').modal('toggle');
   }
   function registeruser() {
-    var form = document.getElementById("registuser_form");
+    var form = document.getElementById("regist_form");
     if (form.reportValidity()) {
      
       var url = "/AccountManage/ReregisterUser"
 
       $.post(url, {
         model: {
-          Username: $('#registuser_form #newusername').val(),
-          Email: $('#registuser_form #newemail').val(),
-          TenantId: $('#registuser_form #tenantid').val(),
-          Password: $('#registuser_form #newpassword').val(),
-          PasswordConfirm:$('#registuser_form #newpasswordConfirm').val(),
-          GivenName: $('#registuser_form #fullname').val(),
-          PhoneNumber: $('#registuser_form #phonenumber').val(),
+          Username: $('#regist_form #userName').val(),
+          Email: $('#regist_form #newemail').val(),
+          TenantId: $('#regist_form #tenantid').val(),
+          Password: $('#regist_form #password').val(),
+          PasswordConfirm:$('#regist_form #passwordConfirm').val(),
+          GivenName: $('#regist_form #givenName').val(),
+          PhoneNumber: $('#regist_form #phonenumber').val(),
         }
       }).done((res) => {
         if (res.success) {

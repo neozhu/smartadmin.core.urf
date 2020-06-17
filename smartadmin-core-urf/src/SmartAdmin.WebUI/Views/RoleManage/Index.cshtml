@@ -108,8 +108,8 @@
           locale:'zh_CN' ,
           size: "small",
           maxlength: 30,
-          pattern: '^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$',
-          placeholder: '新角色',
+          pattern: '^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$',
+          placeholder: '新角色(汉字 英文字母 数字 下划线组成，2-20位)',
           required: true,
           title: "添加新角色",
           callback: function (result) {

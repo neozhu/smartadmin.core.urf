@@ -22,9 +22,9 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
         public async Task OnGet()
         {
-            await _signInManager.SignOutAsync();
-
-            _logger.LogInformation("User logged out.");
+      _logger.LogInformation($"{this.User.Identity.Name}:注销");
+      await _signInManager.SignOutAsync();
+           
         }
 
         public async Task<IActionResult> OnPost(string returnUrl = null)

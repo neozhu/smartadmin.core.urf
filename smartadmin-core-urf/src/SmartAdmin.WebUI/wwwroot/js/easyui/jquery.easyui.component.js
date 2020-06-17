@@ -180,9 +180,9 @@ $.extend($.fn.validatebox.defaults.rules, {
   },
   username: {// 验证用户名  
     validator: function (value) {
-      return /^[a-zA-Z][a-zA-Z0-9_]{3,12}$/i.test(value);
+      return /^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$/i.test(value);
     },
-    message: '用户名不合法(字母开头，允许4-12字节，允许字母数字下划线)'
+    message: '用户名不合法(字母开头，允许2-20位，允许字母数字下划线)'
   },
   carNo: {
     validator: function (value) {

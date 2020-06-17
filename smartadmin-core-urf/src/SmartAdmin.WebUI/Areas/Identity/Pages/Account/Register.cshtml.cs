@@ -100,9 +100,11 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
     {
       [Display(Name = "用户名", Description = "用户名", Prompt = "登录用户名")]
       [Required]
+      [RegularExpression(@"^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$",ErrorMessage = "用户名不合法(字母开头，允许2-20位，允许字母数字下划线)")]
       public string UserName { get; set; }
 
       [Display(Name = "昵称", Description = "昵称", Prompt = "登录后显示的名称")]
+      [RegularExpression(@"^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$",ErrorMessage = "昵称不合法(字母开头，允许2-20位，允许字母数字下划线)")]
       public string GivenName { get; set; }
 
       [Required]
