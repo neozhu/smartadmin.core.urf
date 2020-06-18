@@ -6,7 +6,7 @@
       "icon": "fal fa-home",
       "href": "Home_Index.html",
       "roles": []
-       
+
     },
     {
       "title": "组织架构",
@@ -17,6 +17,20 @@
           "title": "企业信息",
           "showOnSeed": false,
           "href": "Companies_Index.html",
+          "roles": []
+        }
+
+      ]
+    },
+    {
+      "title": "主数据管理",
+      "icon": "fal fa-list-alt",
+      "roles": [],
+      "items": [
+        {
+          "title": "产品主档",
+          "showOnSeed": false,
+          "href": "products_index.html",
           "roles": []
         }
 
@@ -89,7 +103,7 @@
         }
       ]
     }
-    
-    
+
+
   ]
 }

@@ -33,7 +33,7 @@ namespace SmartAdmin.WebUI.Controllers
 
     // GET: Companies
     public IActionResult Index()=> View();
-
+    //datagrid 数据源
     public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {
       try
@@ -63,7 +63,7 @@ namespace SmartAdmin.WebUI.Controllers
         }
 
     }
-
+    //编辑 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<JsonResult> Edit(Company company)
@@ -90,7 +90,7 @@ namespace SmartAdmin.WebUI.Controllers
       }
       //return View(work);
     }
-
+    //新建
     [HttpPost]
     [ValidateAntiForgeryToken]
    

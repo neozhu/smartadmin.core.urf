@@ -103,6 +103,8 @@ namespace SmartAdmin.WebUI
       #region 注入业务服务
       services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
       services.AddScoped<ICompanyService, CompanyService>();
+      services.AddScoped<ITrackableRepository<Product>, TrackableRepository<Product>>();
+      services.AddScoped<IProductService, ProductService>();
       #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
@@ -219,14 +221,19 @@ namespace SmartAdmin.WebUI
     {
   
       //Use the EF Core DB Context Service to automatically migrate database changes
-      //dataContext.Database.Migrate();
       using (var serviceScope = app.ApplicationServices.CreateScope())
       {
         var context = serviceScope.ServiceProvider.GetService<SmartDbContext>();
         if (context.Database.GetPendingMigrations().Any())
         {
-          logger.LogInformation("执行数据库迁移");
+          logger.LogInformation("SmartDbContext:执行数据库迁移");
           context.Database.Migrate();
+        }
+        var identitycontext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+        if (identitycontext.Database.GetPendingMigrations().Any())
+        {
+          logger.LogInformation("ApplicationDbContext:执行数据库迁移");
+          identitycontext.Database.Migrate();
         }
       }
       if (env.IsDevelopment())
@@ -267,7 +274,7 @@ namespace SmartAdmin.WebUI
         endpoints.MapRazorPages();
       });
 
-      logger.LogInformation("网站启动");
+      logger.LogInformation("网站启动成功");
     }
   }
 }

@@ -56,6 +56,43 @@
     <None Include="wwwroot\js\plugin\bootbox\bootbox.locales.js" />
     <None Include="wwwroot\js\plugin\bootbox\bootbox.locales.min.js" />
     <None Include="wwwroot\js\plugin\bootbox\bootbox.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\be-nl.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\bg.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\chs.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\cs.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\da-dk.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\de-ch.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\de.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\en-au.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\en-gb.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\en-za.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\es-es.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\es.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\et.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\fi.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\fr-ca.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\fr-ch.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\fr.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\hu.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\it.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\ja.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\lv.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\nl-be.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\nl-nl.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\no.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\pl.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\pt-br.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\pt-pt.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\ru-ua.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\ru.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\sk.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\sl.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\th.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\tr.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\uk-ua.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\locales\vi.min.js" />
+    <None Include="wwwroot\js\dependency\numeral\numeral.min.js" />
   </ItemGroup>
 
 </Project>
