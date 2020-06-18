@@ -43,10 +43,11 @@ namespace SmartAdmin.Service
       }
       foreach (DataRow row in datatable.Rows)
       {
-        var item = new CodeItem();
+        
         var requiredfield = mapping.Where(x => x.IsRequired == true).FirstOrDefault()?.SourceFieldName;
         if (requiredfield != null && !row.IsNull(requiredfield) && row[requiredfield] != DBNull.Value && Convert.ToString(row[requiredfield]).Trim() != string.Empty)
         {
+          var item = new CodeItem();
           foreach (var field in mapping)
           {
             var defval = field.DefaultValue;

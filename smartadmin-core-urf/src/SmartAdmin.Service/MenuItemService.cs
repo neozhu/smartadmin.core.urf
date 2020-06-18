@@ -44,7 +44,7 @@ namespace SmartAdmin.Service
       var menuitem = this.Queryable().Where(x => x.Title == title).FirstOrDefault();
       if (menuitem == null)
       {
-        throw new Exception($"没有找到 {title} 导航栏");
+        throw new Exception($"没有找到 {title} 父菜单");
       }
       else
       {
@@ -57,11 +57,12 @@ namespace SmartAdmin.Service
       var mapping = await this._mappingservice.Queryable().Where(x => x.EntitySetName == "MenuItem" && ((x.IsEnabled == true) || (x.IsEnabled == false && !(x.DefaultValue == null || x.DefaultValue.Equals(string.Empty))))).ToListAsync();
       foreach (DataRow row in datatable.Rows)
       {
-        var item = new MenuItem();
+       
 
         var requiredfield = mapping.Where(x => x.IsRequired == true).FirstOrDefault()?.SourceFieldName;
         if (requiredfield != null && !row.IsNull(requiredfield) && row[requiredfield] != DBNull.Value && Convert.ToString(row[requiredfield]).Trim() != string.Empty)
         {
+          var item = new MenuItem();
           foreach (var field in mapping)
           {
             var defval = field.DefaultValue;

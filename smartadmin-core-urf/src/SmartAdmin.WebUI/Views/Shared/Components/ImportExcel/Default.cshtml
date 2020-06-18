@@ -29,7 +29,7 @@
             toastr.success('模板下载完成!');
           })
           .fail(() => {
-            $.messager.alert('错误', '没有下载到导入模板[Work.xlsx]文件!', 'error');
+            $.messager.alert('错误', '没有下载到导入模板[@(Model.entity).xlsx]文件!', 'error');
           });
       },
       init: function () {
@@ -69,7 +69,7 @@
             start: true,
             synchron: false,
             beforeSend: function (item) {
-            
+
             },
             onSuccess: function (result, item) {
               console.log(result,item)

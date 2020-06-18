@@ -18,7 +18,7 @@ namespace SmartAdmin.WebUI.Controllers
   {
     private  readonly ICompanyService companyService;
     private readonly IUnitOfWork unitOfWork;
-    private readonly ILogger<CompaniesController> logger;
+    private readonly ILogger<CompaniesController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
     public CompaniesController(ICompanyService companyService,
           IUnitOfWork unitOfWork,
@@ -27,7 +27,7 @@ namespace SmartAdmin.WebUI.Controllers
     {
       this.companyService = companyService;
       this.unitOfWork = unitOfWork;
-      this.logger = logger;
+      this._logger = logger;
       this._webHostEnvironment = webHostEnvironment;
     }
 
@@ -238,23 +238,21 @@ namespace SmartAdmin.WebUI.Controllers
         return Json(new { success = true, total = total, elapsedTime = watch.ElapsedMilliseconds });
       }
       catch (Exception e) {
-        this.logger.LogError(e, "Excel导入失败");
+        this._logger.LogError(e, "Excel导入失败");
         return this.Json(new { success = false,  err = e.GetBaseException().Message });
       }
         }
     //下载模板
     public async Task<IActionResult> Download(string file) {
-      byte[] fileContent = null;
-      var fileName = "";
-      var mimeType = "";
+      
       this.Response.Cookies.Append("fileDownload", "true");
       var path = Path.Combine(this._webHostEnvironment.ContentRootPath, file);
       var downloadFile = new FileInfo(path);
       if (downloadFile.Exists)
       {
-        fileName = downloadFile.Name;
-        mimeType = MimeTypeConvert.FromExtension(downloadFile.Extension);
-        fileContent = new byte[Convert.ToInt32(downloadFile.Length)];
+       var fileName = downloadFile.Name;
+       var mimeType = MimeTypeConvert.FromExtension(downloadFile.Extension);
+       var fileContent = new byte[Convert.ToInt32(downloadFile.Length)];
         using (var fs = downloadFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
         {
           await fs.ReadAsync(fileContent, 0, Convert.ToInt32(downloadFile.Length));
