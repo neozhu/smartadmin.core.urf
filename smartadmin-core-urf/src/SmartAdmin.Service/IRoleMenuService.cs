@@ -20,6 +20,8 @@ namespace SmartAdmin.Service
 
     Task<IEnumerable<MenuItem>> RenderMenus(string[] roleNames);
 
+    Task<SmartNavigation> NavDataSource(string[] roles);
+
 
   }
 }

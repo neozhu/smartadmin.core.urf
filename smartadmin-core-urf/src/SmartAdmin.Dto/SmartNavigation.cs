@@ -2,37 +2,32 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable InconsistentNaming
-
-namespace SmartAdmin.WebUI.Models
+namespace SmartAdmin.Dto
 {
-    /// <summary>Provides easy-access to building the SmartAdmin Navigation using JSON text data.</summary>
-    /// <remarks>These classes are solely created for Demo purposes, please do not use them in Production.</remarks>
-    public  static class NavigationBuilder
+  /// <summary>Provides easy-access to building the SmartAdmin Navigation using JSON text data.</summary>
+  /// <remarks>These classes are solely created for Demo purposes, please do not use them in Production.</remarks>
+  public static class NavigationBuilder
+  {
+    private static JsonSerializerOptions DefaultSettings => SerializerSettings();
+
+    private static JsonSerializerOptions SerializerSettings(bool indented = true)
     {
-        private static JsonSerializerOptions DefaultSettings => SerializerSettings();
+      var options = new JsonSerializerOptions
+      {
+        IgnoreNullValues = true,
+        WriteIndented = indented,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+      };
 
-        private static JsonSerializerOptions SerializerSettings(bool indented = true)
-        {
-            var options = new JsonSerializerOptions
-            {
-                IgnoreNullValues = true,
-                WriteIndented = indented,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+      options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
-            options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-
-            return options;
-        }
-
-        public static SmartNavigation FromJson(string json) => JsonSerializer.Deserialize<SmartNavigation>(json, DefaultSettings);
+      return options;
     }
 
-    public sealed class SmartNavigation
+    public static SmartNavigation FromJson(string json) => JsonSerializer.Deserialize<SmartNavigation>(json, DefaultSettings);
+  }
+
+  public sealed class SmartNavigation
     {
         public SmartNavigation()
         {

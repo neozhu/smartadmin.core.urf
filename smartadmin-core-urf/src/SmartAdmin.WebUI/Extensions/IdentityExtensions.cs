@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Identity;
+using SmartAdmin.Dto;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Models;
 

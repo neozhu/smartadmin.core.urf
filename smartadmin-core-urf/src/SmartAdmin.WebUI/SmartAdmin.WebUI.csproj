@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\SmartNavigation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\RoleMenus\_navMenuBar.cshtml" />
   </ItemGroup>
 

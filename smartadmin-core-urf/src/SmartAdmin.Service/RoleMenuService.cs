@@ -109,6 +109,70 @@ namespace SmartAdmin.Service
       }
       return menulist;
     }
+
+    public async Task<SmartNavigation> NavDataSource(string[] roles) {
+      var menus =await this._menurepository.Queryable().Where(x => x.IsEnabled)
+          .OrderBy(x => x.LineNum).ToListAsync();
+      var owneritems = await this.Queryable()
+        .Where(x => roles.Contains(x.RoleName)).ToListAsync();
+      var list = new List<ListItem>();
+      foreach (var menu in menus.Where(x => x.ParentId == null))
+      {
+        if (owneritems.Where(x => x.MenuId == menu.Id).Any())
+        {
+          var nav = new ListItem()
+          {
+
+            Href = $"{menu.Controller}_{menu.Action}",
+            Icon = menu.Icon,
+            Roles = menu.Roles?.Split(','),
+            Title = menu.Title,
+            Text=menu.Title,
+            Route=menu.Controller,
+            Tags=menu.Target,
+            I18n= $"{menu.Controller}_{menu.Action}"
+          };
+
+          if (menus.Where(x => x.ParentId == menu.Id).Any())
+          {
+            await fillItems(nav, menu, menus, owneritems);
+          }
+          list.Add(nav);
+        }
+
+      }
+      var smartNav = new SmartNavigation(list);
+      return smartNav;
+     }
+    private async Task fillItems(ListItem nav, MenuItem parent, IEnumerable<MenuItem> menus, IEnumerable<RoleMenu> owneritems)
+    {
+      var items = menus.Where(x => x.ParentId == parent.Id).ToList();
+      var list = new List<ListItem>();
+      foreach (var menu in items)
+      {
+        if (owneritems.Where(x => x.MenuId == menu.Id).Any())
+        {
+          var subnav = new ListItem()
+          {
+            Href = $"{menu.Controller}_{menu.Action}",
+            Icon = menu.Icon,
+            Roles = menu.Roles?.Split(','),
+            Title = menu.Title,
+            Text = menu.Title,
+            Route = menu.Controller,
+            Tags = menu.Target,
+            I18n = $"{menu.Controller}_{menu.Action}"
+          };
+
+          if (menus.Where(x => x.ParentId == menu.Id).Any())
+          {
+            await fillItems(subnav, menu, menus, owneritems);
+          }
+          list.Add(subnav);
+        }
+      }
+      nav.Items = list;
+    }
   }
 }
 

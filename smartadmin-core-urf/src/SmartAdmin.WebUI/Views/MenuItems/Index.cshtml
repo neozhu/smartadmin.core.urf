@@ -493,7 +493,7 @@
                   $dg.datagrid("addFilterRule", {
                     field: "ParentId",
                     op: "equal",
-                    value: value
+                    value: value.toString()
                   });
                 }
                 $dg.datagrid("doFilter");

@@ -1,4 +1,4 @@
-﻿@model SmartNavigation
+﻿@model SmartAdmin.Dto.SmartNavigation
 @{
     var pageName = ViewData["PageName"]?.ToString().ToLower();
 }
@@ -96,7 +96,7 @@
         }
         else
         {
-            if (group.Type == ItemType.Category)
+            if (group.Type == SmartAdmin.Dto.ItemType.Category)
             {
                 <li class="nav-title">@group.Title</li>
             }
