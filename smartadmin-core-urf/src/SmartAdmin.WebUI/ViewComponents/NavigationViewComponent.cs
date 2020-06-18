@@ -7,13 +7,12 @@ using SmartAdmin.WebUI.Models;
 
 namespace SmartAdmin.WebUI.ViewComponents
 {
-    public class NavigationViewComponent : ViewComponent
+  public class NavigationViewComponent : ViewComponent
+  {
+    public IViewComponentResult Invoke()
     {
-        public IViewComponentResult Invoke()
-        {
-            var items = NavigationModel.Full;
-
-            return View(items);
-        }
+      var items = NavigationModel.Full;
+      return View(items);
     }
+  }
 }

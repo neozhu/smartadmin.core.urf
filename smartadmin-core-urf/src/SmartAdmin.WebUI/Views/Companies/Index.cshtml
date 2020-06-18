@@ -1,5 +1,4 @@
 ﻿@model SmartAdmin.Data.Models.Company
-@using SmartAdmin.WebUI.Extensions;
 @{
   ViewData["Title"] = "企业信息";
   ViewData["PageName"] = "Companies_Index";
@@ -57,12 +56,12 @@
                 </div>
               </div>
               <div class="btn-group btn-group-sm hidden-xs">
-                <button type="button" onclick="importexcel('Company')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                 <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-animated">
-                  <a class="dropdown-item js-waves-on" href="javascript:downloadtemplate()">
+                  <a class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()">
                     <span class="fal fa-download"></span> 下载模板
                   </a>
                 </div>
@@ -250,49 +249,40 @@
   </div>
 </div>
 
-<partial name="_ImportWindow"  />
+ 
+@await Component.InvokeAsync("ImportExcel", new ImportExcelOptions { entity="Company",
+  folder="Companies",
+  url="/Companies/ImportExcel",
+
+})
+
 @section HeadBlock {
-  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet"  asp-append-version="true"/>
+  <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader-theme-dragdrop.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/font/font-fileuploader.css" rel="stylesheet" asp-append-version="true" />
+
 }
 @section ScriptsBlock {
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
   <script src="~/js/notifications/toastr/toastr.js"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
-
   <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
   <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
-  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
-  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
+
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
+  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script>
         var $dg = $('#companies_datagrid');
         var EDITINLINE = true;
         var company = null;
     var editIndex = undefined;
     //下载Excel导入模板
-    function downloadtemplate() {
-      //默认模板路径存放位置
-      const url = '/FileUpload/Download?file=ExcelTemplate/Company.xlsx';
-      $.fileDownload(url)
-        .done(() => {
-          toastr.success('模板下载完成!');
-        })
-        .fail(() => {
-          $.messager.alert('错误', '没有下载到导入模板[Work.xlsx]文件!', 'error');
-        });
-    }
+
     //执行导出下载Excel
     function exportexcel() {
       const filterRules = JSON.stringify($dg.datagrid('options').filterRules);
