@@ -10,9 +10,6 @@
   <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader-theme-dragdrop.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/plugin/jquery.fileuploader/font/font-fileuploader.css" rel="stylesheet" asp-append-version="true" />
 }
 <div class="row">
   <div class="col-lg-12 col-xl-12">
@@ -78,11 +75,18 @@
   </div>
 </div>
 
-<partial name="_ImportWindow" />
+@await Component.InvokeAsync("ImportExcel", new ImportExcelOptions
+{
+  entity = "CodeItems",
+  folder = "CodeItems",
+  url = "/MenuItems/ImportExcel",
+  tpl = "/MenuItems/Download"
+
+
+})
 
 
 @section ScriptsBlock {
-
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
   <script src="~/js/notifications/toastr/toastr.js"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
@@ -95,8 +99,6 @@
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
   <script type="text/javascript">
       var entityname = "MenuItem";
@@ -120,19 +122,6 @@
         });
 
       }
-      //下载Excel导入模板
-      function downloadtemplate() {
-             //默认模板路径存放位置
-          var url = "/ExcelTemplate/MenuItem.xlsx";
-          $.fileDownload(url)
-           .done(() => {
-                    console.log('file download a success!');
-                })
-           .fail(() => {
-               $.messager.alert("错误","没有找到模板文件! {" + url + "}","error");
-            });
-       }
-
 	   //执行导出下载Excel
 	   function exportexcel() {
 				var filterRules = JSON.stringify($dg.datagrid("options").filterRules);
@@ -293,8 +282,8 @@
 			$dg.datagrid("rejectChanges");
 			editIndex = undefined;
 	}
- 
- 
+
+
 
     //初始化定义datagrid
     var $dg = $("#menuitems_datagrid");
@@ -515,7 +504,7 @@
           .datagrid('load','/MenuItems/GetData',);
       });
   </script>
-   
+
 
 }
 

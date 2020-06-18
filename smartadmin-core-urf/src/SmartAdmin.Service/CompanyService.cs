@@ -55,7 +55,7 @@ namespace SmartAdmin.Service
       return await NPOIHelper.ExportExcelAsync("Company", datarows, expcolopts);
     }
 
-    public async Task ImportDataTableAsync(DataTable datatable,string username)
+    public async Task ImportDataTableAsync(DataTable datatable)
     {
       var mapping = await this.mappingservice.Queryable()
                         .Where(x => x.EntitySetName == "Company" &&
@@ -100,7 +100,7 @@ namespace SmartAdmin.Service
               }
               else if (string.Equals(defval, "user", StringComparison.OrdinalIgnoreCase))
               {
-                propertyInfo.SetValue(item, username, null);
+                propertyInfo.SetValue(item, "", null);
               }
               else
               {

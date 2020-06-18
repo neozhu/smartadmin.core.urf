@@ -14,7 +14,7 @@ namespace SmartAdmin.Service
     // Example: adding synchronous Single method, scope: ICustomerService
     Company Single(Expression<Func<Company, bool>> predicate);
 
-    Task ImportDataTableAsync(DataTable datatable,string username);
+    Task ImportDataTableAsync(DataTable datatable);
     Task<Stream> ExportExcelAsync(string filterRules = "", string sort = "Id", string order = "asc");
   }
 }

@@ -32,31 +32,7 @@ namespace SmartAdmin.WebUI.Controllers
     {
       return View();
     }
-    //下载文件
-    public async Task<FileContentResult> Download(string file = "")
-    {
-      byte[] fileContent = null;
-      var fileName = "";
-      var mimeType = "";
-      this.Response.Cookies.Append("fileDownload", "true");
-      var path = Path.Combine(this._webHostEnvironment.ContentRootPath,file);
-      var downloadFile = new FileInfo(path);
-      if (downloadFile.Exists)
-      {
-        fileName = downloadFile.Name;
-        mimeType = this.GetMimeType(downloadFile.Extension);
-        fileContent = new byte[Convert.ToInt32(downloadFile.Length)];
-        using (var fs = downloadFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        {
-          await fs.ReadAsync(fileContent, 0, Convert.ToInt32(downloadFile.Length));
-        }
-        return this.File(fileContent, mimeType, fileName);
-      }
-      else
-      {
-        throw new FileNotFoundException($"文件 {file} 不存在!");
-      }
-    }
+
     //删除文件
     [HttpPost]
     public JsonResult Remove(string filename = "")

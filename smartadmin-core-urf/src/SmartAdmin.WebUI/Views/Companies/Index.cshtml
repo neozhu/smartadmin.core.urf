@@ -253,6 +253,8 @@
 @await Component.InvokeAsync("ImportExcel", new ImportExcelOptions { entity="Company",
   folder="Companies",
   url="/Companies/ImportExcel",
+  tpl="/Companies/Download"
+
 
 })
 
@@ -260,7 +262,6 @@
   <link href="~/css/notifications/toastr/toastr.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
-
 }
 @section ScriptsBlock {
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
@@ -272,7 +273,7 @@
   <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
   <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
-
+  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
