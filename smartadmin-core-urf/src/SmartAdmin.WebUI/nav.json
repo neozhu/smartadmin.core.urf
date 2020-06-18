@@ -18,8 +18,13 @@
           "showOnSeed": false,
           "href": "Companies_Index.html",
           "roles": []
+        },
+        {
+          "title": "客户信息",
+          "showOnSeed": false,
+          "href": "customers_index.html",
+          "roles": []
         }
-
       ]
     },
     {

@@ -155,7 +155,7 @@ namespace SmartAdmin.WebUI.Controllers
         {
           foreach (var item in products)
           {
-            this.productService.Attach(item);
+            this.productService.ApplyChanges(item);
           }
           var result = await this.unitOfWork.SaveChangesAsync();
           return Json(new { success = true, result });

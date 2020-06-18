@@ -287,14 +287,19 @@
       if (row.Exception) {
         bootbox.alert({
           title: row.Level,
-          message: `${row.Message}  <div id="test-container" class="p-3 rounded bg-warning-700 text-white mt-3">
-                                  ${row.Exception}
+          message: `<p> ${row.Message}</p>  <div id="test-container" class="p-3 rounded bg-warning-700 text-white mt-3">
+                    <p> ${row.RequestForm} </p>
+                    <p> ${row.Properties } </p>
+                    ${row.Exception}
                                   </div>`
         });
       } else {
         bootbox.alert({
           title: row.Level,
-          message: `${row.Message}`
+          message: `<p> ${row.Message}</p>
+  <p> ${row.RequestForm} </p>
+                   <p> ${row.Properties } </p>
+              `
         });
       }
     }

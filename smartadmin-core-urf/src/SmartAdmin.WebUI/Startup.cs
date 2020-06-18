@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SmartAdmin.Data.Models;
+using SmartAdmin.Repository;
 using SmartAdmin.Service;
 using SmartAdmin.Service.Helper;
 using SmartAdmin.WebUI.Data;
@@ -105,6 +106,8 @@ namespace SmartAdmin.WebUI
       services.AddScoped<ICompanyService, CompanyService>();
       services.AddScoped<ITrackableRepository<Product>, TrackableRepository<Product>>();
       services.AddScoped<IProductService, ProductService>();
+      services.AddScoped<IRepositoryX<Customer>, RepositoryX<Customer>>();
+      services.AddScoped<ICustomerService, CustomerService>();
       #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
@@ -117,6 +120,7 @@ namespace SmartAdmin.WebUI
         opts =>
         {
           opts.JsonSerializerOptions.PropertyNamingPolicy = null;
+          opts.JsonSerializerOptions.IgnoreNullValues = true;
         });
 
 
