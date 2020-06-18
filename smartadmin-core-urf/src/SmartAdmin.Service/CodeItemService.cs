@@ -104,6 +104,7 @@ namespace SmartAdmin.Service
       var datarows = query.Select(n => new
       {
         Id = n.Id,
+        CodeType=n.CodeType,
         Code = n.Code,
         Text = n.Text,
         Description = n.Description,

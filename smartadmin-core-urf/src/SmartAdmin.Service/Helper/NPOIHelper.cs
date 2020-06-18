@@ -143,13 +143,15 @@ namespace SmartAdmin
       var col = 0;
       for (var i = 0; i < PropertyInfos.Length; i++)
       {
+       
+
         var fieldname = PropertyInfos[i].Name;
         var fieldtype = PropertyInfos[i].PropertyType;
         if (colopts != null &&
-        (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
-        !colopts.Any(x => x.FieldName == fieldname)
-        )
-        )
+       (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
+       !colopts.Any(x => x.FieldName == fieldname)
+       )
+       )
         {
           continue;
         }
@@ -159,7 +161,7 @@ namespace SmartAdmin
         cell.CellStyle = headstyle;
 
       }
-      var index = 0;
+      var index = 1;
       //for (var i = 0; i < list.Count(); i++)
       foreach(var item in list)
       {
