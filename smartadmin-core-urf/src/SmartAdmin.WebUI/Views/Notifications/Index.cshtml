@@ -384,7 +384,7 @@
         frozenColumns: [[
           /*开启CheckBox选择功能*/
           { field: 'ck', checkbox: true },
-         
+
         ]],
         columns: [[
            {     /*类型*/
@@ -399,14 +399,28 @@
                 prompt: '@Html.DescriptionFor(model => model.Group)',
                 required: true,
                 data: [
-                  { value: '通知', text: '通知' },
-                  { value: '任务', text: '任务' },
-                  { value: '新闻', text: '新闻' },
-                  { value: '公告', text: '公告' }
+                  { value: '操作日志', text: '操作日志' },
+                  { value: '审批记录', text: '审批记录' },
+                  { value: '审计记录', text: '审计记录' }
+
                 ],
 
               }
             },
+            sortable: true,
+            resizable: true
+          },
+          {   /*发出时间*/
+            field: 'PublishDate',
+            title: '<span class="required">@Html.DisplayNameFor(model => model.PublishDate)</span>',
+            width: 150,
+            align: 'right',
+            hidden: false,
+            editor: {
+              type: 'datetimebox',
+              options: { prompt: '@Html.DescriptionFor(model => model.PublishDate)', required: true, showSeconds: true }
+            },
+            formatter: datetimeformatter,
             sortable: true,
             resizable: true
           },
@@ -466,7 +480,7 @@
           {    /*From*/
             field: 'From',
             title: '@Html.DisplayNameFor(model => model.From)',
-            width: 90,
+            width: 140,
             hidden: false,
             editor: {
               type: 'textbox',
@@ -478,7 +492,7 @@
           {    /*From*/
             field: 'To',
             title: '@Html.DisplayNameFor(model => model.To)',
-            width: 90,
+            width: 120,
             hidden: false,
             editor: {
               type: 'textbox',
@@ -486,22 +500,9 @@
             },
             sortable: true,
             resizable: true
-          },
+          }
 
-          {   /*发出时间*/
-            field: 'PublishDate',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.PublishDate)</span>',
-            width: 160,
-            align: 'right',
-            hidden: false,
-            editor: {
-              type: 'datetimebox',
-              options: { prompt: '@Html.DescriptionFor(model => model.PublishDate)', required: true, showSeconds: true }
-            },
-            formatter: datetimeformatter,
-            sortable: true,
-            resizable: true
-          },
+
         ]]
       })
         .datagrid('enableFilter', [
@@ -510,10 +511,9 @@
             type: 'combobox',
             options: {
               data: [
-                { value: '通知', text: '通知' },
-                { value: '任务', text: '任务' },
-                { value: '新闻', text: '新闻' },
-                { value: '公告', text: '公告' }
+                { value: '操作日志', text: '操作日志' },
+                { value: '审批记录', text: '审批记录' },
+                { value: '审计记录', text: '审计记录' }
               ],
               onChange: value => {
                 $dg.datagrid('addFilterRule', {
