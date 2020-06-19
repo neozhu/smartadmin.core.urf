@@ -1229,6 +1229,15 @@ public void ConfigureServices(IServiceCollection services)
       });
     }
 ```
++ 发布消息
++ 订阅消息
 
+## roadmap
++ 还会继续重构和完善代码
++ 开发Scaffold MVC模板,生成定制化的Controller 和 View 减少开发人员重复工作
++ 完善授权访问策略(policy-based authorization)
++ 开发Visual Sutdio.net代码生成插件(类似国内做比较好的52abp)
 
+## 我的联系方式和赞助二维码
+![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/20200620004408.jpg)
 
