@@ -74,7 +74,7 @@ namespace SmartAdmin.Data.Models
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      #region 业务模型
+      #region Business Domain Entity
       modelBuilder.Entity<Company>(entity =>
       {
         entity.HasIndex(e => e.Name)

@@ -194,7 +194,7 @@
             yAxes: [{
               ticks: {
                 beginAtZero: true,
-                stepSize: 1
+                stepSize: 20
               }
             }]
           }
@@ -286,10 +286,13 @@
       }
       if (row.Exception) {
         bootbox.alert({
+          size:'large',
           title: row.Level,
-          message: `<p> ${row.Message}</p>  <div id="test-container" class="p-3 rounded bg-warning-700 text-white mt-3">
+          message: `<p> ${row.Message}</p>
                     <p> ${row.RequestForm} </p>
                     <p> ${row.Properties } </p>
+                   <div  class="p-3 rounded bg-warning-700 text-white mt-3">
+                   
                     ${row.Exception}
                                   </div>`
         });

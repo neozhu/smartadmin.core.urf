@@ -278,7 +278,7 @@ namespace SmartAdmin.WebUI
         endpoints.MapRazorPages();
       });
 
-      logger.LogInformation("网站启动成功");
+      logger.LogInformation("网站启动");
     }
   }
 }

@@ -13,9 +13,9 @@ namespace SmartAdmin.Data.Models
 {
   public partial class SmartDbContext : DbContext
   {
-    
-    
-    #region 业务领域
+
+
+    #region Business Domain Entity
     public virtual DbSet<Company> Companies { get; set; }
     public virtual DbSet<Customer> Customers { get; set; }
     public virtual DbSet<Product> Products { get; set; }

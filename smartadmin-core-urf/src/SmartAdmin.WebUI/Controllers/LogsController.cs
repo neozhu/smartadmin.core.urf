@@ -67,12 +67,14 @@ namespace SmartAdmin.WebUI.Controllers
       var filters = PredicateBuilder.FromFilter<Log>(filterRules);
       var total = await this.dbContext.Logs
                         .Where(filters)
+                        .AsNoTracking()
                         .CountAsync();
       var pagerows = await this.dbContext
                                  .Logs
                                  .Where(filters)
                                  .OrderBy(sort, order)
                                  .Skip(page - 1).Take(rows)
+                                 .AsNoTracking()
                                  .ToListAsync();
                                  
       var pagelist = new { total = total, rows = pagerows };
