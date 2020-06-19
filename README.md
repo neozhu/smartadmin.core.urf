@@ -24,10 +24,24 @@
   >- 字段不要过多的冗余,可以通过定义关联关系
   >- 字段属性和方法尽量使用virtual关键字。有些ORM和动态代理工具需要
    * 价值对象
-   * 存储库(Repositories) 封装基本数据操作方法（CRUD）,本项目通过 [URF.Core](https://github.com/urfnet/URF.Core)
+   * 存储库(Repositories) 封装基本数据操作方法（CRUD）,本项目应用 [URF.Core](https://github.com/urfnet/URF.Core)实现
    * 域服务
    * 技术指标
 + 应用层
   * 应用服务：用于实现应用程序的用例。它们用于将域逻辑公开给表示层，从表示层（可选）使用DTO（数据传输对象）作为参数调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离。对应本项目：(SmartAdmin.Service.csproj)
   * 数据传输对象(DTO)：用于在应用程序层和表示层或其他类型的客户端之间传输数据,通常，使用DTO作为参数从表示层（可选）调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离.对应本项目：(SmartAdmin.Dto.csproj)
-  * Unit of work:主要是整个处理过程的事务管理，本项目通过 [URF.Core](https://github.com/urfnet/URF.Core)
+  * Unit of work:管理和控制应用程序中操作数据库连接和事务 ，本项目使用 [URF.Core](https://github.com/urfnet/URF.Core)实现
+
++ 基础服务层
+  * 租户管理：使用EntityFrmework Core提供的Global Filter实现简单多租户应用
+  * 账号管理: 对登录系统账号维护，注册，注销，锁定，解锁，重置密码，导入、导出等功能
+  * 角色管理：采用RoleManage管理用户的授权
+  * 导航菜单：系统主导航栏配置
+  * 角色授权：配置角色显示的菜单
+  * 键值对配置：常用的数据字典维护，如何正确使用和想法后面会介绍
+  * 导入&导出配置：使用Excel导入导出做一个可配置的功能
+  * 系统日志：asp.net core 自带的日志+Nlog把所有日志保存到数据库方便查询和分析
+  * 消息订阅：集中订阅CAP分布式事件总线的消息
+  * WebApi: Swagger UI Api服务发现和在线调试工具
+  * CAP： CAP看板查看发布和订阅的消息
+  
