@@ -149,7 +149,7 @@ namespace SmartAdmin.WebUI
               return CookieAuthenticationDefaults.AuthenticationScheme;
           };
         })
-       .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
        {
          options.LoginPath = "/Identity/Account/Login";
          options.LogoutPath = "/Identity/Account/Logout";
@@ -158,7 +158,7 @@ namespace SmartAdmin.WebUI
          options.SlidingExpiration = true;
          options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
        })
-      .AddJwtBearer(x =>
+        .AddJwtBearer(x =>
       {
         x.RequireHttpsMetadata = false;
         x.SaveToken = true;
