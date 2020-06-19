@@ -44,4 +44,9 @@
   * 消息订阅：集中订阅CAP分布式事件总线的消息
   * WebApi: Swagger UI Api服务发现和在线调试工具
   * CAP： CAP看板查看发布和订阅的消息
-  
+
+## 快速上手开发
++ 开发环境
+  >- Visual Studio .Net 2019
+  >- .Net Core 3.1
+  >- Sql Server(LocalDb)
