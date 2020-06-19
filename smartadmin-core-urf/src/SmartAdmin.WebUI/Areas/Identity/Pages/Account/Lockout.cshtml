@@ -5,7 +5,7 @@
 }
 
 <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0 text-white d-flex align-items-center justify-content-center">
-  <form id="js-login" role="form"  asp-antiforgery="true" class="text-center text-white mb-5 pb-5" method="post">
+  <form id="js-login" role="form"  asp-antiforgery="false" class="text-center text-white mb-5 pb-5" method="post">
     <div class="py-3">
       <img src="~/img/demo/avatars/@(HttpContext.Request.Cookies["Avatars"])" class="img-responsive rounded-circle img-thumbnail" alt="thumbnail">
     </div>

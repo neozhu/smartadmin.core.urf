@@ -16,10 +16,14 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
   public class LoginModel : PageModel
   {
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<LoginModel> _logger;
 
-    public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+    public LoginModel(
+      UserManager<ApplicationUser> userManager,
+      SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
     {
+      _userManager = userManager;
       _signInManager = signInManager;
       _logger = logger;
     }
@@ -70,14 +74,25 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
       if (ModelState.IsValid)
       {
-        //var valid = new EmailAddressAttribute().IsValid(Input.UserName);
-      
+        var valid = new EmailAddressAttribute().IsValid(Input.UserName);
+        ApplicationUser loginUser = null;
+        if (valid)
+        {
+          loginUser = await _userManager.FindByEmailAsync(Input.UserName);
+        }
+        else {
+          loginUser = await _userManager.FindByNameAsync(Input.UserName);
+        }
+        if (loginUser == null) {
+          ModelState.AddModelError(string.Empty, "账号或电子邮件不存在.");
+          return Page();
+        }
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+        var result = await _signInManager.PasswordSignInAsync(loginUser, Input.Password, Input.RememberMe, lockoutOnFailure: true);
         if (result.Succeeded)
         {
-          _logger.LogInformation($"{Input.UserName}:登录成功");
+          _logger.LogInformation($"{loginUser.UserName}:登录成功");
           return LocalRedirect(returnUrl);
         }
         if (result.RequiresTwoFactor)
@@ -86,7 +101,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         }
         if (result.IsLockedOut)
         {
-          _logger.LogInformation($"{Input.UserName}:账号被锁定");
+          _logger.LogInformation($"{loginUser.UserName}:账号被锁定");
           ModelState.AddModelError(string.Empty, "账号被锁定,15分钟后再试.");
           return Page();
         }

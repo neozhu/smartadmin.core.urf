@@ -57,8 +57,8 @@ namespace SmartAdmin.WebUI.Models
         controller.ViewBag.ThemeVersion = _settings.Theme.ThemeVersion;
         controller.ViewBag.Logo = _settings.Logo;
         controller.ViewBag.LogoM = _settings.LogoM;
-        controller.ViewBag.Copyright = "2019 © SmartAdmin by&nbsp;<a href='https://www.gotbootstrap.com' class='text-primary fw-500' title='gotbootstrap.com' target='_blank'>gotbootstrap.com</a>";
-        controller.ViewBag.CopyrightInverse = "2019 © SmartAdmin by&nbsp;<a href='https://www.gotbootstrap.com' class='text-white opacity-40 fw-500' title='gotbootstrap.com' target='_blank'>gotbootstrap.com</a>";
+        controller.ViewBag.Copyright = $"2020 © { _settings.AppName} &nbsp; { _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='粤ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 粤ICP备{_settings.ICP}号 </a>";
+        controller.ViewBag.CopyrightInverse = $"2020 © { _settings.AppName} &nbsp;{ _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='粤ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 粤ICP备{_settings.ICP}号 </a>";
       }
     }
 

@@ -10,6 +10,7 @@ using SmartAdmin.WebUI.Data.Models;
 namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 {
   [AllowAnonymous]
+  [IgnoreAntiforgeryToken]
   public class LockoutModel : PageModel
   {
     private readonly ILogger<LogoutModel> _logger;
@@ -18,10 +19,6 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 
     [BindProperty]
     public InputModel Input { get; set; }
-    [ViewData]
-    public string UserName { get; set; }
-    [ViewData]
-    public string GivenName { get; set; }
     public class InputModel
     {
       [Required]

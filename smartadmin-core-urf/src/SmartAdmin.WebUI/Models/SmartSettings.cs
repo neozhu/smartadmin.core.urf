@@ -35,6 +35,8 @@
         public string AppFlavorSubscript { get; set; }
     public string Logo { get; set; }
     public string LogoM { get; set; }
+    public string Author { get; set; }
+    public string ICP { get; set; }
     public Theme Theme { get; set; }
         public Features Features { get; set; }
     }
