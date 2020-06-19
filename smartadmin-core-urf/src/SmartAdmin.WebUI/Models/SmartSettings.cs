@@ -10,7 +10,8 @@
         public string Email { get; set; }
         public string Twitter { get; set; }
         public string Avatar { get; set; }
-    }
+    public string AvatarM { get; set; }
+  }
 
     public class Features
     {

@@ -52,7 +52,8 @@ namespace SmartAdmin.WebUI.Models
         controller.ViewBag.TenantId = tenantid;
         controller.ViewBag.Email = email;
         controller.ViewBag.Twitter = givenname;
-        controller.ViewBag.Avatar = avatars;
+        controller.ViewBag.Avatar = _settings.Theme.Avatar;
+        controller.ViewBag.AvatarM = _settings.Theme.AvatarM;
         controller.ViewBag.Version = _settings.Version;
         controller.ViewBag.ThemeVersion = _settings.Theme.ThemeVersion;
         controller.ViewBag.Logo = _settings.Logo;

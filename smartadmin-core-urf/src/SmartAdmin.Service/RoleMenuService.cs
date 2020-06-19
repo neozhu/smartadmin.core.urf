@@ -158,7 +158,7 @@ namespace SmartAdmin.Service
             Roles = menu.Roles?.Split(','),
             Title = menu.Title,
             Text = menu.Title,
-            Route = menu.Controller,
+            Route = menu.Url,
             Tags = menu.Target,
             I18n = $"{menu.Controller}_{menu.Action}"
           };

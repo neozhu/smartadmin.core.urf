@@ -1,2 +1,2 @@
-# smartadmin.core.urf
-smartadmin ui + URF.Core 超轻量级快速开发框架
+# 基于领域驱动设计(DDD)超轻量级快速开发架构
+
