@@ -29,11 +29,7 @@ namespace SmartAdmin.Service
 
     public async Task<IEnumerable<RoleMenu>> GetByMenuIdAsync(int menuid) =>await this.Queryable().Where(x=>x.MenuId== menuid).ToListAsync();
 
-
-
-
     public async Task<IEnumerable<RoleMenu>> GetByRoleNameAsync(string roleName) => await this.Queryable().Where(x => x.RoleName == roleName).ToListAsync();
-
 
     public async Task AuthorizeAsync(RoleMenusView[] list)
     {

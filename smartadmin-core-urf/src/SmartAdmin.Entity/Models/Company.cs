@@ -9,8 +9,6 @@ namespace SmartAdmin.Data.Models
 {
     public partial class Company : URF.Core.EF.Trackable.Entity
     {
-
-
         [Display(Name = "企业名称", Description = "归属企业名称")]
         [MaxLength(50)]
         [Required]
@@ -34,6 +32,5 @@ namespace SmartAdmin.Data.Models
         [Display(Name = "注册日期", Description = "注册日期")]
         [DefaultValue("now")]
         public virtual  DateTime RegisterDate { get; set; }
-
     }
 }
