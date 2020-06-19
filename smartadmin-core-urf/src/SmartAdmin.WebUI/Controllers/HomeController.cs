@@ -31,16 +31,20 @@ namespace SmartAdmin.WebUI.Controllers
       _unitOfWork = unitOfWork;
       this.logger = logger;
       this.logger.LogInformation("访问首页");
-      _eventBus.Publish("smartadmin.eventbus", new SubscribeEventData() {
-         content="访问首页",
-          from= "HomeController",
-           group="操作日志",
-            title= "访问首页",
-             url="/Home/Index"
-      });
+     
     }
 
-    public IActionResult Index() => View();
+    public IActionResult Index() {
+      _eventBus.Publish("smartadmin.eventbus", new SubscribeEventData()
+      {
+        content = "访问首页",
+        from = ViewBag.GivenName,
+        group = "操作日志",
+        title = "访问首页",
+        url = "/Home/Index"
+      });
+      return View();
+      }
 
 
   }
