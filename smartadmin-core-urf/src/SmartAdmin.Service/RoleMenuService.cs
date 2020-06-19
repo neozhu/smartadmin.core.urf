@@ -110,7 +110,7 @@ namespace SmartAdmin.Service
       return menulist;
     }
 
-    public async Task<SmartNavigation> NavDataSource(string[] roles) {
+    public async Task<IEnumerable<ListItem>> NavDataSource(string[] roles) {
       var menus =await this._menurepository.Queryable().Where(x => x.IsEnabled)
           .OrderBy(x => x.LineNum).ToListAsync();
       var owneritems = await this.Queryable()
@@ -141,8 +141,7 @@ namespace SmartAdmin.Service
         }
 
       }
-      var smartNav = new SmartNavigation(list);
-      return smartNav;
+    return list;
      }
     private async Task fillItems(ListItem nav, MenuItem parent, IEnumerable<MenuItem> menus, IEnumerable<RoleMenu> owneritems)
     {

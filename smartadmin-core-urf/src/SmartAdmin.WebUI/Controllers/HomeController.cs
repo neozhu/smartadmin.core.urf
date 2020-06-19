@@ -25,7 +25,7 @@ namespace SmartAdmin.WebUI.Controllers
       _companyService = companyService;
       _unitOfWork = unitOfWork;
       this.logger = logger;
-      this.logger.LogInformation("test");
+      this.logger.LogInformation("访问首页");
     }
 
     public IActionResult Index() => View();

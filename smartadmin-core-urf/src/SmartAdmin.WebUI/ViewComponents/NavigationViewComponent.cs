@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SmartAdmin.Dto;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Data.Models;
 using SmartAdmin.WebUI.Models;
@@ -27,7 +28,7 @@ namespace SmartAdmin.WebUI.ViewComponents
       var user = await _userManager.FindByNameAsync(userName);
       var roles = await this._userManager.GetRolesAsync(user);
       var items = await _menuService.NavDataSource(roles.ToArray()); //NavigationModel.Full;
-      return View(items);
+      return View(new SmartNavigation(items));
     }
   }
 }
