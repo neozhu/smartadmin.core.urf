@@ -1239,5 +1239,5 @@ public void ConfigureServices(IServiceCollection services)
 + 开发Visual Sutdio.net代码生成插件(类似国内做比较好的52abp)
 
 ## 我的联系方式，qq群，赞助二维码
-![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)![赞助](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/20200620004408.jpg)
+![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)![赞助](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/wx.jpg)
 
