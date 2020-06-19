@@ -11,6 +11,7 @@ using System.IO;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using URF.Core.EF;
+using SmartAdmin.Dto;
 
 // Sample to extend ProductService, scoped to only ProductService vs. application wide
 namespace SmartAdmin.Service

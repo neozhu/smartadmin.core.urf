@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using URF.Core.EF.Trackable;
 
@@ -19,6 +20,7 @@ namespace SmartAdmin.Data.Models
     [MaxLength(10)]
     public virtual string Unit { get; set; }
     [Display(Name = "单价", Description = "单价", Prompt = "单价")]
+    [Column(TypeName = "decimal(18, 2)")]
     public virtual  decimal UnitPrice { get; set; }
   }
 }

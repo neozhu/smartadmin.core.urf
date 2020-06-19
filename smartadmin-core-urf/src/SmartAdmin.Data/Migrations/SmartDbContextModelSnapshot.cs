@@ -457,7 +457,7 @@ namespace SmartAdmin.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(20)")
@@ -477,7 +477,7 @@ namespace SmartAdmin.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -539,7 +539,7 @@ namespace SmartAdmin.Data.Migrations
                         .HasMaxLength(10);
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 

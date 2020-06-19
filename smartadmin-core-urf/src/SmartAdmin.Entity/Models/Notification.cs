@@ -23,10 +23,8 @@ namespace SmartAdmin.Data.Models
     [DefaultValue(false)]
     public virtual  bool Read { get; set; }
     [Display(Name = "From", Description = "From")]
-    [DefaultValue("user")]
     public virtual string From { get; set; }
     [Display(Name = "To", Description = "From")]
-    [DefaultValue("user")]
     public virtual string To { get; set; }
     [Display(Name = "分组", Description = "分组")]
     [MaxLength(20)]

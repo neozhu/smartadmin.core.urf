@@ -12,6 +12,7 @@ using System.Data;
 using Microsoft.Extensions.Logging;
 using URF.Core.EF;
 using System.Collections.Generic;
+using SmartAdmin.Dto;
 
 namespace SmartAdmin.Service
 {
