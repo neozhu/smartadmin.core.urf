@@ -1,6 +1,6 @@
 # 基于领域驱动设计(DDD)超轻量级快速开发架构
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_0.jpg)
-**smartadmin.core.urf 这个项目是基于asp.net core 3.1(最新)基础上参照领域驱动设计（DDD）的理念，并参考目前最为了流行的abp架构开发的一套轻量级的快速开发web application 技术架构**
+**smartadmin.core.urf 这个项目是基于asp.net core 3.1(最新)基础上参照领域驱动设计（DDD）的理念，并参考目前最为了流行的abp架构开发的一套轻量级的快速开发web application 技术架构,专注业务核心需求，减少重复代码，开始构建和发布，让初级程序员也能开发出专业并且漂亮的Web应用程序**
 
 >域驱动设计（DDD）是一种通过将实现与不断发展的模型相连接来满足复杂需求的软件开发方法。域驱动设计的前提如下：
 > - 将项目的主要重点放在核心领域和领域逻辑上；
@@ -50,3 +50,45 @@
   >- Visual Studio .Net 2019
   >- .Net Core 3.1
   >- Sql Server(LocalDb)
++ 附加数据库
+  > 使用SQL Server Management Studio 附加.\src\SmartAdmin.Data\db\smartadmindb.mdf 数据库(如果是localdb,那么不需要修改数据库连接配置)
++ 打开解决方案
+
+> **第一个简单的需求开始** \
+> 新增 Company 企业信息 完成CRUD 导入导出功能
+
++ 新建实体对象(Entity)
+> 在SmartAdmin.Entity.csproj项目的Models目录下新增一个Company.cs类
+```javascript
+//记住：定义实体对象最佳做法，继承基类，使用virtual关键字,尽可能的定义每个属性，名称，类型，长度，校验规则，索引，默认值等
+namespace SmartAdmin.Data.Models
+{
+    public partial class Company : URF.Core.EF.Trackable.Entity
+    {
+        [Display(Name = "企业名称", Description = "归属企业名称")]
+        [MaxLength(50)]
+        [Required]
+        //[Index(IsUnique = true)]
+        public virtual string Name { get; set; }
+        [Display(Name = "组织代码", Description = "组织代码")]
+        [MaxLength(12)]
+        //[Index(IsUnique = true)]
+        [Required]
+        public virtual string Code { get; set; }
+        [Display(Name = "地址", Description = "地址")]
+        [MaxLength(128)]
+        [DefaultValue("-")]
+        public virtual string Address { get; set; }
+        [Display(Name = "联系人", Description = "联系人")]
+        [MaxLength(12)]
+        public virtual string Contect { get; set; }
+        [Display(Name = "联系电话", Description = "联系电话")]
+        [MaxLength(20)]
+        public virtual string PhoneNumber { get; set; }
+        [Display(Name = "注册日期", Description = "注册日期")]
+        [DefaultValue("now")]
+        public virtual  DateTime RegisterDate { get; set; }
+    }
+}
+```
+
