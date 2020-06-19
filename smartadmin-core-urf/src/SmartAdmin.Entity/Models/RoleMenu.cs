@@ -14,40 +14,40 @@ namespace SmartAdmin.Data.Models
     [Display(Name ="授权角色",Description = "授权角色")]
     [MaxLength(128)]
     [Required]
-    public string RoleName { get; set; }
+    public virtual string RoleName { get; set; }
 
     [Display(Name = "导航栏", Description = "导航栏")]
-    public int MenuId { get; set; }
+    public virtual  int MenuId { get; set; }
     [Display(Name = "导航栏", Description = "导航栏")]
     [ForeignKey("MenuId")]
-    public MenuItem MenuItem { get; set; }
+    public virtual MenuItem MenuItem { get; set; }
     [Display(Name = "是否开启", Description = "是否开启")]
     [DefaultValue(true)]
-    public bool IsEnabled { get; set; }
+    public virtual  bool IsEnabled { get; set; }
     [Display(Name = "新增", Description = "新增")]
     [DefaultValue(true)]
-    public bool Create { get; set; }
+    public virtual  bool Create { get; set; }
     [Display(Name = "编辑", Description = "编辑")]
     [DefaultValue(true)]
-    public bool Edit { get; set; }
+    public virtual  bool Edit { get; set; }
     [Display(Name = "删除", Description = "删除")]
     [DefaultValue(true)]
-    public bool Delete { get; set; }
+    public virtual  bool Delete { get; set; }
     [Display(Name = "导入", Description = "导入")]
     [DefaultValue(true)]
-    public bool Import { get; set; }
+    public virtual  bool Import { get; set; }
     [Display(Name = "导出", Description = "导出")]
     [DefaultValue(true)]
-    public bool Export { get; set; }
+    public virtual  bool Export { get; set; }
     [Display(Name = "功能点1", Description = "功能点1")]
     [DefaultValue(true)]
-    public bool FunctionPoint1 { get; set; }
+    public virtual  bool FunctionPoint1 { get; set; }
     [Display(Name = "功能点2", Description = "功能点2")]
     [DefaultValue(true)]
-    public bool FunctionPoint2 { get; set; }
+    public virtual  bool FunctionPoint2 { get; set; }
     [Display(Name = "功能点3", Description = "功能点3")]
     [DefaultValue(true)]
-    public bool FunctionPoint3 { get; set; }
+    public virtual  bool FunctionPoint3 { get; set; }
   }
 }
 

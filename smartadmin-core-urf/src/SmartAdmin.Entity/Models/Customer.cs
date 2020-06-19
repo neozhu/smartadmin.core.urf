@@ -14,18 +14,18 @@ namespace SmartAdmin.Data.Models
     [Display(Name = "客户名称", Description = "客户名称")]
     [MaxLength(50)]
     [Required]
-    public string Name { get; set; }
+    public virtual string Name { get; set; }
 
     [Display(Name = "联系人", Description = "联系人")]
     [MaxLength(12)]
-    public string Contect { get; set; }
+    public virtual string Contect { get; set; }
     [Display(Name = "联系电话", Description = "联系电话")]
     [MaxLength(20)]
-    public string PhoneNumber { get; set; }
+    public virtual string PhoneNumber { get; set; }
     [Display(Name = "地址", Description = "地址")]
     [MaxLength(50)]
     [DefaultValue("-")]
-    public string Address { get; set; }
+    public virtual string Address { get; set; }
 
 
   }

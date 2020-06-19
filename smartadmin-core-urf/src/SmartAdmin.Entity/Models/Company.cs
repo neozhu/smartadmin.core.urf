@@ -15,25 +15,25 @@ namespace SmartAdmin.Data.Models
         [MaxLength(50)]
         [Required]
         //[Index(IsUnique = true)]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         [Display(Name = "组织代码", Description = "组织代码")]
         [MaxLength(12)]
         //[Index(IsUnique = true)]
         [Required]
-        public string Code { get; set; }
+        public virtual string Code { get; set; }
         [Display(Name = "地址", Description = "地址")]
         [MaxLength(128)]
         [DefaultValue("-")]
-        public string Address { get; set; }
+        public virtual string Address { get; set; }
         [Display(Name = "联系人", Description = "联系人")]
         [MaxLength(12)]
-        public string Contect { get; set; }
+        public virtual string Contect { get; set; }
         [Display(Name = "联系电话", Description = "联系电话")]
         [MaxLength(20)]
-        public string PhoneNumber { get; set; }
+        public virtual string PhoneNumber { get; set; }
         [Display(Name = "注册日期", Description = "注册日期")]
         [DefaultValue("now")]
-        public DateTime RegisterDate { get; set; }
+        public virtual  DateTime RegisterDate { get; set; }
 
     }
 }

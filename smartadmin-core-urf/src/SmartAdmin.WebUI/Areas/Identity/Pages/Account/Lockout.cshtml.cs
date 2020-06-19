@@ -25,7 +25,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
       [DataType(DataType.Password)]
       public string Password { get; set; }
       [Required]
-      public string UserName { get; set; }
+      public  string UserName { get; set; }
     }
 
     public LockoutModel(
@@ -46,8 +46,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         this.PageContext.HttpContext.Response.Cookies.Append("UserName", user.UserName);
         this.PageContext.HttpContext.Response.Cookies.Append("GivenName", user.GivenName);
         this.PageContext.HttpContext.Response.Cookies.Append("Avatars", user.Avatars);
-       
-        }
+      }
       
       await _signInManager.SignOutAsync();
        
