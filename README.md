@@ -1204,4 +1204,31 @@ services.AddScoped<ICustomerService, CustomerService>();
 + Debug 运行项目
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_1.jpg)
 
+## 高级应用
+> CAP 分布式事务的解决方案及应用场景 \
+> nuget 安装组件 \
+>PM> Install-Package DotNetCore.CAP \
+>PM> Install-Package DotNetCore.CAP.RabbitMQ \
+>PM> Install-Package DotNetCore.CAP.SqlServer \
++ 配置Startup.cs
+```javascript
+public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddCap(x =>
+      {
+        x.UseEntityFramework<SmartDbContext>();
+        x.UseRabbitMQ("127.0.0.1");
+        x.UseDashboard();
+        x.FailedRetryCount = 5;
+        x.FailedThresholdCallback = failed =>
+        {
+          var logger = failed.ServiceProvider.GetService<ILogger<Startup>>();
+          logger.LogError($@"A message of type {failed.MessageType} failed after executing {x.FailedRetryCount} several times, 
+                        requiring manual troubleshooting. Message name: {failed.Message.GetName()}");
+        };
+      });
+    }
+```
+
+
 
