@@ -40,11 +40,16 @@ namespace SmartAdmin.WebUI.Controllers
       {
         var filters = PredicateBuilder.FromFilter<Company>(filterRules);
         var total = await this.companyService
-                             .Query(filters).CountAsync();
+                             .Query(filters)
+                             .AsNoTracking()
+                             .CountAsync()
+                              ;
         var pagerows = (await this.companyService
                              .Query(filters)
+                              .AsNoTracking()
                            .OrderBy(n => n.OrderBy(sort, order))
-                           .Skip(page - 1).Take(rows).SelectAsync())
+                           .Skip(page - 1).Take(rows)
+                           .SelectAsync())
                            .Select(n => new
                            {
                              Id = n.Id,

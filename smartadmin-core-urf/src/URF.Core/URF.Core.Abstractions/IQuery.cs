@@ -29,6 +29,6 @@ namespace URF.Core.Abstractions
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> AnyAsync(CancellationToken cancellationToken = default);
     Task<bool> AllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
-
+    IQuery<TEntity> AsNoTracking();
   }
 }

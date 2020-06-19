@@ -100,5 +100,10 @@ namespace URF.Core.EF
             setParameter(this);
             return this;
         }
-    }
+
+    public virtual IQuery<TEntity> AsNoTracking() {
+        _query.AsNoTracking();
+        return this;
+        }
+  }
 }
