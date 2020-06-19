@@ -15,6 +15,7 @@
 - 基础结构层(Infrastructure Layer)：提供通用技术功能，这些功能主要有第三方库来支持，比如日志:**Nlog**,服务发现：**Swagger UI**,事件总线(EventBus):**[dotnetcore/CAP](https://github.com/dotnetcore/CAP)**,认证与授权:**Microsoft.AspNetCore.Identity**,后面会具体介绍
 
 ## 内容
+![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/project.png)
 + 域层(Domain Layer)
   * 实体(Entity,BaseEntity) 通常实体就是映射到关系数据库中的表，这里说名一下最佳做法和惯例：
   >- 在域层定义:本项目就是**(SmartAdmin.Entity.csproj)**
@@ -27,3 +28,6 @@
    * 域服务
    * 技术指标
 + 应用层
+  * 应用服务：用于实现应用程序的用例。它们用于将域逻辑公开给表示层，从表示层（可选）使用DTO（数据传输对象）作为参数调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离。对应本项目：(SmartAdmin.Service.csproj)
+  * 数据传输对象(DTO)：用于在应用程序层和表示层或其他类型的客户端之间传输数据,通常，使用DTO作为参数从表示层（可选）调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离.对应本项目：(SmartAdmin.Dto.csproj)
+  * Unit of work:主要是整个处理过程的事务管理，本项目通过 [URF.Core](https://github.com/urfnet/URF.Core)
