@@ -1202,6 +1202,6 @@ services.AddScoped<ICustomerService, CustomerService>();
 >PM>:update-database \
 >PM>:更新完成
 + Debug 运行项目
-
+![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_1.jpg)
 
 
