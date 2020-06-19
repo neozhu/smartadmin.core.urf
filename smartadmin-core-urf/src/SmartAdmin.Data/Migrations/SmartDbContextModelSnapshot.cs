@@ -424,8 +424,8 @@ namespace SmartAdmin.Data.Migrations
                         .HasMaxLength(8);
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
 
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(100)")
@@ -435,6 +435,10 @@ namespace SmartAdmin.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(8)")
+                        .HasMaxLength(8);
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");

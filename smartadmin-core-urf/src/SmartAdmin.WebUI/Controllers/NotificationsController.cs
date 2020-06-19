@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Consul;
+using DotNetCore.CAP;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
+using SmartAdmin.Dto;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
@@ -162,7 +165,14 @@ namespace SmartAdmin.WebUI.Controllers
       var stream = await this.notificationService.ExportExcelAsync(filterRules, sort, order);
       return this.File(stream, "application/vnd.ms-excel", fileName);
     }
-    
+
+    [NonAction]
+    [CapSubscribe("smartadmin.eventbus")]
+    public async Task Subscriber(SubscribeEventData eventdata)
+    {
+      this.notificationService.Subscribe(eventdata);
+      await this.unitOfWork.SaveChangesAsync();
+    }
 
   }
 }
