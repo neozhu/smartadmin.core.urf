@@ -10,6 +10,8 @@
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/login.png)
 [演示站点](http://106.52.105.140:2060/Identity/Account/Login) \
 账号:**demo** 密码:**123456** 
+> 喜欢请给个 **Star**  \
+> 如果你用于自己公司及盈利性的项目，希望给与金钱上的赞助，并且保留原作者的版权
 ## 分层
 **smartadmin.core.urf遵行DDD设计模式来实现应用程序的四层模型**
 - 表示层(Presentation Layer)：用户操作展示界面，使用[SmartAdmin - Responsive WebApp](https://www.gotbootstrap.com/themes/smartadmin/4.5.1/intel_analytics_dashboard.html)模板+[Jquery EasyUI](https://www.jeasyui.com/)
