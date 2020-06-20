@@ -3659,6 +3659,12 @@
 .datagrid-editable .textbox-invalid {
   border-color: #ffa8a8;
 }
+.datagrid-view1 {
+  border-right: 1px solid #dfdfdf;
+}
+.datagrid-view3 {
+  border-left: 1px solid #dfdfdf;
+}
 .tree-node {
   border-left: 2px solid transparent;
 }

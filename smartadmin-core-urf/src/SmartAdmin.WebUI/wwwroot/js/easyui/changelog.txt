@@ -5,6 +5,7 @@ Version 1.9.x
  * datebox: Add 'getDate' and 'setDate' methods.
  * pagination: Add 'onBeforeSelectPage' event.
  * combo: Prevent from conflicting with svg.
+ * window: Add 'fixed' property.
 
 Version 1.9.0
 -------------

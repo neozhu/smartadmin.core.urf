@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.5
+ * EasyUI for jQuery 1.9.6
  * 
  * Copyright (c) 2009-2020 www.jeasyui.com. All rights reserved.
  *
@@ -43,7 +43,8 @@
 			var parent = pp.parent();
 			opts.left = Math.ceil((parent.width() - width) / 2 + parent.scrollLeft());
 		} else {
-			opts.left = Math.ceil(($(window)._outerWidth() - width) / 2 + $(document).scrollLeft());
+			var scrollLeft = opts.fixed ? 0 : $(document).scrollLeft();
+			opts.left = Math.ceil(($(window)._outerWidth() - width) / 2 + scrollLeft);
 		}
 		if (tomove){moveWindow(target);}
 	}
@@ -59,11 +60,12 @@
 			var parent = pp.parent();
 			opts.top = Math.ceil((parent.height() - height) / 2 + parent.scrollTop());
 		} else {
-			opts.top = Math.ceil(($(window)._outerHeight() - height) / 2 + $(document).scrollTop());
+			var scrollTop = opts.fixed ? 0 : $(document).scrollTop();
+			opts.top = Math.ceil(($(window)._outerHeight() - height) / 2 + scrollTop);
 		}
 		if (tomove){moveWindow(target);}
 	}
-	
+
 	function create(target){
 		var state = $.data(target, 'window');
 		var opts = state.options;
@@ -95,6 +97,7 @@
 				if (state.shadow){
 					state.shadow.css({
 						display:'block',
+						position: (opts.fixed ? 'fixed' : 'absolute'),
 						zIndex: $.fn.window.defaults.zIndex++,
 						left: opts.left,
 						top: opts.top,
@@ -102,7 +105,10 @@
 						height: state.window._outerHeight()
 					});
 				}
-				state.window.css('z-index', $.fn.window.defaults.zIndex++);
+				state.window.css({
+					position: (opts.fixed ? 'fixed' : 'absolute'),
+					zIndex: $.fn.window.defaults.zIndex++
+				});
 				
 				opts.onOpen.call(target);
 			},
@@ -171,8 +177,9 @@
 		}
 		var win = $(target).window('window');
 		var parent = opts.inline ? win.parent() : $(window);
+		var scrollTop = opts.fixed ? 0 : parent.scrollTop();
 		if (left < 0){left = 0;}
-		if (top < parent.scrollTop()){top = parent.scrollTop();}
+		if (top < scrollTop){top = scrollTop;}
 		if (left + width > parent.width()){
 			if (width == win.outerWidth()){	// moving
 				left = parent.width() - width;
@@ -180,11 +187,11 @@
 				width = parent.width() - left;
 			}
 		}
-		if (top - parent.scrollTop() + height > parent.height()){
+		if (top - scrollTop + height > parent.height()){
 			if (height == win.outerHeight()){	// moving
-				top = parent.height() - height + parent.scrollTop();
+				top = parent.height() - height + scrollTop;
 			} else {	// resizing
-				height = parent.height() - top + parent.scrollTop();
+				height = parent.height() - top + scrollTop;
 			}
 		}
 
@@ -202,6 +209,7 @@
 	 */
 	function setProperties(target){
 		var state = $.data(target, 'window');
+		var opts = state.options;
 		
 		state.window.draggable({
 			handle: '>div.panel-header>div.panel-title',
@@ -238,10 +246,15 @@
 		});
 
 		function start1(e){
+			state.window.css('position', opts.fixed ? 'fixed' : 'absolute');
+			if (state.shadow){
+				state.shadow.css('position', opts.fixed ? 'fixed' : 'absolute');
+			}
 			if (state.pmask){state.pmask.remove();}
 			state.pmask = $('<div class="window-proxy-mask"></div>').insertAfter(state.window);
 			state.pmask.css({
 				display: 'none',
+				position: (opts.fixed ? 'fixed' : 'absolute'),
 				zIndex: $.fn.window.defaults.zIndex++,
 				left: e.data.left,
 				top: e.data.top,
@@ -252,6 +265,7 @@
 			state.proxy = $('<div class="window-proxy"></div>').insertAfter(state.window);
 			state.proxy.css({
 				display: 'none',
+				position: (opts.fixed ? 'fixed' : 'absolute'),
 				zIndex: $.fn.window.defaults.zIndex++,
 				left: e.data.left,
 				top: e.data.top
@@ -275,6 +289,10 @@
 			state.proxy._outerHeight(e.data.height);
 		}
 		function stop1(e, method){
+			state.window.css('position', opts.fixed ? 'fixed' : 'absolute');
+			if (state.shadow){
+				state.shadow.css('position', opts.fixed ? 'fixed' : 'absolute');
+			}
 			$.extend(e.data, constrain.call(target, e.data.left, e.data.top, e.data.width+0.1, e.data.height+0.1));
 			$(target).window(method, e.data);
 			state.pmask.remove();
@@ -402,6 +420,7 @@
 		maximizable: true,
 		closable: true,
 		closed: false,
+		fixed: false,
 		constrain: false
 		/*
 		constrain: function(left,top,width,height){
