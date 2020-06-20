@@ -10,7 +10,7 @@
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/login.png)
 [演示站点](http://106.52.105.140:2060/Identity/Account/Login) \
 账号:**demo** 密码:**123456** 
-> 喜欢请给个 **Star**  \
+> 喜欢请给个 **Star**  每一颗Star都是鼓励我继续更新的动力 谢谢\
 > 如果你用于自己公司及盈利性的项目，希望给与金钱上的赞助，并且保留原作者的版权
 ## 分层
 **smartadmin.core.urf遵行DDD设计模式来实现应用程序的四层模型**
