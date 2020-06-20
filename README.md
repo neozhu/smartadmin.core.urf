@@ -6,7 +6,9 @@
 > - 将项目的主要重点放在核心领域和领域逻辑上；
 > - 将复杂的设计基于领域模型；
 > - 启动技术专家和领域专家之间的创造性合作，以迭代方式完善解决特定领域问题的概念模型。
-
+## Demo 网站
+[演示站点](http://106.52.105.140:2060/Identity/Account/Login) \
+账号:**demo** 密码:**123456** 
 ## 分层
 **smartadmin.core.urf遵行DDD设计模式来实现应用程序的四层模型**
 - 表示层(Presentation Layer)：用户操作展示界面，使用[SmartAdmin - Responsive WebApp](https://www.gotbootstrap.com/themes/smartadmin/4.5.1/intel_analytics_dashboard.html)模板+[Jquery EasyUI](https://www.jeasyui.com/)
