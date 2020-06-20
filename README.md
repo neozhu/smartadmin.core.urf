@@ -26,8 +26,7 @@
   >- 必须要有一个主键最好是GRUID(不推荐复合主键),但本项目使用递增的int类型
   >- 字段不要过多的冗余,可以通过定义关联关系
   >- 字段属性和方法尽量使用virtual关键字。有些ORM和动态代理工具需要
-   * 价值对象
-   * 存储库(Repositories) 封装基本数据操作方法（CRUD）,本项目应用 [URF.Core](https://github.com/urfnet/URF.Core)实现
+    * 存储库(Repositories) 封装基本数据操作方法（CRUD）,本项目应用 [URF.Core](https://github.com/urfnet/URF.Core)实现
    * 域服务
    * 技术指标
 + 应用层
@@ -36,9 +35,10 @@
   * Unit of work:管理和控制应用程序中操作数据库连接和事务 ，本项目使用 [URF.Core](https://github.com/urfnet/URF.Core)实现
 
 + 基础服务层
+  * UI样式定义:根据用户喜好选择多种页面显示模式
   * 租户管理：使用EntityFrmework Core提供的Global Filter实现简单多租户应用
   * 账号管理: 对登录系统账号维护，注册，注销，锁定，解锁，重置密码，导入、导出等功能
-  * 角色管理：采用RoleManage管理用户的授权
+  * 角色管理：使用Microsoft身份库管理角色，用户及其权限管理
   * 导航菜单：系统主导航栏配置
   * 角色授权：配置角色显示的菜单
   * 键值对配置：常用的数据字典维护，如何正确使用和想法后面会介绍
@@ -1192,6 +1192,7 @@ namespace SmartAdmin.WebUI.Controllers
 }
 
 ```
+> 上面View层的代码非常的复杂，但都是固定格式，可以用scaffold快速生成
 + 配置依赖注入(DI),注册服务
 > 打开 startup.cs 在 public void ConfigureServices(IServiceCollection services)
 > 注册服务 
@@ -1236,6 +1237,7 @@ public void ConfigureServices(IServiceCollection services)
 + 订阅消息
 
 ## roadmap
++ 支持My SQL数据库
 + 还会继续重构和完善代码
 + 开发Scaffold MVC模板,生成定制化的Controller 和 View 减少开发人员重复工作
 + 完善授权访问策略(policy-based authorization)
