@@ -1252,8 +1252,11 @@ public void ConfigureServices(IServiceCollection services)
   integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
   crossorigin="anonymous"></script>
 <script type="text/javascript">
-$(document.links).filter(function() {
-  console.log(this)
-    return this.hostname != window.location.hostname;
-}).attr('target', '_blank');
+var links = document.links;
+
+for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+   if (links[i].hostname != window.location.hostname) {
+       links[i].target = '_blank';
+   } 
+}
 </script>
