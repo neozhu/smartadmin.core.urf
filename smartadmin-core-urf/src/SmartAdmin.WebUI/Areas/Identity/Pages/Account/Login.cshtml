@@ -17,7 +17,7 @@
         登录
     </h1>
     <div class="card p-4 rounded-plus bg-faded">
-        <form id="js-login" method="post">
+        <form id="js-login"  asp-antiforgery="false"  method="post">
             <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
             <div class="form-group">
                 <label class="form-label" asp-for="Input.UserName">用户名</label>

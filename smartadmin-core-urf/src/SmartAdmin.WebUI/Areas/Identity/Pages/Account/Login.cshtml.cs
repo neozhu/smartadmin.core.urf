@@ -13,6 +13,7 @@ using SmartAdmin.WebUI.Data.Models;
 namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
 {
   [AllowAnonymous]
+  [IgnoreAntiforgeryToken]
   public class LoginModel : PageModel
   {
     private readonly SignInManager<ApplicationUser> _signInManager;
