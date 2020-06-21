@@ -1253,6 +1253,7 @@ public void ConfigureServices(IServiceCollection services)
   crossorigin="anonymous"></script>
 <script type="text/javascript">
 $(document.links).filter(function() {
+  console.log(this)
     return this.hostname != window.location.hostname;
 }).attr('target', '_blank');
 </script>
