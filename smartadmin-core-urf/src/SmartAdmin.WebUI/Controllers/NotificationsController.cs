@@ -94,7 +94,7 @@ namespace SmartAdmin.WebUI.Controllers
                                  .Skip(page - 1).Take(rows).SelectAsync())
                                  .Select(n => new
                                  {
-
+                                   n.Publisher,
                                    Id = n.Id,
                                    Title = n.Title,
                                    Content = n.Content,

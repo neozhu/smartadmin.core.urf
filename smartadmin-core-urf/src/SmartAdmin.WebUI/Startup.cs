@@ -62,7 +62,11 @@ namespace SmartAdmin.WebUI
       });
       var connectionString = Configuration.GetConnectionString(nameof(SmartDbContext));
 
-      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, sqlServerOptions=> {
+        sqlServerOptions.CommandTimeout(60);
+        })
+      .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+      );
       services.AddDbContext<SmartDbContext>(options => options.UseSqlServer(connectionString));
       services.AddIdentity<ApplicationUser, IdentityRole>(options =>
       {

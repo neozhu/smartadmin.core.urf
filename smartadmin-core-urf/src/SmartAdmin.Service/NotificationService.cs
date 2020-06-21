@@ -48,6 +48,7 @@ namespace SmartAdmin.Service
         Group = data.group,
         Link = data.url,
         PublishDate = DateTime.Now,
+        Publisher=data.publisher,
         To = data.to
 
       };

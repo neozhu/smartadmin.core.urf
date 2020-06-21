@@ -37,7 +37,8 @@ namespace SmartAdmin.WebUI.Controllers
     public IActionResult Index() {
       _eventBus.Publish("smartadmin.eventbus", new SubscribeEventData()
       {
-        content = "访问首页",
+        publisher=typeof(HomeController).Name,
+        content = $"欢迎来到首页 @ {DateTime.Now}",
         from = ViewBag.GivenName,
         group = "操作日志",
         title = "访问首页",

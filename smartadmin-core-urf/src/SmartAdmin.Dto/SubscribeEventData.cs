@@ -13,5 +13,6 @@ namespace SmartAdmin.Dto
     public virtual string from { get; set; }
     public virtual string to { get; set; }
     public virtual string group { get; set; }
+    public virtual string publisher { get; set; }
   }
 }

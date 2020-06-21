@@ -32,6 +32,9 @@ namespace SmartAdmin.Data.Models
     [Display(Name = "发出时间", Description = "发出时间")]
     [DefaultValue("now")]
     public virtual  DateTime PublishDate { get; set; }
+    [Display(Name = "发布者", Description = "发布者")]
+    [MaxLength(128)]
+    public virtual string Publisher { get; set; }
 
 
 

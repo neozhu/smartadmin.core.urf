@@ -368,6 +368,10 @@ namespace SmartAdmin.Data.Migrations
                     b.Property<DateTime>("PublishDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Publisher")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
                     b.Property<bool>("Read")
                         .HasColumnType("bit");
 
