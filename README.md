@@ -1252,10 +1252,7 @@ public void ConfigureServices(IServiceCollection services)
   integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
   crossorigin="anonymous"></script>
 <script type="text/javascript">
-	$(document).ready(function() {
-	    //为超链接加上target='_blank'属性
-		$('a[href^="http"]').each(function() {
-			$(this).attr('target', '_blank');
-		});
-	});
+$(document.links).filter(function() {
+    return this.hostname != window.location.hostname;
+}).attr('target', '_blank');
 </script>
