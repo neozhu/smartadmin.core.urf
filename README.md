@@ -1247,16 +1247,4 @@ public void ConfigureServices(IServiceCollection services)
 
 ## 我的联系方式，qq群，赞助二维码
 ![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)![赞助](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/wx.jpg)
-<script
-  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-  crossorigin="anonymous"></script>
-<script type="text/javascript">
-var links = document.links;
 
-for (var i = 0, linksLength = links.length; i < linksLength; i++) {
-   if (links[i].hostname != window.location.hostname) {
-       links[i].target = '_blank';
-   } 
-}
-</script>
