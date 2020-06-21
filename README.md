@@ -8,7 +8,7 @@
 > - 启动技术专家和领域专家之间的创造性合作，以迭代方式完善解决特定领域问题的概念模型。
 ## Demo 网站
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/login.png)
-<a herf=http://106.52.105.140:2060/Identity/Account/Login target="_blank" >[演示站点]</a> \
+[演示站点](http://106.52.105.140:2060/Identity/Account/Login) \
 账号:**demo** 密码:**123456** 
 > 喜欢请给个 **Star**  每一颗Star都是鼓励我继续更新的动力 谢谢\
 > 如果你用于自己公司及盈利性的项目，希望给与金钱上的赞助，并且保留原作者的版权
@@ -1247,4 +1247,15 @@ public void ConfigureServices(IServiceCollection services)
 
 ## 我的联系方式，qq群，赞助二维码
 ![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)![赞助](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/wx.jpg)
-
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+  crossorigin="anonymous"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+	    //为超链接加上target='_blank'属性
+		$('a[href^="http"]').each(function() {
+			$(this).attr('target', '_blank');
+		});
+	});
+</script>
