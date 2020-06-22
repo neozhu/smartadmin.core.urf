@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -46,27 +47,27 @@ namespace SmartAdmin.WebUI.EndPoints
       _logger = logger;
       _config = config;
     }
-    [Route("login")]
+    [Route("authenticate")]
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Login(jwtlogin login)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
     {
       try
       {
         //Sign user in with username and password from parameters. This code assumes that the emailaddress is being used as the username. 
-        var result = await _signInManager.PasswordSignInAsync(login.username, login.password, true, true);
+        var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, true);
 
         if (result.Succeeded)
         {
           //Retrieve authenticated user's details
-          var user = await _manager.FindByNameAsync(login.username);
+          var user = await _manager.FindByNameAsync(model.UserName);
 
           //Generate unique token with user's details
-          var tokenString = await GenerateJSONWebToken(user);
-
+          var accessToken = await GenerateJSONWebToken(user);
+          var refreshToken = GenerateRefreshToken();
           //Return Ok with token string as content
-          _logger.LogInformation($"{login.username}:JWT登录成功");
-          return Ok(new { token = tokenString });
+          _logger.LogInformation($"{model.UserName}:JWT登录成功");
+          return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
         }
         return Unauthorized();
       }
@@ -74,6 +75,23 @@ namespace SmartAdmin.WebUI.EndPoints
       {
         return StatusCode(500, e.Message);
       }
+    }
+    [Route("refreshtoken")]
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest model)
+    {
+      var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+      var nameId = principal.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+      var user = await _manager.FindByNameAsync(nameId);
+
+      //Generate unique token with user's details
+      var accessToken = await GenerateJSONWebToken(user);
+      var refreshToken = GenerateRefreshToken();
+      //Return Ok with token string as content
+      _logger.LogInformation($"{user.UserName}:RefreshToken");
+      return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
+
     }
 
     private async Task<string> GenerateJSONWebToken(ApplicationUser user)
@@ -83,19 +101,19 @@ namespace SmartAdmin.WebUI.EndPoints
       var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
       //Generate list of claims with general and universally recommended claims
-      var claims = new List<Claim>
-            {
+      var claims = new List<Claim>  {
+           new Claim(ClaimTypes.NameIdentifier, user.UserName),
+           new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 //添加自定义claim
                 new Claim(ClaimTypes.GivenName, string.IsNullOrEmpty(user.GivenName) ? "" : user.GivenName),
                 new Claim(ClaimTypes.Email, user.Email),
-                 new Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()),
-                  new Claim("http://schemas.microsoft.com/identity/claims/avatars", string.IsNullOrEmpty(user.Avatars) ? "" : user.Avatars),
-                   new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)
-
-    };
+                new Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()),
+                new Claim("http://schemas.microsoft.com/identity/claims/avatars", string.IsNullOrEmpty(user.Avatars) ? "" : user.Avatars),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)
+      };
       //Retreive roles for user and add them to the claims listing
       var roles = await _manager.GetRolesAsync(user);
       claims.AddRange(roles.Select(r => new Claim(ClaimsIdentity.DefaultRoleClaimType, r)));
@@ -111,6 +129,42 @@ namespace SmartAdmin.WebUI.EndPoints
       //Return token string
       return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public string GenerateRefreshToken()
+    {
+      var randomNumber = new byte[32];
+      using (var rng = RandomNumberGenerator.Create())
+      {
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+      }
+    }
+
+    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+      var tokenValidationParameters = new TokenValidationParameters
+      {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Jwt:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = _config["Jwt:Issuer"],
+        ValidAudience = _config["Jwt:Issuer"],
+      };
+
+      var tokenHandler = new JwtSecurityTokenHandler();
+      SecurityToken securityToken;
+      var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+      var jwtSecurityToken = securityToken as JwtSecurityToken;
+      if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+      {
+        throw new SecurityTokenException("Invalid token");
+      }
+
+      return principal;
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<ApplicationUser>>> Get()
