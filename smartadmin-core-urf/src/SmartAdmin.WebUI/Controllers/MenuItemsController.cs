@@ -36,7 +36,6 @@ namespace SmartAdmin.WebUI.Controllers
     }
     //GET: MenuItems/Index
     //[OutputCache(Duration = 360, VaryByParam = "none")]
-    //[Route("Index", Name = "导航菜单管理", Order = 1)]
     public ActionResult Index()=>View();
  
     //Get :MenuItems/GetData

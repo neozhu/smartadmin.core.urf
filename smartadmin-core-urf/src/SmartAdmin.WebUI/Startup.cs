@@ -242,7 +242,9 @@ namespace SmartAdmin.WebUI
         x.UseRabbitMQ(options=> {
           options = mqoptions;
           });
-        x.UseDashboard();
+        x.UseDashboard( options=> {
+          options.Authorization= new[] { new DashboardAuthorizationFilter() };
+        });
         x.FailedRetryCount = 5;
         x.FailedThresholdCallback = failed =>
         {
