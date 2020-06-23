@@ -87,7 +87,7 @@ namespace SmartAdmin.WebUI.EndPoints
       await _signInManager.RefreshSignInAsync(user);
 
         //Retrieve authenticated user's details
-               //Generate unique token with user's details
+        //Generate unique token with user's details
         var accessToken = await GenerateJSONWebToken(user);
         var refreshToken = GenerateRefreshToken();
         //Return Ok with token string as content

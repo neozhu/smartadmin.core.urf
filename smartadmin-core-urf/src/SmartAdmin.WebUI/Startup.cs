@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -160,7 +161,7 @@ namespace SmartAdmin.WebUI
          options.AccessDeniedPath = "/Identity/Account/AccessDenied";
          options.Cookie.Name = "CustomerPortal.Identity";
          options.SlidingExpiration = true;
-         options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
+         options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
        })
         .AddJwtBearer(x =>
       {
@@ -182,11 +183,25 @@ namespace SmartAdmin.WebUI
       services.ConfigureApplicationCookie(options =>
       {
         // Cookie settings
-        //options.Cookie.Name = settings.App;
+        options.Cookie.Name = settings.App;
         options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        //options.LoginPath = "/Identity/Account/Login";
-       // options.LogoutPath = "/Identity/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
+        options.LoginPath = "/Identity/Account/Login";
+       options.LogoutPath = "/Identity/Account/Logout";
+        options.Events = new CookieAuthenticationEvents()
+        {
+          OnRedirectToLogin = context =>
+          {
+            if (context.Request.Path.Value.StartsWith("/api"))
+            {
+              context.Response.Clear();
+              context.Response.StatusCode = 401;
+              return Task.FromResult(0);
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.FromResult(0);
+          }
+        };
         //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
       });
       // Register the Swagger generator
