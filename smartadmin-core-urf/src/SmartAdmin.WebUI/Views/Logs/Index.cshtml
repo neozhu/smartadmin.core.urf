@@ -11,7 +11,7 @@
 @section HeadBlock {
   <link href="~/css/statistics/chartjs/chartjs.css" rel="stylesheet" />
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" />
-  
+
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
   <style>
     #test-container {
@@ -71,8 +71,8 @@
 
 @section ScriptsBlock {
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
-  
   <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
   <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
@@ -292,7 +292,7 @@
                     <p> ${row.RequestForm} </p>
                     <p> ${row.Properties } </p>
                    <div  class="p-3 rounded bg-warning-700 text-white mt-3">
-                   
+
                     ${row.Exception}
                                   </div>`
         });

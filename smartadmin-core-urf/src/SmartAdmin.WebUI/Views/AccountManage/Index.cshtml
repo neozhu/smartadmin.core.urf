@@ -8,7 +8,7 @@
   ViewData["PageDescription"] = "";
 }
 @section HeadBlock {
-  
+
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
@@ -79,7 +79,7 @@
     </div>
   </div>
 </div>
- 
+
 
 <partial name="_ImportWindow" />
 <partial name="_ResetPasswordPartial" />
@@ -87,13 +87,10 @@
 <!-- END MAIN CONTENT -->
 
 @section ScriptsBlock {
-
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
-  
+  <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
-
   <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
-
   <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
