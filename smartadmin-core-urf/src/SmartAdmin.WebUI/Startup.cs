@@ -163,7 +163,7 @@ namespace SmartAdmin.WebUI
          options.SlidingExpiration = true;
          options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
        })
-        .AddJwtBearer(x =>
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,x =>
       {
         x.RequireHttpsMetadata = false;
         x.SaveToken = true;
@@ -187,7 +187,7 @@ namespace SmartAdmin.WebUI
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
         options.LoginPath = "/Identity/Account/Login";
-       options.LogoutPath = "/Identity/Account/Logout";
+        options.LogoutPath = "/Identity/Account/Logout";
         options.Events = new CookieAuthenticationEvents()
         {
           OnRedirectToLogin = context =>
