@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -253,7 +254,11 @@ namespace SmartAdmin.WebUI
                         requiring manual troubleshooting. Message name: {failed.Message.GetName()}");
         };
       });
-      services.AddSignalR();
+      services.AddSignalR(options =>
+      {
+        options.EnableDetailedErrors = true;
+        options.KeepAliveInterval = TimeSpan.FromMinutes(1);
+      });
      }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -312,7 +317,9 @@ namespace SmartAdmin.WebUI
                   "default",
                   "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
-        endpoints.MapHub<NotificationHub>("/NotificationHub");
+        endpoints.MapHub<NotificationHub>("/NotificationHub",options=> {
+          options.Transports = HttpTransportType.LongPolling;
+          });
       });
       
       logger.LogInformation("网站启动");
