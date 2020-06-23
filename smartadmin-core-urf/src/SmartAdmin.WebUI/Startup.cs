@@ -26,6 +26,7 @@ using SmartAdmin.Service;
 using SmartAdmin.Service.Helper;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
+using SmartAdmin.WebUI.Hubs;
 using SmartAdmin.WebUI.Models;
 using SqlSugar;
 using URF.Core.Abstractions;
@@ -161,7 +162,7 @@ namespace SmartAdmin.WebUI
          options.AccessDeniedPath = "/Identity/Account/AccessDenied";
          options.Cookie.Name = "CustomerPortal.Identity";
          options.SlidingExpiration = true;
-         options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
+         options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
        })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,x =>
       {
@@ -185,7 +186,7 @@ namespace SmartAdmin.WebUI
         // Cookie settings
         options.Cookie.Name = settings.App;
         options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
         options.Events = new CookieAuthenticationEvents()
@@ -250,8 +251,8 @@ namespace SmartAdmin.WebUI
                         requiring manual troubleshooting. Message name: {failed.Message.GetName()}");
         };
       });
-      //services.AddSingleton<EventSubscriber>();
-    }
+      services.AddSignalR();
+     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -309,8 +310,9 @@ namespace SmartAdmin.WebUI
                   "default",
                   "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
+        endpoints.MapHub<NotificationHub>("/NotificationHub");
       });
-
+      
       logger.LogInformation("网站启动");
     }
   }

@@ -5,12 +5,14 @@ using Consul;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Dto;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
+using SmartAdmin.WebUI.Hubs;
 using URF.Core.Abstractions;
 using URF.Core.EF;
 namespace SmartAdmin.WebUI.Controllers
@@ -32,19 +34,21 @@ namespace SmartAdmin.WebUI.Controllers
 
   public class NotificationsController : Controller
   {
-    private readonly INotificationService notificationService;
-    private readonly IUnitOfWork unitOfWork;
+    private readonly INotificationService _notificationService;
+    private readonly IHubContext<NotificationHub> _notificationHubContext;
+    private readonly IUnitOfWork _unitOfWork;
     //private readonly IHubContext hub;
-    private readonly ILogger<CompaniesController> logger;
+    private readonly ILogger<CompaniesController> _logger;
     public NotificationsController(
+      IHubContext<NotificationHub> notificationHubContext,
       INotificationService notificationService,
       ILogger<CompaniesController> logger,
       IUnitOfWork unitOfWork)
     {
-      
-      this.notificationService = notificationService;
-      this.unitOfWork = unitOfWork;
-      this.logger = logger;
+      _notificationHubContext = notificationHubContext;
+      _notificationService = notificationService;
+      _unitOfWork = unitOfWork;
+      _logger = logger;
       //this.hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
     }
     //获取未读的消息
@@ -53,7 +57,7 @@ namespace SmartAdmin.WebUI.Controllers
     {
       userName = string.IsNullOrEmpty(userName) ? this.User.Identity.Name : userName;
       
-        var data = await this.notificationService.Queryable()
+        var data = await this._notificationService.Queryable()
           .Where(x => x.Read == false &&
           x.Group.Contains(notifygroup) &&
           ( x.To == "ALL" || x.To == userName ))
@@ -86,9 +90,9 @@ namespace SmartAdmin.WebUI.Controllers
     public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {
       var filters = PredicateBuilder.FromFilter<Notification>(filterRules);
-      var total = await this.notificationService
+      var total = await this._notificationService
                            .Query(filters).CountAsync();
-      var pagerows = ( await this.notificationService
+      var pagerows = ( await this._notificationService
                                  .Query(filters)
                                  .OrderBy(n => n.OrderBy(sort, order))
                                  .Skip(page - 1).Take(rows).SelectAsync())
@@ -120,10 +124,10 @@ namespace SmartAdmin.WebUI.Controllers
           //var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
           foreach (var item in notifications)
           {
-            this.notificationService.ApplyChanges(item);
+            this._notificationService.ApplyChanges(item);
             
           }
-           await this.unitOfWork.SaveChangesAsync();
+           await this._unitOfWork.SaveChangesAsync();
           //this.hub.Clients.All.broadcastChanged();
           return this.Json(new { success = true });
         }
@@ -147,8 +151,8 @@ namespace SmartAdmin.WebUI.Controllers
 
       try
       {
-        await this.notificationService.Delete(id);
-        await this.unitOfWork.SaveChangesAsync();
+        await this._notificationService.Delete(id);
+        await this._unitOfWork.SaveChangesAsync();
         return this.Json(new { success = true } );
       }
       
@@ -162,7 +166,7 @@ namespace SmartAdmin.WebUI.Controllers
     public async Task< ActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
     {
       var fileName = "notifications_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
-      var stream = await this.notificationService.ExportExcelAsync(filterRules, sort, order);
+      var stream = await this._notificationService.ExportExcelAsync(filterRules, sort, order);
       return this.File(stream, "application/vnd.ms-excel", fileName);
     }
 
@@ -170,8 +174,9 @@ namespace SmartAdmin.WebUI.Controllers
     [CapSubscribe("smartadmin.eventbus")]
     public async Task Subscriber(SubscribeEventData eventdata)
     {
-      this.notificationService.Subscribe(eventdata);
-      await this.unitOfWork.SaveChangesAsync();
+      await _notificationHubContext.Clients.All.SendAsync("smartadmin.eventbus", eventdata);
+      this._notificationService.Subscribe(eventdata);
+      await this._unitOfWork.SaveChangesAsync();
     }
 
   }
