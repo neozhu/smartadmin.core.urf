@@ -84,13 +84,16 @@ namespace SmartAdmin.WebUI.EndPoints
       var principal = GetPrincipalFromExpiredToken(model.AccessToken);
       var nameId = principal.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
       var user = await _manager.FindByNameAsync(nameId);
+      await _signInManager.RefreshSignInAsync(user);
 
-      //Generate unique token with user's details
-      var accessToken = await GenerateJSONWebToken(user);
-      var refreshToken = GenerateRefreshToken();
-      //Return Ok with token string as content
-      _logger.LogInformation($"{user.UserName}:RefreshToken");
-      return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
+        //Retrieve authenticated user's details
+               //Generate unique token with user's details
+        var accessToken = await GenerateJSONWebToken(user);
+        var refreshToken = GenerateRefreshToken();
+        //Return Ok with token string as content
+        _logger.LogInformation($"{user.UserName}:RefreshToken");
+        return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
+
 
     }
 

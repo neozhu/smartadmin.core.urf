@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -136,7 +137,6 @@ namespace SmartAdmin.WebUI
       //Jwt Authentication
       services.AddAuthentication(opts =>
       {
-        opts.DefaultScheme = settings.App;
         //opts.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
       })
@@ -182,12 +182,12 @@ namespace SmartAdmin.WebUI
       services.ConfigureApplicationCookie(options =>
       {
         // Cookie settings
-        options.Cookie.Name = settings.App;
+        //options.Cookie.Name = settings.App;
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        options.LoginPath = "/Identity/Account/Login";
-        options.LogoutPath = "/Identity/Account/Logout";
-        options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+        //options.LoginPath = "/Identity/Account/Login";
+       // options.LogoutPath = "/Identity/Account/Logout";
+        //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
       });
       // Register the Swagger generator
       services.AddSwaggerGen(c =>
@@ -219,10 +219,13 @@ namespace SmartAdmin.WebUI
                 });
       });
 
+      var mqoptions= Configuration.GetSection(nameof(RabbitMQOptions)).Get<RabbitMQOptions>();
       services.AddCap(x =>
       {
         x.UseEntityFramework<SmartDbContext>();
-        x.UseRabbitMQ("127.0.0.1");
+        x.UseRabbitMQ(options=> {
+          options = mqoptions;
+          });
         x.UseDashboard();
         x.FailedRetryCount = 5;
         x.FailedThresholdCallback = failed =>
