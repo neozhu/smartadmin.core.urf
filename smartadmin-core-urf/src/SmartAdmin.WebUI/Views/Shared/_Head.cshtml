@@ -1,13 +1,15 @@
 ﻿<meta charset="utf-8">
 <title>
-@if (ViewBag.Title?.Length > 0)
-{
-	<text>@ViewData["Title"] - @ViewData["Category1"] - @Settings.App v@(Settings.Version)</text>
-} else {
-	@Settings.App
-}
+  @if (ViewBag.Title?.Length > 0)
+  {
+    <text>@ViewData["Title"] - @ViewData["Category1"] - @Settings.App v@(Settings.Version)</text>
+  }
+  else
+  {
+    @Settings.App
+  }
 </title>
-<base href="~/"/>
+<base href="~/" />
 <meta name="description" content="@ViewBag.Title">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
@@ -17,4 +19,5 @@
 <link id="appbundle" rel="stylesheet" media="screen, print" href="~/css/app.bundle.css">
 <link id="myskin" rel="stylesheet" media="screen, print" href="~/css/skins/skin-master.css">
 <link rel="stylesheet" media="screen, print" href="~/css/site.css">
-<partial name="_Favicon"/>
+<link  id="toastr" rel="stylesheet" media="screen, print" href="~/css/notifications/toastr/toastr.css"  />
+<partial name="_Favicon" />

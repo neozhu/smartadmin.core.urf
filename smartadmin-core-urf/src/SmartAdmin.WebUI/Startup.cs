@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +27,7 @@ using SmartAdmin.Service;
 using SmartAdmin.Service.Helper;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
+using SmartAdmin.WebUI.Hubs;
 using SmartAdmin.WebUI.Models;
 using SqlSugar;
 using URF.Core.Abstractions;
@@ -136,7 +140,6 @@ namespace SmartAdmin.WebUI
       //Jwt Authentication
       services.AddAuthentication(opts =>
       {
-        opts.DefaultScheme = settings.App;
         //opts.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         //opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
       })
@@ -162,7 +165,7 @@ namespace SmartAdmin.WebUI
          options.SlidingExpiration = true;
          options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
        })
-        .AddJwtBearer(x =>
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,x =>
       {
         x.RequireHttpsMetadata = false;
         x.SaveToken = true;
@@ -187,7 +190,21 @@ namespace SmartAdmin.WebUI
         options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
-        options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+        options.Events = new CookieAuthenticationEvents()
+        {
+          OnRedirectToLogin = context =>
+          {
+            if (context.Request.Path.Value.StartsWith("/api"))
+            {
+              context.Response.Clear();
+              context.Response.StatusCode = 401;
+              return Task.FromResult(0);
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.FromResult(0);
+          }
+        };
+        //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
       });
       // Register the Swagger generator
       services.AddSwaggerGen(c =>
@@ -219,11 +236,16 @@ namespace SmartAdmin.WebUI
                 });
       });
 
+      var mqoptions= Configuration.GetSection(nameof(RabbitMQOptions)).Get<RabbitMQOptions>();
       services.AddCap(x =>
       {
         x.UseEntityFramework<SmartDbContext>();
-        x.UseRabbitMQ("127.0.0.1");
-        x.UseDashboard();
+        x.UseRabbitMQ(options=> {
+          options = mqoptions;
+          });
+        x.UseDashboard( options=> {
+          options.Authorization= new[] { new DashboardAuthorizationFilter() };
+        });
         x.FailedRetryCount = 5;
         x.FailedThresholdCallback = failed =>
         {
@@ -232,8 +254,12 @@ namespace SmartAdmin.WebUI
                         requiring manual troubleshooting. Message name: {failed.Message.GetName()}");
         };
       });
-      //services.AddSingleton<EventSubscriber>();
-    }
+      services.AddSignalR(options =>
+      {
+        options.EnableDetailedErrors = true;
+        options.KeepAliveInterval = TimeSpan.FromMinutes(1);
+      });
+     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -291,8 +317,11 @@ namespace SmartAdmin.WebUI
                   "default",
                   "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
+        endpoints.MapHub<NotificationHub>("/NotificationHub",options=> {
+          options.Transports = HttpTransportType.LongPolling;
+          });
       });
-
+      
       logger.LogInformation("网站启动");
     }
   }
