@@ -56,8 +56,7 @@ namespace SmartAdmin.WebUI
       var settings = Configuration.GetSection(nameof(SmartSettings)).Get<SmartSettings>();
       // Note: This line is for demonstration purposes only, I would not recommend using this as a shorthand approach for accessing settings
       // While having to type '.Value' everywhere is driving me nuts (>_<), using this method means reloaded appSettings.json from disk will not work
-      services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+     
       services.Configure<CookiePolicyOptions>(options =>
       {
         // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -94,8 +93,11 @@ namespace SmartAdmin.WebUI
                 .AddDefaultTokenProviders();
 
      
-      services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
+     
       #region infrastructure framework
+      services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+      services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
       services.AddScoped<DbContext, SmartDbContext>();
       services.AddScoped<IUnitOfWork, UnitOfWork>();
       services.AddScoped<ITrackableRepository<DataTableImportMapping>, TrackableRepository<DataTableImportMapping>>();
