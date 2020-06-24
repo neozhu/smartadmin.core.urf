@@ -57,7 +57,7 @@ namespace SmartAdmin.WebUI
       // Note: This line is for demonstration purposes only, I would not recommend using this as a shorthand approach for accessing settings
       // While having to type '.Value' everywhere is driving me nuts (>_<), using this method means reloaded appSettings.json from disk will not work
       services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
-
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.Configure<CookiePolicyOptions>(options =>
       {
         // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -93,7 +93,7 @@ namespace SmartAdmin.WebUI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+     
       services.AddScoped(SqlSugarFactory.CreateSqlSugarClient);
       #region infrastructure framework
       services.AddScoped<DbContext, SmartDbContext>();
@@ -163,7 +163,7 @@ namespace SmartAdmin.WebUI
          options.AccessDeniedPath = "/Identity/Account/AccessDenied";
          options.Cookie.Name = "CustomerPortal.Identity";
          options.SlidingExpiration = true;
-         options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
+         options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
        })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,x =>
       {
@@ -187,7 +187,7 @@ namespace SmartAdmin.WebUI
         // Cookie settings
         options.Cookie.Name = settings.App;
         options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
         options.Events = new CookieAuthenticationEvents()

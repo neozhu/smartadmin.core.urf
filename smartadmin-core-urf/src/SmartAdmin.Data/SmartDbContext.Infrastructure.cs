@@ -63,7 +63,7 @@ namespace SmartAdmin.Data.Models
 
       return base.SaveChangesAsync(cancellationToken);
     }
-
+  
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       if (!optionsBuilder.IsConfigured)
@@ -74,6 +74,15 @@ namespace SmartAdmin.Data.Models
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+      #region set Global Query Filters with tenantid
+      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext?.User.Identity;
+      var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
+      var tenantid = Convert.ToInt32(tenantclaim?.Value);
+      modelBuilder.Entity<Product>().HasQueryFilter(b => EF.Property<int>(b, "TenantId") == tenantid);
+
+      #endregion
+
       #region Business Domain Entity
       modelBuilder.Entity<Company>(entity =>
       {
