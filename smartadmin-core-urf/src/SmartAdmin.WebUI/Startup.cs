@@ -319,7 +319,7 @@ namespace SmartAdmin.WebUI
                   "default",
                   "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
-        endpoints.MapHub<NotificationHub>("/NotificationHub",options=> {
+        endpoints.MapHub<NotificationHub>("/notificationhub", options=> {
           options.Transports = HttpTransportType.LongPolling;
           });
       });

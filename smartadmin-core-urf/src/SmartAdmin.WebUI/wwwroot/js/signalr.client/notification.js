@@ -1,6 +1,7 @@
 "use strict";
-Object.defineProperty(WebSocket, 'OPEN', { value: 1, });
-var connection = new signalR.HubConnectionBuilder().withUrl("/NotificationHub").build();
+
+//Object.defineProperty(WebSocket, 'OPEN', { value: 1, });
+var connection = new signalR.HubConnectionBuilder().withUrl("/notificationhub").build();
 connection.on("smartadmin.eventbus", (eventData) => {
   console.log('subscribe smartadmin.eventbus', eventData);
   toastr.options = {

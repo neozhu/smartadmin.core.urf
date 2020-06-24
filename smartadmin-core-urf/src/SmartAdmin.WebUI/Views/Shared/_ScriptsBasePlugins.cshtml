@@ -1,3 +1,13 @@
+<script type="text/javascript">
+  window.paceOptions = {
+    ajax: {
+      trackWebSockets: false,
+      ignoreURLs: ["browserLink", "socket.io", "hub", "notificationhub"],
+      trackMethods: ["GET", "POST"],
+    },
+    restartOnRequestAfter: false,
+  }
+</script>
 <script src="~/js/vendors.bundle.js" asp-append-version="true"></script>
 <script src="~/js/app.bundle.js" asp-append-version="true"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
