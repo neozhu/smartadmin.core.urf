@@ -160,7 +160,7 @@ namespace SmartAdmin.WebUI
          options.AccessDeniedPath = "/Identity/Account/AccessDenied";
          options.Cookie.Name = "CustomerPortal.Identity";
          options.SlidingExpiration = true;
-         options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
+         options.ExpireTimeSpan = TimeSpan.FromSeconds(10); //Account.Login overrides this default value
        })
         .AddJwtBearer(x =>
       {
@@ -178,13 +178,13 @@ namespace SmartAdmin.WebUI
         };
       });
 
- 
+
       services.ConfigureApplicationCookie(options =>
       {
         // Cookie settings
         options.Cookie.Name = settings.App;
         options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
         options.AccessDeniedPath = "/Identity/Account/AccessDenied";

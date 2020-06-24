@@ -263,27 +263,27 @@
           $dg.datagrid('uncheckAll');
 			    $dg.datagrid('reload');
 	   }
+    //设置日志状态
+    function setLogState(id,index) {
+      $.get(`/Logs/SetLogState?id=${id}`).done(res => {
+        if (res.success) {
+          const row = $dg.datagrid('getRows')[index];
+          row.IsNew = 1;
+          row.IsNotification = 1;
+          $dg.datagrid('updateRow', {
+            index: index,
+            row: {
+              Resolved: true,
+            }
+          });
+          $dg.datagrid('refreshRow', index);
+        }
+      })
 
+    }
 
     function onClickRow(index, row) {
-      if (row.Resolved == false) {
-        $.get(`/Logs/SetLogState?id=${row.Id}`).done(res => {
-          if (res.success) {
-            console.log(res);
-            row.IsNew = 1;
-            row.IsNotification = 1;
-            $dg.datagrid('updateRow', {
-              index: index,
-              row: {
-                Resolved: true,
-              }
-            });
-            $dg.datagrid('refreshRow', index);
-
-          }
-
-        })
-      }
+      const id = row.Id;
       if (row.Exception) {
         bootbox.alert({
           size:'large',
@@ -294,7 +294,10 @@
                    <div  class="p-3 rounded bg-warning-700 text-white mt-3">
                    
                     ${row.Exception}
-                                  </div>`
+                                  </div>`,
+          callback: function () {
+            setLogState(id, index);
+          }
         });
       } else {
         bootbox.alert({
@@ -302,7 +305,10 @@
           message: `<p> ${row.Message}</p>
   <p> ${row.RequestForm} </p>
                    <p> ${row.Properties } </p>
-              `
+              `,
+          callback: function () {
+            setLogState(id, index);
+          }
         });
       }
     }

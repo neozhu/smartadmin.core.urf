@@ -122,7 +122,7 @@ namespace SmartAdmin.WebUI.EndPoints
           , _config["Jwt:Issuer"],
           claims,
           null,
-          expires: DateTime.Now.AddDays(30),
+          expires: DateTime.Now.AddSeconds(10),
           signingCredentials: credentials
       );
 

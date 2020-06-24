@@ -55,11 +55,10 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpGet]
     public async Task<IActionResult> SetLogState(int id)
     {
-
       var log = await this.dbContext.Logs.FindAsync(id);
       log.Resolved = true;
       await this.dbContext.SaveChangesAsync();
-      return Ok();
+      return Json(new { success=true});
     }
     [HttpGet]
     public async Task<IActionResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
