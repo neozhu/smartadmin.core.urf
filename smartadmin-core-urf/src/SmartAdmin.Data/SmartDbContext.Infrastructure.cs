@@ -14,11 +14,17 @@ namespace SmartAdmin.Data.Models
   public partial class SmartDbContext : DbContext
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly int _tenantId;
+    private readonly string _userName;
     public SmartDbContext(
       DbContextOptions options,
       IHttpContextAccessor httpContextAccessor) : base(options)
     {
       _httpContextAccessor = httpContextAccessor;
+      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext?.User.Identity;
+      var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
+      _tenantId = Convert.ToInt32(tenantclaim?.Value);
+      _userName = claimsidentity?.Name;
     }
     #region Infrastructure Entity
     public virtual DbSet<DataTableImportMapping> DataTableImportMappings { get; set; }
@@ -32,9 +38,7 @@ namespace SmartAdmin.Data.Models
     {
        
       var currentDateTime = DateTime.Now;
-      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext?.User.Identity;
-      var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
-      var tenantid = Convert.ToInt32(tenantclaim?.Value);
+      
       foreach (var auditableEntity in this.ChangeTracker.Entries<Entity>())
       {
         if (auditableEntity.State == EntityState.Added || auditableEntity.State == EntityState.Modified)
@@ -46,15 +50,15 @@ namespace SmartAdmin.Data.Models
               auditableEntity.Property("LastModifiedDate").IsModified = false;
               auditableEntity.Property("LastModifiedBy").IsModified = false;
               auditableEntity.Entity.CreatedDate = currentDateTime;
-              auditableEntity.Entity.CreatedBy = claimsidentity?.Name;
-              auditableEntity.Entity.TenantId = tenantid;
+              auditableEntity.Entity.CreatedBy = _userName;
+              auditableEntity.Entity.TenantId = _tenantId;
               break;
             case EntityState.Modified:
               auditableEntity.Property("CreatedDate").IsModified = false;
               auditableEntity.Property("CreatedBy").IsModified = false;
               auditableEntity.Entity.LastModifiedDate = currentDateTime;
-              auditableEntity.Entity.LastModifiedBy = claimsidentity?.Name;
-              auditableEntity.Entity.TenantId = tenantid;
+              auditableEntity.Entity.LastModifiedBy = _userName;
+              auditableEntity.Entity.TenantId = _tenantId;
 
               break;
           }
@@ -76,10 +80,8 @@ namespace SmartAdmin.Data.Models
     {
 
       #region set Global Query Filters with tenantid
-      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext?.User.Identity;
-      var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
-      var tenantid = Convert.ToInt32(tenantclaim?.Value);
-      modelBuilder.Entity<Product>().HasQueryFilter(b => EF.Property<int>(b, "TenantId") == tenantid);
+       
+      modelBuilder.Entity<Product>().HasQueryFilter(b => EF.Property<int>(b, "TenantId") == _tenantId);
 
       #endregion
 
