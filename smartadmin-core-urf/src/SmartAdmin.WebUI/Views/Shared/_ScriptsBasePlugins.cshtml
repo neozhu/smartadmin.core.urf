@@ -11,9 +11,11 @@
 <script src="~/js/vendors.bundle.js" asp-append-version="true"></script>
 <script src="~/js/app.bundle.js" asp-append-version="true"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/notifications/toastr/toastr.js"></script>
+<script src="~/js/notifications/toastr/toastr.js" asp-append-version="true"></script>
+<script src="~js/plugin/plusastab/plusastab.joelpurra.js" asp-append-version="true"></script>
+<script src="~js/plugin/plusastab/emulatetab.joelpurra.js" asp-append-version="true"></script>
 @if (User.Identity.IsAuthenticated)
 {
-  <script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
+  <script src="~/js/microsoft/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
   <script src="~/js/signalr.client/notification.js" asp-append-version="true"></script>
 }

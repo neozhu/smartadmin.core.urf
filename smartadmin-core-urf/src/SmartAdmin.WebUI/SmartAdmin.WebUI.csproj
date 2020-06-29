@@ -102,6 +102,11 @@
     <None Include="wwwroot\js\dependency\numeral\locales\uk-ua.min.js" />
     <None Include="wwwroot\js\dependency\numeral\locales\vi.min.js" />
     <None Include="wwwroot\js\dependency\numeral\numeral.min.js" />
+    <None Include="wwwroot\js\plugin\plusastab\console-shim.js" />
+    <None Include="wwwroot\js\plugin\plusastab\emulatetab.joelpurra.js" />
+    <None Include="wwwroot\js\plugin\plusastab\jquery.simulate.js" />
+    <None Include="wwwroot\js\plugin\plusastab\plusastab.joelpurra.js" />
+    <None Include="wwwroot\js\plugin\plusastab\qunit-2.1.1.js" />
   </ItemGroup>
 
 </Project>
