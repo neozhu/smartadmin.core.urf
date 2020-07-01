@@ -125,7 +125,7 @@ namespace SmartAdmin.Service
             Title = menu.Title,
             Text=menu.Title,
             Route=menu.Controller,
-            Tags=menu.Target,
+            Tags= menu.Title,
             I18n= $"{menu.Controller}_{menu.Action}"
           };
 
@@ -155,7 +155,7 @@ namespace SmartAdmin.Service
             Title = menu.Title,
             Text = menu.Title,
             Route = menu.Url,
-            Tags = menu.Target,
+            Tags = menu.Title,
             I18n = $"{menu.Controller}_{menu.Action}"
           };
 
