@@ -92,7 +92,7 @@ namespace SmartAdmin.WebUI.EndPoints
         var refreshToken = GenerateRefreshToken();
         //Return Ok with token string as content
         _logger.LogInformation($"{user.UserName}:RefreshToken");
-        return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
+        return Ok(new { accessToken = accessToken, refreshToken = refreshToken,userId=user.Id });
 
 
     }
@@ -111,11 +111,11 @@ namespace SmartAdmin.WebUI.EndPoints
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 //添加自定义claim
-                new Claim(ClaimTypes.GivenName, string.IsNullOrEmpty(user.GivenName) ? "" : user.GivenName),
+                new Claim(ClaimTypes.GivenName,   user.GivenName??""),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()),
-                new Claim("http://schemas.microsoft.com/identity/claims/avatars", string.IsNullOrEmpty(user.Avatars) ? "" : user.Avatars),
-                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)
+                new Claim("http://schemas.microsoft.com/identity/claims/avatars",  user.Avatars??""),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber??"")
       };
       //Retreive roles for user and add them to the claims listing
       var roles = await _manager.GetRolesAsync(user);
@@ -133,7 +133,7 @@ namespace SmartAdmin.WebUI.EndPoints
       return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    private string GenerateRefreshToken()
     {
       var randomNumber = new byte[32];
       using (var rng = RandomNumberGenerator.Create())
