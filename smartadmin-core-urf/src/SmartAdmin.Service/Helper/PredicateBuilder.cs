@@ -8,27 +8,64 @@ using System.Reflection;
 using System.Web;
 using System.Text.Json;
 using SmartAdmin.Dto;
+using System.Text.Json.Serialization;
 
 namespace SmartAdmin
 {
- 
+
+  internal class AutoNumberToStringConverter : JsonConverter<object>
+  {
+    public override bool CanConvert(Type typeToConvert)
+    {
+      return typeof(string) == typeToConvert;
+    }
+    public override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+      if (reader.TokenType == JsonTokenType.Number)
+      {
+        return reader.TryGetInt64(out long l) ?
+            l.ToString() :
+            reader.GetDouble().ToString();
+      }
+      if (reader.TokenType == JsonTokenType.String)
+      {
+        return reader.GetString();
+      }
+      using (JsonDocument document = JsonDocument.ParseValue(ref reader))
+      {
+        return document.RootElement.Clone().ToString();
+      }
+    }
+
+    public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+    {
+      writer.WriteStringValue(value.ToString());
+    }
+  }
+
   public static class PredicateBuilder
   {
 
-    public static Expression<Func<T, bool>> FromFilter<T>(string filtergroup) {
+    public static Expression<Func<T, bool>> FromFilter<T>(string filtergroup)
+    {
       Expression<Func<T, bool>> any = x => true;
       if (!string.IsNullOrEmpty(filtergroup))
       {
-        var filters = JsonSerializer.Deserialize<filter[]>(filtergroup);
+        var opts = new JsonSerializerOptions
+        {
+          PropertyNameCaseInsensitive = true,
+        };
+        opts.Converters.Add(new AutoNumberToStringConverter());
+        var filters = JsonSerializer.Deserialize<filter[]>(filtergroup, opts);
 
-          foreach (var filter in filters)
+        foreach (var filter in filters)
+        {
+          if (Enum.TryParse(filter.op, out OperationExpression op) && !string.IsNullOrEmpty(filter.value))
           {
-            if (Enum.TryParse(filter.op, out OperationExpression op) && !string.IsNullOrEmpty(filter.value))
-            {
-              var expression = GetCriteriaWhere<T>(filter.field, op, filter.value);
-              any = any.And(expression);
-            }
+            var expression = GetCriteriaWhere<T>(filter.field, op, filter.value);
+            any = any.And(expression);
           }
+        }
       }
 
       return any;
@@ -55,12 +92,12 @@ namespace SmartAdmin
       var expressionParameter = GetMemberExpression<T>(parameter, fieldName);
       if (prop != null && fieldValue != null)
       {
-       
+
         BinaryExpression body = null;
         switch (selectedOperator)
         {
           case OperationExpression.equal:
-            body = Expression.Equal(expressionParameter, Expression.Constant(Convert.ChangeType(fieldValue, Nullable.GetUnderlyingType(prop.PropertyType)?? prop.PropertyType), prop.PropertyType));
+            body = Expression.Equal(expressionParameter, Expression.Constant(Convert.ChangeType(fieldValue, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(body, parameter);
           case OperationExpression.notequal:
             body = Expression.NotEqual(expressionParameter, Expression.Constant(Convert.ChangeType(fieldValue, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType), prop.PropertyType));
@@ -82,7 +119,7 @@ namespace SmartAdmin
             var bodyLike = Expression.Call(expressionParameter, contains, Expression.Constant(Convert.ChangeType(fieldValue, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(bodyLike, parameter);
           case OperationExpression.endwith:
-            var endswith = typeof(string).GetMethod("EndsWith",new[] { typeof(string) });
+            var endswith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
             var bodyendwith = Expression.Call(expressionParameter, endswith, Expression.Constant(Convert.ChangeType(fieldValue, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType), prop.PropertyType));
             return Expression.Lambda<Func<T, bool>>(bodyendwith, parameter);
           case OperationExpression.beginwith:
@@ -159,7 +196,7 @@ namespace SmartAdmin
 
     private static string GetOperand<T>(Expression<Func<T, object>> exp)
     {
-      if (!( exp.Body is MemberExpression body ))
+      if (!(exp.Body is MemberExpression body))
       {
         var ubody = (UnaryExpression)exp.Body;
         body = ubody.Operand as MemberExpression;
@@ -187,13 +224,13 @@ namespace SmartAdmin
       return Expression.Property(parameter, propName);
     }
 
-    private static Expression<Func<T, bool>> Includes<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression ,Type type)
+    private static Expression<Func<T, bool>> Includes<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression, Type type)
     {
-      var safetype= Nullable.GetUnderlyingType(type) ?? type;
+      var safetype = Nullable.GetUnderlyingType(type) ?? type;
 
       switch (safetype.Name.ToLower())
       {
-        case  "string":
+        case "string":
           var strlist = (IEnumerable<string>)fieldValue;
           if (strlist == null || strlist.Count() == 0)
           {
@@ -223,16 +260,16 @@ namespace SmartAdmin
         default:
           return x => true;
       }
-      
+
     }
     private static Expression<Func<T, bool>> Between<T>(object fieldValue, ParameterExpression parameterExpression, MemberExpression memberExpression, Type type)
     {
-      
+
       var safetype = Nullable.GetUnderlyingType(type) ?? type;
       switch (safetype.Name.ToLower())
       {
         case "datetime":
-          var datearray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+          var datearray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var start = Convert.ToDateTime(datearray[0] + " 00:00:00", CultureInfo.CurrentCulture);
           var end = Convert.ToDateTime(datearray[1] + " 23:59:59", CultureInfo.CurrentCulture);
           var greater = Expression.GreaterThan(memberExpression, Expression.Constant(start, type));
@@ -241,15 +278,15 @@ namespace SmartAdmin
             .And(Expression.Lambda<Func<T, bool>>(less, parameterExpression));
         case "int":
         case "int32":
-          var intarray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-          var min = Convert.ToInt32(intarray[0] , CultureInfo.CurrentCulture);
+          var intarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+          var min = Convert.ToInt32(intarray[0], CultureInfo.CurrentCulture);
           var max = Convert.ToInt32(intarray[1], CultureInfo.CurrentCulture);
           var maxthen = Expression.GreaterThan(memberExpression, Expression.Constant(min, type));
           var minthen = Expression.LessThan(memberExpression, Expression.Constant(max, type));
           return Expression.Lambda<Func<T, bool>>(maxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(minthen, parameterExpression));
         case "decimal":
-          var decarray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+          var decarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var dmin = Convert.ToDecimal(decarray[0], CultureInfo.CurrentCulture);
           var dmax = Convert.ToDecimal(decarray[1], CultureInfo.CurrentCulture);
           var dmaxthen = Expression.GreaterThan(memberExpression, Expression.Constant(dmin, type));
@@ -265,10 +302,10 @@ namespace SmartAdmin
           return Expression.Lambda<Func<T, bool>>(fmaxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(fminthen, parameterExpression));
         case "string":
-          var strarray = ( (string)fieldValue ).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+          var strarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var smin = strarray[0];
           var smax = strarray[1];
-        
+
           var strmethod = typeof(string).GetMethod("Contains");
           var mm = Expression.Call(memberExpression, strmethod, Expression.Constant(smin, type));
           var nn = Expression.Call(memberExpression, strmethod, Expression.Constant(smax, type));
