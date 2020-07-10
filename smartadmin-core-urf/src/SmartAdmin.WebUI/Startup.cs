@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -122,6 +123,7 @@ namespace SmartAdmin.WebUI
       #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
+      services.AddAutoMapper(typeof(Startup));
       services
           .AddControllersWithViews(options =>
           {
