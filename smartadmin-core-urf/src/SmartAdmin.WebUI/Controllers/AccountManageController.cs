@@ -173,6 +173,7 @@ namespace SmartAdmin.WebUI.Controllers
               update.Description = item.Description;
               update.ConnectionStrings = item.ConnectionStrings;
               update.Disabled = item.Disabled;
+              this._dbContext.Update(update);
              
             }
             if (item.TrackingState == 3)
