@@ -45,7 +45,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
         var user = await _userManager.FindByNameAsync(this.User.Identity.Name);
         this.PageContext.HttpContext.Response.Cookies.Append("UserName", user.UserName);
         this.PageContext.HttpContext.Response.Cookies.Append("GivenName", user.GivenName);
-        this.PageContext.HttpContext.Response.Cookies.Append("Avatars", user.Avatars);
+        this.PageContext.HttpContext.Response.Cookies.Append("Avatars", user.AvatarUrl);
       }
       
       await _signInManager.SignOutAsync();

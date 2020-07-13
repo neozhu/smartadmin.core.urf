@@ -114,7 +114,7 @@ namespace SmartAdmin.WebUI.EndPoints
                 new Claim(ClaimTypes.GivenName,   user.GivenName??""),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()),
-                new Claim("http://schemas.microsoft.com/identity/claims/avatars",  user.Avatars??""),
+                new Claim("http://schemas.microsoft.com/identity/claims/avatarurl",  user.AvatarUrl??""),
                 new Claim(ClaimTypes.MobilePhone, user.PhoneNumber??"")
       };
       //Retreive roles for user and add them to the claims listing

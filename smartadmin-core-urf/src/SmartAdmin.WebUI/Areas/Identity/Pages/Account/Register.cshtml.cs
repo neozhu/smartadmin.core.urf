@@ -61,7 +61,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
           TenantId = Input.TenantId,
           Email = Input.Email,
           PhoneNumber = Input.PhoneNumber,
-          Avatars = "ng.jpg",
+          AvatarUrl = "ng.jpg",
           GivenName = Input.GivenName,
           EnabledChat = false
 
@@ -76,7 +76,7 @@ namespace SmartAdmin.WebUI.Areas.Identity.Pages.Account
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantname", user.TenantName??""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantdb", user.TenantDb??""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.Email));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/avatars",  user.Avatars ?? ""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/avatarurl",  user.AvatarUrl ?? ""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.MobilePhone, user.PhoneNumber ?? ""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.HomePhone,  user.PhoneNumber ?? ""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.OtherPhone, user.PhoneNumber ?? ""));

@@ -35,25 +35,28 @@
           <div class="row no-gutters align-items-center">
             <div class="col">
               <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
-              <div class="btn-group">
+              <div class="btn-group ">
                 <a href="javascript:resetpassword()" class="btn btn-sm btn-primary"> <i class="fal fa-key mr-1"></i> 重置密码 </a>
               </div>
-              <div class="btn-group">
+              <div class="btn-group ">
                 <a href="javascript:setlockout()" class="btn btn-sm btn-danger"> <i class="fal fa-user-lock mr-1"></i> 禁用账号 </a>
               </div>
-              <div class="btn-group">
+              <div class="btn-group ">
                 <a href="javascript:setunlockout()" class="btn btn-sm btn-success"> <i class="fal fa-unlock-alt mr-1"></i> 恢复账号 </a>
               </div>
-              <div class="btn-group btn-group-sm">
+              <div class="btn-group btn-group-sm ">
                 <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 注册新账号 </button>
               </div>
-              <div class="btn-group btn-group-sm">
+              <div class="btn-group btn-group-sm ">
                 <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除账号 </button>
               </div>
-              <div class="btn-group btn-group-sm">
+              @*<div class="btn-group btn-group-sm ">
+                <button onclick="acceptChanges()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
+              </div>*@
+              <div class="btn-group btn-group-sm ">
                 <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 刷新 </button>
               </div>
-              <div class="btn-group btn-group-sm hidden-xs">
+              <div class="btn-group btn-group-sm hidden-xs ">
                 <button type="button" onclick="importexcel('ApplicationUser')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                 <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
@@ -196,8 +199,8 @@
     $(function () {
       $dg.datagrid({
         rownumbers: true,
-        checkOnSelect: true,
-        selectOnCheck: true,
+        checkOnSelect: false,
+        selectOnCheck: false,
         idField: 'Id',
         sortName: 'Id',
         sortOrder: 'desc',
@@ -261,6 +264,10 @@
             field: 'UserName',
             title: '账号',
             width: 140,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '账号', required: true, validType: 'length[0,128]' }
+            },
             sortable: true,
             resizable: true
           },
@@ -268,6 +275,10 @@
             field: 'GivenName',
             title:  '昵称',
             width: 140,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '昵称', required: true, validType: 'length[0,128]' }
+            },
             sortable: true,
             resizable: true
           },
@@ -275,6 +286,10 @@
             field: 'Email',
             title: '电子邮件',
             width: 240,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '电子邮件', required: true, validType: 'email' }
+            },
             sortable: true,
             resizable: true
           },
@@ -282,13 +297,21 @@
             field: 'PhoneNumber',
             title: '电话号码',
             width: 140,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '电话号码', required: false, validType: 'length[0,128]' }
+            },
             sortable: true,
             resizable: true
           },
           {
-            field: 'Avatars',
+            field: 'AvatarUrl',
             title: '头像',
             width: 120,
+            editor: {
+              type: 'textbox',
+              options: { prompt: '头像', required: false, validType: 'length[0,128]' }
+            },
             sortable: true,
             resizable: true
           },
@@ -314,24 +337,13 @@
       $dg.datagrid('enableFilter', [
         {
           field: 'TenantId',
-          type: 'combogrid',
+          type: 'combobox',
           options: {
-            idField: 'Id',
-            panelWidth: 330,
+            valueField: 'Id',
+            panelHeight: 'auto',
             textField: 'Name',
-            method: 'get',
+            method: 'post',
             url: '/AccountManage/GetTenantData',
-            icons: [{
-              iconCls: 'icon-clear',
-              handler: function (e) {
-                $dg.datagrid('removeFilterRule', 'TenantId');
-                $dg.datagrid('doFilter');
-              }
-            }],
-            columns: [[
-              { field: 'Name', title: '名称', width: 170 },
-              { field: 'ConnectionStrings', title: '数据库', width: 120 }
-            ]],
             onChange: value => {
               if (value === '' || value === null) {
                 $dg.datagrid('removeFilterRule', 'TenantId');

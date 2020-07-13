@@ -915,14 +915,14 @@
   width: 18px;
   height: 20px;
   overflow: hidden;
-  vertical-align: top;
+  vertical-align: baseline;
   background-position: center center;
   cursor: pointer;
   opacity: 0.6;
   filter: alpha(opacity=60);
   text-decoration: none;
   outline-style: none;
-
+  padding-top:8px;
 
  
 }

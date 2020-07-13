@@ -78,7 +78,7 @@ namespace SmartAdmin.WebUI.Controllers
           TenantId = model.TenantId,
           Email = model.Email,
           PhoneNumber = model.PhoneNumber,
-          Avatars = "ng.jpg",
+          AvatarUrl = "ng.jpg",
           GivenName = model.GivenName,
           EnabledChat = false
 
@@ -89,14 +89,14 @@ namespace SmartAdmin.WebUI.Controllers
           this._logger.LogInformation($"{user.UserName}:注册成功");
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.UserName));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.GivenName, string.IsNullOrEmpty(user.GivenName) ? "" : user.GivenName));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantname", string.IsNullOrEmpty(user.TenantName) ? "" : user.TenantName));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantdb", string.IsNullOrEmpty(user.TenantDb) ? "" : user.TenantDb));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.GivenName,  user.GivenName??""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantname", user.TenantName??""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantdb",  user.TenantDb??""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.Email));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/avatars", string.IsNullOrEmpty(user.Avatars)?"": user.Avatars));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.MobilePhone, string.IsNullOrEmpty(user.PhoneNumber) ? "" : user.PhoneNumber));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.HomePhone, string.IsNullOrEmpty(user.PhoneNumber) ? "" : user.PhoneNumber));
-          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.OtherPhone, string.IsNullOrEmpty(user.PhoneNumber) ? "" : user.PhoneNumber));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/avatarurl", user.AvatarUrl??""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.MobilePhone,   user.PhoneNumber??""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.HomePhone,   user.PhoneNumber ?? ""));
+          await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.OtherPhone,  user.PhoneNumber ?? ""));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Locality, "zh-cn"));
           await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Country, "china"));
           var role = "users";
@@ -229,7 +229,7 @@ namespace SmartAdmin.WebUI.Controllers
         Email = n.Email,
         TenantId = n.TenantId,
         PhoneNumber = n.PhoneNumber,
-        Avatars = n.Avatars,
+        AvatarUrl = n.AvatarUrl,
         AccessFailedCount = n.AccessFailedCount,
         LockoutEnabled = n.LockoutEnabled,
         LockoutEnd = n.LockoutEnd?.ToString("yyyy-MM-dd HH:mm:ss"),

@@ -22,7 +22,7 @@ namespace SmartAdmin.WebUI.Models
         var mobilephone = claimsidentity.FindFirst(ClaimTypes.MobilePhone)?.Value;
         var homephone = claimsidentity.FindFirst(ClaimTypes.HomePhone)?.Value;
         var otherphone = claimsidentity.FindFirst(ClaimTypes.OtherPhone)?.Value;
-        var avatars = claimsidentity.FindFirst("http://schemas.microsoft.com/identity/claims/avatars")?.Value;
+        var avatarurl = claimsidentity.FindFirst("http://schemas.microsoft.com/identity/claims/avatarurl")?.Value;
         var tenantid = claimsidentity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
         var tenantname = claimsidentity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantname")?.Value;
         var tenantdb = claimsidentity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantdb")?.Value;
