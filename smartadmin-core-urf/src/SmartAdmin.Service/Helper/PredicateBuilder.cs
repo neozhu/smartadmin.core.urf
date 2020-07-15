@@ -231,7 +231,7 @@ namespace SmartAdmin
       switch (safetype.Name.ToLower())
       {
         case "string":
-          var strlist = (IEnumerable<string>)fieldValue;
+          var strlist = fieldValue.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
           if (strlist == null || strlist.Count() == 0)
           {
             return x => true;
@@ -240,7 +240,7 @@ namespace SmartAdmin
           var strcallexp = Expression.Call(Expression.Constant(strlist.ToList()), strmethod, memberExpression);
           return Expression.Lambda<Func<T, bool>>(strcallexp, parameterExpression);
         case "int32":
-          var intlist = (IEnumerable<int>)fieldValue;
+          var intlist = fieldValue.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList();
           if (intlist == null || intlist.Count() == 0)
           {
             return x => true;
@@ -249,12 +249,13 @@ namespace SmartAdmin
           var intcallexp = Expression.Call(Expression.Constant(intlist.ToList()), intmethod, memberExpression);
           return Expression.Lambda<Func<T, bool>>(intcallexp, parameterExpression);
         case "float":
-          var floatlist = (IEnumerable<float>)fieldValue;
+        case "decimal":
+          var floatlist = fieldValue.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Decimal.Parse).ToList();
           if (floatlist == null || floatlist.Count() == 0)
           {
             return x => true;
           }
-          var floatmethod = typeof(List<int>).GetMethod("Contains", new Type[] { typeof(int) });
+          var floatmethod = typeof(List<decimal>).GetMethod("Contains", new Type[] { typeof(decimal) });
           var floatcallexp = Expression.Call(Expression.Constant(floatlist.ToList()), floatmethod, memberExpression);
           return Expression.Lambda<Func<T, bool>>(floatcallexp, parameterExpression);
         default:
@@ -305,12 +306,9 @@ namespace SmartAdmin
           var strarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var smin = strarray[0];
           var smax = strarray[1];
-
           var strmethod = typeof(string).GetMethod("Contains");
           var mm = Expression.Call(memberExpression, strmethod, Expression.Constant(smin, type));
           var nn = Expression.Call(memberExpression, strmethod, Expression.Constant(smax, type));
-
-
           return Expression.Lambda<Func<T, bool>>(mm, parameterExpression)
             .Or(Expression.Lambda<Func<T, bool>>(nn, parameterExpression));
         default:
