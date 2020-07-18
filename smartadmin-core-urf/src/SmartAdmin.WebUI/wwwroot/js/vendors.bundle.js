@@ -935,10 +935,10 @@
 }).call(this);
 
 window.paceOptions = {
-    ajax: {
-        ignoreURLs: ['signalr', '__browserLink', 'browserLinkSignalR'],
-        trackWebSockets: false
-    }
+  ajax: {
+    ignoreURLs: ['signalr', '__browserLink', 'browserLinkSignalR'],
+    trackWebSockets: false
+  }
 };
 /*!
  * jQuery JavaScript Library v3.5.1
