@@ -42,39 +42,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="menu-tree" style="width:auto;height:auto"
-                 data-options="
-                                            iconCls: 'icon-ok',
-                                            rownumbers: true,
-                                            animate: true,
-                                            singleSelect: false,
-                                            fitColumns: true,
-                                            url: '/RoleMenus/GetMenuList',
-                                            method: 'get',
-                                            idField: 'Id',
-                                            treeField: 'Title',
-                                            pagination: false,
-                                            checkOnSelect: true,
-                                            onSelect:onSelect,
-                                            onUnselect:onUnselect
-                                            ">
-            <thead>
-              <tr>
-                <th data-options="field:'ck',checkbox: true ">选择</th>
-                <th data-options="field:'Title',width:180">Title</th>
-                <th data-options="field:'Code',width:80">Code</th>
-                <th data-options="field:'Url',width:120">Url</th>
-                <th data-options="field:'Create',width:80, align: 'center' "  formatter="formatcreatecheckbox">新增</th>
-                <th data-options="field:'Edit',width:80 , align: 'center'" formatter="formateditcheckbox">编辑</th>
-                <th data-options="field:'Delete',width:80, align: 'center' " formatter="formatdeletecheckbox">删除</th>
-                <th data-options="field:'Import',width:80, align: 'center' " formatter="formatimportcheckbox">导入</th>
-                <th data-options="field:'Export',width:80, align: 'center' " formatter="formatexportcheckbox">导出</th>
-                <th data-options="field:'FunctionPoint1',width:80 , align: 'center'" formatter="formatpoint1checkbox">功能点1</th>
-                <th data-options="field:'FunctionPoint2',width:80 , align: 'center'" formatter="formatpoint2checkbox">功能点2</th>
-                <th data-options="field:'FunctionPoint3',width:80 , align: 'center'" formatter="formatpoint3checkbox">功能点3</th>
-
-              </tr>
-            </thead>
+          <table id="menu-tree" style="width:auto;height:auto">
           </table>
         </div>
       </div>
@@ -233,7 +201,97 @@
     $(function () {
       $('#savebutton').attr('disabled', true);
 
-      $('#menu-tree').treegrid();
+      $('#menu-tree').treegrid(
+        {
+          iconCls: 'icon-ok',
+          rownumbers: true,
+          animate: true,
+          singleSelect: false,
+          fitColumns: true,
+          url: '/RoleMenus/GetMenuList',
+          method: 'get',
+          idField: 'Id',
+          treeField: 'Title',
+          pagination: false,
+          checkOnSelect: true,
+          onSelect: onSelect,
+          onUnselect: onUnselect,
+          columns: [[
+            {
+              field: 'ck',
+              checkbox: true
+
+            },
+            {
+              field: 'Title',
+              width: 180,
+              title: '菜单名称'
+            },
+            {
+              field: 'Code',
+              width: 80,
+              title: '序号'
+            },
+            {
+              field: 'Url',
+              width: 120,
+              title: 'Url'
+            }
+            ,
+            {
+              field: 'Create',
+              width: 70,
+              title: '新增',
+              formatter: formatcreatecheckbox
+
+            },
+            {
+              field: 'Edit',
+              width: 70,
+              title: '编辑',
+              formatter: formateditcheckbox
+            },
+            {
+              field: 'Delete',
+              width: 70,
+              title: '删除',
+              formatter: formatdeletecheckbox
+            }
+            ,
+            {
+              field: 'Import',
+              width: 70,
+              title: '导入',
+              formatter: formatimportcheckbox
+            }
+            ,
+            {
+              field: 'Export',
+              width: 70,
+              title: '导出',
+              formatter: formatexportcheckbox
+            },
+            {
+              field: 'FunctionPoint1',
+              width: 70,
+              title: '功能点1',
+              formatter: formatpoint1checkbox
+            },
+            {
+              field: 'FunctionPoint2',
+              width: 70,
+              title: '功能点2',
+              formatter: formatpoint2checkbox
+            },
+            {
+              field: 'FunctionPoint3',
+              width: 70,
+              title: '功能点3',
+              formatter: formatpoint3checkbox
+            }
+          ]]
+        }
+      );
       $('.list-group-item').click(function () {
         $('.list-group-item').removeClass('active');
         $(this).addClass('active');
