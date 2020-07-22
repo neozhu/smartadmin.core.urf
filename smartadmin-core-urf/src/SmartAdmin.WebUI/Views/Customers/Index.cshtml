@@ -488,6 +488,14 @@
           $("button[name*='savebutton']").prop('disabled', true);
           $("button[name*='cancelbutton']").prop('disabled', true);
         },
+        onCheckAll: function (rows) {
+          if (rows.length > 0) {
+            $("button[name*='deletebutton']").prop('disabled', false);
+          }
+        },
+        onUncheckAll: function () {
+          $("button[name*='deletebutton']").prop('disabled', true);
+        },
         onCheck: function () {
           $("button[name*='deletebutton']").prop('disabled', false);
         },

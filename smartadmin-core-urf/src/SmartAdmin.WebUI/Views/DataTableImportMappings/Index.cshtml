@@ -57,7 +57,7 @@
                 <a href="javascript:exportexcel()" class="btn btn-sm   btn-info"> <i class="fal fa-download mr-1"></i> 导出配置 </a>
               </div>
               <div class="btn-group">
-                <a href="javascript:removeit()" class="btn btn-sm btn-danger"> <i class="fal fa-trash-alt mr-1"></i> 删除 </a>
+                <a href="javascript:removeit()" name="deletebutton" class="btn btn-sm btn-danger"> <i class="fal fa-trash-alt mr-1"></i> 删除 </a>
               </div>
               <div class="btn-group">
                 <a href="javascript:accept()" class="btn btn-sm btn-default"> <i class="fal fa-save mr-1"></i> 保存 </a>
@@ -388,6 +388,14 @@
               that.datagrid('resize');
             }, 200)
           })
+        },
+        onCheckAll: function (rows) {
+          if (rows.length > 0) {
+            $("button[name*='deletebutton']").prop('disabled', false);
+          }
+        },
+        onUncheckAll: function () {
+          $("button[name*='deletebutton']").prop('disabled', true);
         },
         onBeginEdit:function(rowIndex,row){
           var editors = $(this).datagrid('getEditors', rowIndex);
