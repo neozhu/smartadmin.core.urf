@@ -650,7 +650,8 @@
       }
       var menu = input[0].menu;
       if (menu) {
-        menu.find('.menu-icon').removeClass(opts.filterMenuIconCls);
+        //menu.find('.menu-icon').removeClass(opts.filterMenuIconCls);
+        menu.find('.' + opts.filterMenuIconCls).removeClass(opts.filterMenuIconCls);
         var item = menu.menu('findItem', opts.operators[param.op]['text']);
         menu.menu('setIcon', {
           target: item.target,
@@ -917,6 +918,31 @@
       }
       return result;
     };
+    if ((opts.view.type == 'detailview' || opts.view.type == 'scrollview') && opts.frozenColumns && opts.frozenColumns.length) {
+      var onBeforeRender = opts.view.onBeforeRender;
+      opts.view.onBeforeRender = function (target) {
+        onBeforeRender.call(opts.view, target)
+        if (!opts.detailviewFilterInited) {
+          opts.detailviewFilterInited = true;
+          var fields = $(target).datagrid('getColumnFields', true);
+          if (opts.rownumbers) {
+            fields.unshift('_');
+          }
+          var tr = $(target).data('datagrid').dc.header1.find('.datagrid-filter-row');
+          if (tr.length < fields.length) {
+            var index = $.inArray('_expander', fields);
+            if (index >= 0) {
+              var td = tr.children().eq(index);
+              if (td.length) {
+                $('<td class="_expander"></td>').insertBefore(td);
+              } else {
+                $('<td class="_expander"></td>').appendTo(tr);
+              }
+            }
+          }
+        }
+      }
+    }
     // opts.loadFilter = myLoadFilter;
     opts.loadFilter = function (data, parentId) {
       var d = opts.oldLoadFilter.call(this, data, parentId);
