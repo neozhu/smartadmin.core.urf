@@ -176,8 +176,9 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpPost]
     public async Task<IActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
     {
-      var fileName = "compnay" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
-      var stream = await this.productService.ExportExcelAsync(filterRules, sort, order);
+      var fileName = "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+      var filters = PredicateBuilder.FromFilter<Product>(filterRules);
+      var stream = await this.productService.ExportExcelAsync(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
     //导入excel

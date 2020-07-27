@@ -116,7 +116,7 @@ namespace SmartAdmin.WebUI
       #region 注入业务服务
       services.AddScoped<ITrackableRepository<Company>, TrackableRepository<Company>>();
       services.AddScoped<ICompanyService, CompanyService>();
-      services.AddScoped<ITrackableRepository<Product>, TrackableRepository<Product>>();
+      services.AddScoped<IRepositoryX<Product>, RepositoryX<Product>>();
       services.AddScoped<IProductService, ProductService>();
       services.AddScoped<IRepositoryX<Customer>, RepositoryX<Customer>>();
       services.AddScoped<ICustomerService, CustomerService>();

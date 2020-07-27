@@ -16,7 +16,7 @@ namespace SmartAdmin.WebUI.Controllers
 {
   public class CustomersController : Controller
   {
-    private  readonly ICustomerService customerService;
+    private readonly ICustomerService customerService;
     private readonly IUnitOfWork unitOfWork;
     private readonly ILogger<CustomersController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -32,7 +32,7 @@ namespace SmartAdmin.WebUI.Controllers
     }
 
     // GET: Customers
-    public IActionResult Index()=> View();
+    public IActionResult Index() => View();
     //datagrid 数据源
     public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
     {
@@ -49,9 +49,10 @@ namespace SmartAdmin.WebUI.Controllers
         var pagelist = new { total = total, rows = pagerows };
         return Json(pagelist);
       }
-      catch(Exception e) {
+      catch (Exception e)
+      {
         throw e;
-        }
+      }
 
     }
     //编辑 
@@ -67,7 +68,7 @@ namespace SmartAdmin.WebUI.Controllers
           var result = await this.unitOfWork.SaveChangesAsync();
           return Json(new { success = true, result = result });
         }
-         catch (Exception e)
+        catch (Exception e)
         {
           return Json(new { success = false, err = e.GetBaseException().Message });
         }
@@ -83,7 +84,7 @@ namespace SmartAdmin.WebUI.Controllers
     //新建
     [HttpPost]
     [ValidateAntiForgeryToken]
-   
+
     public async Task<JsonResult> Create([Bind("Name,Contect,PhoneNumber,Address")] Customer customer)
     {
       if (ModelState.IsValid)
@@ -91,8 +92,8 @@ namespace SmartAdmin.WebUI.Controllers
         try
         {
           this.customerService.Insert(customer);
-       await this.unitOfWork.SaveChangesAsync();
-          return Json(new { success = true});
+          await this.unitOfWork.SaveChangesAsync();
+          return Json(new { success = true });
         }
         catch (Exception e)
         {
@@ -103,7 +104,7 @@ namespace SmartAdmin.WebUI.Controllers
         //return RedirectToAction("Index");
       }
       else
-       {
+      {
         var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
         return Json(new { success = false, err = modelStateErrors });
         //DisplayErrorMessage(modelStateErrors);
@@ -121,7 +122,7 @@ namespace SmartAdmin.WebUI.Controllers
         await this.unitOfWork.SaveChangesAsync();
         return Json(new { success = true });
       }
-     
+
       catch (Exception e)
       {
         return Json(new { success = false, err = e.GetBaseException().Message });
@@ -155,11 +156,11 @@ namespace SmartAdmin.WebUI.Controllers
         {
           foreach (var item in customers)
           {
-         
+
             this.customerService.ApplyChanges(item);
           }
           var result = await this.unitOfWork.SaveChangesAsync();
-              return Json(new { success = true, result });
+          return Json(new { success = true, result });
         }
         catch (Exception e)
         {
@@ -173,7 +174,16 @@ namespace SmartAdmin.WebUI.Controllers
       }
 
     }
-     
-
+    //导出Excel
+    [HttpPost]
+    public async Task<ActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
+    {
+      var fileName = "customers_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+      var filters = PredicateBuilder.FromFilter<Customer>(filterRules);
+      var stream = await this.customerService.ExportExcelAsync(filters, sort, order);
+      return File(stream, "application/vnd.ms-excel", fileName);
     }
+
+
+  }
 }

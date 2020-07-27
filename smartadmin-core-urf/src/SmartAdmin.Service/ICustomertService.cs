@@ -9,7 +9,7 @@ using URF.Core.Abstractions.Services;
 namespace SmartAdmin.Service
 {
   // Example: extending IService<TEntity> and/or ITrackableRepository<TEntity>, scope: ICustomerService
-  public interface ICustomerService : IService<Customer>
+  public interface ICustomerService : IServiceX<Customer>
   {
     
   }
