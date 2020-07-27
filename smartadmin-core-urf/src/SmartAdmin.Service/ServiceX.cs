@@ -52,22 +52,21 @@ namespace SmartAdmin.Service
         if (requiredfield != null || !row.IsNull(requiredfield))
         {
           var item = Activator.CreateInstance<TEntity>();
+          var entitytype = item.GetType();
           foreach (var field in mapping)
           {
             var defval = field.DefaultValue;
             var contain = datatable.Columns.Contains(field.SourceFieldName ?? "");
             if (contain && !row.IsNull(field.SourceFieldName))
             {
-              var worktype = item.GetType();
-              var propertyInfo = worktype.GetProperty(field.FieldName);
+              var propertyInfo = entitytype.GetProperty(field.FieldName);
               var safetype = Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType;
               var safeValue = (row[field.SourceFieldName] == null) ? null : Convert.ChangeType(row[field.SourceFieldName], safetype);
               propertyInfo.SetValue(item, safeValue, null);
             }
             else if (!string.IsNullOrEmpty(defval))
             {
-              var worktype = item.GetType();
-              var propertyInfo = worktype.GetProperty(field.FieldName);
+               var propertyInfo = entitytype.GetProperty(field.FieldName);
               if (string.Equals(defval, "now", StringComparison.OrdinalIgnoreCase) && (propertyInfo.PropertyType == typeof(DateTime) || propertyInfo.PropertyType == typeof(Nullable<DateTime>)))
               {
                 var safetype = Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType;

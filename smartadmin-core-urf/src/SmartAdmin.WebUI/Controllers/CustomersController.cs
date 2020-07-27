@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
@@ -183,7 +185,38 @@ namespace SmartAdmin.WebUI.Controllers
       var stream = await this.customerService.ExportExcelAsync(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
+    //上传导入Excel
+    [HttpPost]
+    public async Task<JsonResult> ImportExcel(List<IFormFile> uploadfiles) {
+      try
+      {
+        var total = 0m;
+        var watch = new Stopwatch();
+        watch.Start();
+        foreach (var formFile in uploadfiles)
+        {
+          if (formFile.Length > 0)
+          {
+            var ext = System.IO.Path.GetExtension(formFile.FileName);
+            var stream = new MemoryStream();
+            await formFile.CopyToAsync(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var datatable = await NPOIHelper.GetDataTableFromExcelAsync(stream, ext);
+            await this.customerService.ImportDataTableAsync(datatable, this.User.Identity.Name);
+            await this.unitOfWork.SaveChangesAsync();
+            total = total + datatable.Rows.Count;
+          }
+        }
 
+        watch.Stop();
+        //获取当前实例测量得出的总运行时间（以毫秒为单位）
+        var elapsedTime = watch.ElapsedMilliseconds.ToString();
+        return Json(new { success = true, total, elapsedTime });
+      }
+      catch (Exception e) {
+        return Json(new { success = false, err=e.GetBaseException().Message });
+      }
+    }
 
   }
 }

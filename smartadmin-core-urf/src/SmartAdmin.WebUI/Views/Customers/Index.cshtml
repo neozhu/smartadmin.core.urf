@@ -79,7 +79,7 @@
         </div>
         <div class="panel-content">
           <div class="table-responsive">
-            <table id="companies_datagrid">
+            <table id="customers_datagrid">
             </table>
           </div>
         </div>
@@ -252,7 +252,7 @@
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script>
-        var $dg = $('#companies_datagrid');
+        var $dg = $('#customers_datagrid');
         var EDITINLINE = true;
         var customer = null;
     var editIndex = undefined;
@@ -329,7 +329,7 @@
           });
         }
       } else {
-        deletechecked();
+        deleteChecked();
       }
     }
     //删除选中的行
