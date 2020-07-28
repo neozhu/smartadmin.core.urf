@@ -390,20 +390,23 @@
             resizable: true,
             title: '@Html.DisplayNameFor(model => model.Description)'
           },
-          {
+         {
             field: 'IsDisabled',
-            width: 100, align: 'right',
+            title: '@Html.DisplayNameFor(model => model.IsDisabled)',
+            width: 100,
+            align: 'center',
             editor: {
-              type: 'isdisablededitor',
+              type: 'combobox',
               options: {
+                panelHeight:'auto',
+                data: [{ value: '0', text: '未禁用' }, { value: '1', text: '已禁用' }],
                 prompt: '是否禁用',
                 required: true
               }
             },
             sortable: true,
             resizable: true,
-            formatter: isdisabledformatter,
-            title: '@Html.DisplayNameFor(model => model.IsDisabled)'
+            formatter: checkboxformatter
           }
         ]]
 
@@ -411,8 +414,27 @@
       .datagrid("enableFilter", [
         {
           field: "IsDisabled",
-          type: "isdisabledfilter",
-
+          type: "combobox",
+          options: {
+            panelHeight: 'auto',
+            data: [
+              { value: '', text: 'All' },
+              { value: '0', text: '未禁用' },
+              { value: '1', text: '已禁用' }
+            ],
+            onChange: value => {
+              if (value == '') {
+                $dg.datagrid('removeFilterRule', 'IsDisabled');
+              } else {
+                $dg.datagrid('addFilterRule', {
+                  field: 'IsDisabled',
+                  op: 'equal',
+                  value: value
+                });
+              }
+              $dg.datagrid('doFilter');
+            }
+          }
         },
         {
           field: "Multiple",

@@ -156,7 +156,7 @@
 .panel-title {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 14px;
+ /* font-size: 14px;*/
   color: inherit;
 }
 
@@ -874,7 +874,7 @@
   margin-bottom: -3px;
   line-height: 19px;
   font-weight: 400;
-  font-size: 13px;
+  /*font-size: 13px;*/
   color: #333;
   text-align: left;
   vertical-align: middle;
@@ -3769,7 +3769,7 @@
   opacity: 1;
   filter: alpha(opacity=100);
   padding: 5px;
-  font-size: 12px;
+ /* font-size: 12px;*/
   border-width: 1px;
   border-style: solid;
   border-radius: 2px;
@@ -3782,7 +3782,7 @@
 }
 
 .tooltip-content {
-  font-size: 12px;
+  /*font-size: 12px;*/
 }
 
 .tooltip-arrow-outer,
@@ -3923,7 +3923,7 @@
   text-align: center;
   height: 100%;
   float: left;
-  font-size: 14px;
+  /*font-size: 14px;*/
   height: 27px !important;
   line-height: 27px !important;
   /*-moz-border-radius: 4px 4px 4px 4px;

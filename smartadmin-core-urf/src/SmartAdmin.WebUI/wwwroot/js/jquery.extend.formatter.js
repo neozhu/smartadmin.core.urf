@@ -1,12 +1,10 @@
-//-------test---------//
-var isdisabledfiltersource = [{ value: '', text: 'All'}];
-var isdisableddatasource = [];
-isdisabledfiltersource.push({ value: '0',text:'未禁用'  });
-isdisableddatasource.push({ value: '0',text:'未禁用'  });
-isdisabledfiltersource.push({ value: '1',text:'已禁用'  });
-isdisableddatasource.push({ value: '1',text:'已禁用'  });
-//for datagrid isdisabled field  formatter
-function isdisabledformatter(value, row, index) { 
+//-------订单状态---------//
+var statusfiltersource = [{ value: '', text: 'All'}];
+var statusdatasource = [];
+statusfiltersource.push({ value: '新增',text:'新增'  });
+statusdatasource.push({ value: '新增',text:'新增'  });
+//for datagrid status field  formatter
+function statusformatter(value, row, index) { 
      let multiple = false; 
      if (value === null || value === '' || value === undefined) 
      { 
@@ -14,29 +12,29 @@ function isdisabledformatter(value, row, index) {
      } 
      if (multiple) { 
          let valarray = value.split(','); 
-         let result = isdisableddatasource.filter(item => valarray.includes(item.value));
+         let result = statusdatasource.filter(item => valarray.includes(item.value));
          let textarray = result.map(x => x.text);
          if (textarray.length > 0)
              return textarray.join(",");
          else 
              return value;
       } else { 
-         let result = isdisableddatasource.filter(x => x.value == value);
+         let result = statusdatasource.filter(x => x.value == value);
                if (result.length > 0)
                     return result[0].text;
                else
                     return value;
        } 
  } 
-//for datagrid   isdisabled  field filter 
+//for datagrid   status  field filter 
 $.extend($.fn.datagrid.defaults.filters, {
-isdisabledfilter: {
+statusfilter: {
      init: function(container, options) {
         var input = $('<select class="easyui-combobox" >').appendTo(container);
         var myoptions = {
              panelHeight: 'auto',
              editable: false,
-             data: isdisabledfiltersource ,
+             data: statusfiltersource ,
              onChange: function () {
                 input.trigger('combobox.filter');
              }
@@ -64,15 +62,15 @@ isdisabledfilter: {
      }
    }
 });
-//for datagrid   isdisabled   field  editor 
+//for datagrid   status   field  editor 
 $.extend($.fn.datagrid.defaults.editors, {
-isdisablededitor: {
+statuseditor: {
      init: function(container, options) {
         var input = $('<input type="text">').appendTo(container);
         var myoptions = {
          panelHeight: 'auto',
          editable: false,
-         data: isdisableddatasource,
+         data: statusdatasource,
          multiple: false,
          valueField: 'value',
          textField: 'text'
