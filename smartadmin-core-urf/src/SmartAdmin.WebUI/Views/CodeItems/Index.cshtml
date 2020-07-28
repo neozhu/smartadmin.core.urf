@@ -30,6 +30,9 @@
           <div class="row  no-gutters align-items-center">
             <div class="col">
               <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+              <div class="btn-group btn-group-sm">
+                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+              </div>
               <div class="btn-group">
                 <a href="javascript:updatejavascript()" class="btn btn-sm btn-primary"> <i class="fal fa-code-commit"></i> 更新JS脚本 </a>
               </div>
@@ -45,9 +48,7 @@
               <div class="btn-group btn-group-sm">
                 <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span>  取消  </button>
               </div>
-              <div class="btn-group btn-group-sm">
-                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
-              </div>
+
               <div class="btn-group btn-group-sm hidden-xs">
                 <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                 <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

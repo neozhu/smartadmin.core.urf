@@ -8,9 +8,11 @@ namespace SmartAdmin.Dto
   {
     public string level { get; set; }
     public string total { get; set; }
+
   }
   public class logtimesummary {
     public DateTime time { get; set; }
     public int total { get; set; }
+    public string level { get; set; }
   }
 }

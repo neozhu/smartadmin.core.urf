@@ -26,7 +26,7 @@ namespace SmartAdmin.WebUI
                     {
                       logging.ClearProviders();
                       logging.SetMinimumLevel(LogLevel.Trace);
-                  })
+                    })
                   .UseNLog();
             });
   }

@@ -44,6 +44,9 @@
                                         panelHeight:'auto'
                                         ">
               <div class="btn-group">
+                <a href="javascript:reload()" class="btn btn-sm btn-default"> <i class="fal fa-search mr-1"></i> 刷新 </a>
+              </div>
+              <div class="btn-group">
                 <a href="javascript:generate()" class="btn btn-sm btn-primary"> <i class="fal fa-plus mr-1"></i> 生成配置 </a>
               </div>
 
@@ -62,9 +65,7 @@
               <div class="btn-group">
                 <a href="javascript:accept()" class="btn btn-sm btn-default"> <i class="fal fa-save mr-1"></i> 保存 </a>
               </div>
-              <div class="btn-group">
-                <a href="javascript:reload()" class="btn btn-sm btn-default"> <i class="fal fa-search mr-1"></i> 刷新 </a>
-              </div>
+
               <div class="btn-group">
                 <a href="javascript:reject()" class="btn btn-sm btn-default"> <i class="fal fa-times-circle mr-1"></i> 取消 </a>
               </div>
@@ -375,8 +376,6 @@
         remoteFilter: true,
         singleSelect: false,
         pageList: [10, 20, 50, 100, 500],
-        toolbar: '#datatableimportmappings_toolbar',
-        url: '/DataTableImportMappings/GetData',
         method: 'get',
         onClickCell: onClickCell,
          clientPaging: false,
@@ -457,8 +456,8 @@
           { field: 'RegularExpression', width: 190, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.RegularExpression)' }
         ]]
 
-      });
-      $dg.datagrid('enableFilter', [
+      })
+      .datagrid('enableFilter', [
         {
           field: 'EntitySetName',
           type: 'combobox',
@@ -543,7 +542,8 @@
           }
         }
 
-      ]);
+      ])
+        .datagrid('load', '/DataTableImportMappings/GetData');
     });
   </script>
 

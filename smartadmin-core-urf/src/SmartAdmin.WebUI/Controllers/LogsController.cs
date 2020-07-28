@@ -82,14 +82,15 @@ namespace SmartAdmin.WebUI.Controllers
     //easyui datagrid post acceptChanges 
     public async Task<IActionResult> GetChartData()
     {
-      var sql = @"SELECT
+      var levels = new string[] { "Info", "Trace", "Debug", "Warn", "Error", "Fatal" };
+      var sql = @"SELECT [level],
        CONVERT(Datetime,format(min(Logged),'yyyy-MM-dd HH:00:00')) AS [time],
        COUNT(*) AS total
 FROM AspNetLogs
 where DATEDIFF(D, GETDATE(), Logged)> -3
-GROUP BY CAST(Logged as date),
+GROUP BY [level], CAST(Logged as date),
        DATEPART(hour, Logged)
-order by  CAST(Logged as date),
+order by [level], CAST(Logged as date),
        DATEPART(hour, Logged)";
       var data = await this.db.Ado.SqlQueryAsync<logtimesummary>(sql);
       var date = DateTime.Now.AddDays(-2).Date;
@@ -97,15 +98,18 @@ order by  CAST(Logged as date),
       var list = new List<dynamic>();
       while ((date = date.AddHours(1)) < today)
       {
-        var item = data.Where(x => x.time == date).FirstOrDefault();
-        if (item != null)
+        foreach (var level in levels)
         {
-          list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), total = item.total });
-        }
-        else
-        {
-          list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), total = 0 });
+          var item = data.Where(x => x.time == date && x.level == level).FirstOrDefault();
+          if (item != null)
+          {
+            list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), level = level, total = item.total });
+          }
+          else
+          {
+            list.Add(new { time = date.ToString("yyyy-MM-dd HH:mm"), level = level, total = 0 });
 
+          }
         }
 
       }
@@ -114,7 +118,7 @@ FROM AspNetLogs
 where DATEDIFF(D, GETDATE(), Logged)> -3
 group by Level";
       var array = await this.db.Ado.SqlQueryAsync<loglevelsummary>(sql1);
-      var levels = new string[] { "Info", "Trace", "Debug", "Warn", "Error", "Fatal" };
+      
       var group = new List<dynamic>();
       foreach (var level in levels)
       {

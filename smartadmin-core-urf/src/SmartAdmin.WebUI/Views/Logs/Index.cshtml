@@ -158,32 +158,77 @@
     //获取图表数据
     $(async () => {
       var data = await $.get('/Logs/GetChartData');
-      //console.log(data.map(item => item.total));
+      console.log(data);
       var ctx = document.getElementById('timebar').getContext('2d');
       var timebarchart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: data.list.map(item=>item.time),
+          labels: Array.from(new Set(data.list.map(item => item.time))),
           datasets: [{
-            label:'记录',
-            data: data.list.map(item=>item.total),
-            backgroundColor: color.success._500,
-            borderColor: "rgba(179,181,198,1)",
-            pointBorderColor: "#fff",
-            pointBackgroundColor: "rgba(179,181,198,1)",
-
-          }]
+            label: 'Info',
+            data: data.list.filter(item => item.level == 'Info').map(item => item.total),
+            backgroundColor: '#1dc9b7',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          },
+          {
+            label: 'Trace',
+            data: data.list.filter(item => item.level == 'Trace').map(item => item.total),
+            backgroundColor: '#2196f3',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          },
+          {
+            label: 'Debug',
+            data: data.list.filter(item => item.level == 'Debug').map(item => item.total),
+            backgroundColor: '#868e96',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          },
+          {
+            label: 'Warn',
+            data: data.list.filter(item => item.level == 'Warn').map(item => item.total),
+            backgroundColor: '#ffc241',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          },
+          {
+            label: 'Error',
+            data: data.list.filter(item => item.level == 'Error').map(item => item.total),
+            backgroundColor: '#fe6bb0',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          },
+          {
+            label: 'Fatal',
+            data: data.list.filter(item => item.level == 'Fatal').map(item => item.total),
+            backgroundColor: '#e7026e',
+            //borderColor: "rgba(179,181,198,1)",
+            //pointBorderColor: "#fff",
+            //pointBackgroundColor: "rgba(179,181,198,1)",
+          }
+          ]
         },
         options: {
           legend: { display: false },
           maintainAspectRatio: false,
           responsive: true,
+          tooltips: {
+            mode: 'index',
+            intersect: false
+          },
           title: {
             display: true,
             text: '最近3天志情况',
           },
           scales: {
             xAxes: [{
+              stacked: true,
               type: "time",
               time: {
                 displayFormats: {
@@ -192,6 +237,7 @@
               }
             }],
             yAxes: [{
+              stacked: true,
               ticks: {
                 beginAtZero: true,
                 stepSize: 20

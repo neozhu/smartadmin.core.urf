@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Repository;
 using SmartAdmin.Service;
@@ -53,7 +54,7 @@ namespace SmartAdmin.WebUI
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.Configure<SmartSettings>(Configuration.GetSection(SmartSettings.SectionName));
+        services.Configure<SmartSettings>(Configuration.GetSection(SmartSettings.SectionName));
       var settings = Configuration.GetSection(nameof(SmartSettings)).Get<SmartSettings>();
       // Note: This line is for demonstration purposes only, I would not recommend using this as a shorthand approach for accessing settings
       // While having to type '.Value' everywhere is driving me nuts (>_<), using this method means reloaded appSettings.json from disk will not work
@@ -111,6 +112,8 @@ namespace SmartAdmin.WebUI
       services.AddScoped<INotificationService, NotificationService>();
       services.AddScoped<ITrackableRepository<RoleMenu>, TrackableRepository<RoleMenu>>();
       services.AddScoped<IRoleMenuService, RoleMenuService>();
+
+
       #endregion
 
       #region 注入业务服务
@@ -326,7 +329,7 @@ namespace SmartAdmin.WebUI
           });
       });
       
-      logger.LogInformation("网站启动");
+       logger.LogTrace("网站启动");
     }
   }
 }

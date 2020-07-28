@@ -30,11 +30,14 @@ namespace SmartAdmin.WebUI.Controllers
       _companyService = companyService;
       _unitOfWork = unitOfWork;
       this.logger = logger;
-      this.logger.LogInformation("访问首页");
-     
+   
     }
 
     public IActionResult Index() {
+      NLog.LogManager.GetCurrentClassLogger().Trace("访问首页");
+      this.logger.LogTrace("访问首页");
+      this.logger.LogDebug("访问首页");
+      this.logger.LogInformation("访问首页");
       _eventBus.Publish("smartadmin.eventbus", new SubscribeEventData()
       {
         publisher=typeof(HomeController).Name,
