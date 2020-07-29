@@ -8,9 +8,7 @@
   ViewData["PageDescription"] = "";
 }
 @section HeadBlock {
-  
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
-
 }
 
 <div class="row">
@@ -119,7 +117,7 @@
             return !deleted.includes(item);
           })).concat(deleted);
           //console.table(changed);
-          $.post('/Tenants/SaveTenantData', { tenant: changed })
+          $.post('/Tenants/SaveData', { tenant: changed })
             .done(response => {
               //console.log(response);
               if (response.success) {
@@ -182,7 +180,7 @@
         });
         $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length}</span> 个租户?`, result => {
           if (result) {
-            $.post('/Tenants/DeleteCheckedTenant', { id: id })
+            $.post('/Tenants/DeleteChecked', { id: id })
               .done(response => {
                 if (response.success) {
                   toastr.success('删除成功', '确认', { timeOut: 2000 });
@@ -325,7 +323,7 @@
           field: 'Disabled',
           type: 'booleanfilter'
         }])
-        .datagrid('load', '/Tenants/GetTenantData');
+        .datagrid('load', '/Tenants/GetData');
     });
   </script>
 

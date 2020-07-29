@@ -22,11 +22,8 @@ namespace SmartAdmin.WebUI.Controllers
     private readonly ApplicationDbContext _dbContext;
     public TenantsController(
               ILogger<TenantsController> logger,
-             
               ApplicationDbContext dbContext
-
-
-                               ) {
+       ) {
       _logger = logger;
       _dbContext = dbContext;
     }
@@ -45,7 +42,7 @@ namespace SmartAdmin.WebUI.Controllers
 
     
     //保存租户信息
-    public async Task<JsonResult> SaveTenantData(Tenant[] tenant) {
+    public async Task<JsonResult> SaveData(Tenant[] tenant) {
       if (ModelState.IsValid)
       {
         try
@@ -90,7 +87,7 @@ namespace SmartAdmin.WebUI.Controllers
 
     }
     //删除租户信息
-    public async Task<JsonResult> DeleteCheckedTenant(int[] id) {
+    public async Task<JsonResult> DeleteChecked(int[] id) {
       var items = this._dbContext.Tenants.Where(x => id.Contains(x.Id));
       foreach (var item in items)
       {
@@ -102,7 +99,7 @@ namespace SmartAdmin.WebUI.Controllers
    
     //获取租户数据
     [HttpGet]
-    public async Task<JsonResult> GetTenantData(int page = 1, int rows = 10, string sort = "Id", string order = "desc", string filterRules = "")
+    public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "desc", string filterRules = "")
     {
       var filters = PredicateBuilder.FromFilter<Tenant>(filterRules);
       var totalCount = 0;
