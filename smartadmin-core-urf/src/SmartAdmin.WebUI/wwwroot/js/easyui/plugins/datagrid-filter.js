@@ -775,11 +775,13 @@
         });
       }
       //注解当remotefilter=true时多余
-      //data = opts.filterMatcher.call(target, {
-      //  total: state.filterSource.total,
-      //  rows: state.filterSource.rows,
-      //  footer: state.filterSource.footer || []
-      //});
+      if (opts.clientPaging === true) {
+        data = opts.filterMatcher.call(target, {
+          total: state.filterSource.total,
+          rows: state.filterSource.rows,
+          footer: state.filterSource.footer || []
+        });
+      }
     }
     if (opts.pagination && opts.clientPaging) {
       var dg = $(target);
