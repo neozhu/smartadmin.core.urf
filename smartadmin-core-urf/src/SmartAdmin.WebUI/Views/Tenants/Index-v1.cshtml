@@ -1,0 +1,355 @@
+﻿@model SmartAdmin.WebUI.Data.Models.Tenant
+@{
+  /**/
+  ViewData["Title"] = "租户管理";
+  ViewData["PageName"] = "tenants_index";
+  ViewData["Heading"] = "<i class='fal fa-users text-primary'></i>  租户管理";
+  ViewData["Category1"] = "系统管理";
+  ViewData["PageDescription"] = "";
+}
+@section HeadBlock {
+  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<div class="row">
+  <div class="col-lg-12 col-xl-12">
+    <div id="panel-1" class="panel">
+      <div class="panel-hdr">
+        <h2>
+          租户管理
+        </h2>
+        <div class="panel-toolbar">
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
+        </div>
+
+      </div>
+      <div class="panel-container show">
+        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-faded bg-subtlelight-fade">
+          <div class="row no-gutters align-items-center">
+            <div class="col">
+              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+              <div class="btn-group btn-group-sm">
+                <button  name="searchbutton" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 刷新 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button  name="registbutton" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 注册新租户 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="deletebutton"   disabled  class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="savebutton" disabled  class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="cancelbutton" disabled  class="btn btn-default"> <span class="fal fa-ban mr-1"></span> 取消 </button>
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+        <div class="panel-content">
+          <div class="table-responsive">
+            <table id="tenant_datagrid"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- END MAIN CONTENT -->
+
+@section ScriptsBlock {
+  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+  <script type="text/javascript">
+    (function () {
+      var tentan = {
+        init: function () {
+          this.cacheDom();
+          this.bindEvents();
+        },
+        cacheDom: function () {
+          this.editIndex = undefined;
+          this.$dg = $('#tenant_datagrid').datagrid({
+            rownumbers: true,
+            checkOnSelect: false,
+            selectOnCheck: false,
+            idField: 'Id',
+            sortName: 'Id',
+            sortOrder: 'desc',
+            remoteFilter: true,
+            singleSelect: false,
+            method: 'get',
+            onClickCell: (index, field) => {
+              this.tentan =this.$dg.datagrid('getRows')[index];
+              const _actions = ['action', 'ck'];
+              if (!true || $.inArray(field, _actions) >= 0) {
+                return;
+              }
+              if (this.editIndex !== index) {
+                if (this.endEditing()) {
+                 this.$dg.datagrid('selectRow', index)
+                    .datagrid('beginEdit', index);
+                  this.hook = true;
+                  this.editIndex = index;
+                  const ed =this.$dg.datagrid('getEditor', { index: index, field: field });
+                  if (ed) {
+                    ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                  }
+                } else {
+                  this.$dg.datagrid('selectRow', index);
+                }
+              }
+            },
+            pagination: true,
+            clientPaging: false,
+            striped: true,
+            onLoadSuccess: ()=> {
+              this.editIndex = undefined;
+              this.$deletebutton.prop('disabled', true);
+              this.$savebutton.prop('disabled', true);
+              this.$cancelbutton.prop('disabled', true);
+            },
+            onCheck: ()=> {
+              this.$deletebutton.prop('disabled', false);
+            },
+            onUncheck:  ()=> {
+              const checked =this.$dg.datagrid('getChecked').length > 0;
+              this.$deletebutton.prop('disabled', !checked);
+            },
+            onSelect: (index, row)=> {
+              this.tenant = row;
+            },
+            onBeginEdit: (index, row)=> {
+              //const editors = $(this).datagrid('getEditors', index);
+            },
+            onEndEdit: (index, row) =>{
+
+            },
+            onBeforeEdit: (index, row) => {
+              row.editing = true;
+              this.editIndex = index;
+              this.$deletebutton.prop('disabled', false);
+              this.$savebutton.prop('disabled', false);
+              this.$cancelbutton.prop('disabled', false);
+              this.$dg.datagrid('refreshRow', index);
+            },
+            onAfterEdit: (index, row)=> {
+              row.editing = false;
+              this.editIndex = undefined;
+             this.$dg.datagrid('refreshRow', index);
+            },
+            onCancelEdit: (index, row)=> {
+              row.editing = false;
+              this.editIndex = undefined;
+              this.$deletebutton.prop('disabled', true);
+              this.$savebutton.prop('disabled', true);
+              this.$cancelbutton.prop('disabled', true);
+             this.$dg.datagrid('refreshRow', index);
+            },
+            columns: [[
+              { field: 'ck', checkbox: true },
+              {
+                field: 'Name',
+                title: '<span class="text-danger">*</span>租户名称',
+                width: 150,
+                sortable: true,
+                resizable: true,
+                editor: {
+                  type: 'textbox',
+                  options: { prompt: '租户名称', required: true, validType: 'length[0,50]' }
+                },
+              },
+              {
+                field: 'Description',
+                title: '描述',
+                width: 150,
+                sortable: true,
+                resizable: true,
+                editor: {
+                  type: 'textbox',
+                  options: { prompt: '描述', required: false, validType: 'length[0,128]' }
+                },
+              },
+              {
+                field: 'ConnectionStrings',
+                title: '数据库连接',
+                width: 320,
+                sortable: true,
+                resizable: true,
+                editor: {
+                  type: 'textbox',
+                  options: { prompt: '数据库连接字符串', multiline: true, required: false, validType: 'length[0,500]' }
+                },
+              },
+              {
+                field: 'Disabled',
+                title: '是否禁用',
+                width: 100,
+                sortable: true,
+                resizable: true,
+                formatter: checkboxformatter,
+                editor: {
+                  type: 'checkboxeditor'
+                }
+              }
+
+
+            ]]
+          })
+            .datagrid('enableFilter', [
+              {
+                field: 'Disabled',
+                type: 'booleanfilter'
+              }])
+            .datagrid('load', '/Tenants/GetData');
+          this.$searchbutton = $('button[name="searchbutton"]');
+          this.$registbutton = $('button[name="registbutton"]');
+          this.$deletebutton = $('button[name="deletebutton"]');
+          this.$savebutton = $('button[name="savebutton"]');
+          this.$cancelbutton = $('button[name="cancelbutton"]');
+          this.tenant = null;
+
+        },
+        bindEvents: function () {
+          document.addEventListener('panel.onfullscreen', () => {
+            setTimeout(() => {
+             this.$dg.datagrid('resize');
+            }, 200)
+          });
+          this.$searchbutton.on('click', this.reloadData.bind(this));
+          this.$registbutton.on('click', this.append.bind(this));
+          this.$deletebutton.on('click', this.remove.bind(this));
+          this.$savebutton.on('click', this.acceptChanges.bind(this));
+          this.$cancelbutton.on('click', this.rejectChanges.bind(this));
+        },
+        reloadData: function () {
+          this.$dg.datagrid('unselectAll');
+          this.$dg.datagrid('uncheckAll');
+          this.$dg.datagrid('reload');
+        },
+        append: function () {
+          this.tenant = { Disabled: false };
+          if (this.endEditing()) {
+            //对必填字段进行默认值初始化
+            this.$dg.datagrid('insertRow',
+              {
+                index: 0,
+                row: this.tenant
+              });
+            this.editIndex = 0;
+           this.$dg.datagrid('selectRow', this.editIndex)
+              .datagrid('beginEdit', this.editIndex);
+            this.hook = true;
+          }
+        },
+        remove: function () {
+          const rows = this.$dg.datagrid('getChecked');
+          if (rows.length > 0) {
+            const id = rows.filter(item => item.Id != null).map(item => {
+              return item.Id;
+            });
+            $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length}</span> 个租户?`, result => {
+              if (result) {
+                $.post('/Tenants/DeleteChecked', { id: id })
+                  .done(response => {
+                    if (response.success) {
+                      toastr.success('删除成功', '确认', { timeOut: 2000 });
+                      this.reloadData();
+                    } else {
+                      $.messager.alert('错误', response.err, 'error');
+                    }
+                  })
+                  .fail((jqXHR, textStatus, errorThrown) => {
+                    //console.log(errorThrown);
+                    $.messager.alert('失败', errorThrown, 'error');
+                  });
+              }
+            });
+          } else {
+            $.messager.alert('提示', '请选择要删除的租户');
+
+          }
+        },
+        acceptChanges: function () {
+          if (this.endEditing()) {
+            console.log(this.$dg.datagrid('getChanges'));
+            if (this.$dg.datagrid('getChanges').length > 0) {
+              //debugger
+              const inserted =this.$dg.datagrid('getChanges', 'inserted').map(item => {
+                item.TrackingState = 1;
+                return item;
+              });
+              const updated =this.$dg.datagrid('getChanges', 'updated').map(item => {
+                item.TrackingState = 2
+                return item;
+              });
+              const deleted =this.$dg.datagrid('getChanges', 'deleted').map(item => {
+                item.TrackingState = 3
+                return item;
+              });
+              //过滤已删除的重复项
+              const changedarray = inserted.concat(updated.filter(item => {
+                return !deleted.includes(item);
+              })).concat(deleted);
+              console.log(changedarray);
+              $.post('/Tenants/SaveData', { tenant: changedarray })
+                .done(response => {
+                  //console.log(response);
+                  if (response.success) {
+                    toastr.success('保存成功');
+                   this.$dg.datagrid('acceptChanges');
+                    this.reloadData();
+                    this.hook = false;
+                  } else {
+                    $.messager.alert('错误', response.err, 'error');
+                  }
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                  $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+                });
+            }
+          }
+        },
+        rejectChanges:function () {
+          this.$dg.datagrid('rejectChanges');
+      this.editIndex = undefined;
+      this.hook = false;
+    },
+        endEditing: function () {
+          if (this.editIndex === undefined) {
+            return true;
+          }
+          if (this.$dg.datagrid('validateRow', this.editIndex)) {
+           this.$dg.datagrid('endEdit', this.editIndex);
+            return true;
+          } else {
+            const invalidinput = $('input.validatebox-invalid',this.$dg.datagrid('getPanel'));
+            const fieldnames = invalidinput.map((index, item) => {
+              return $(item).attr('placeholder') || $(item).attr('id');
+            });
+            $.messager.alert('提示', `${Array.from(fieldnames)} 输入有误.`, 'error');
+            return false;
+          }
+        },
+      
+      }
+      tentan.init();
+    })();
+
+    
+     
+    
+  
+    
+  </script>
+
+}
+
