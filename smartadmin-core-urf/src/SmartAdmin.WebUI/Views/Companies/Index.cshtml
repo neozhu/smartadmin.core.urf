@@ -25,49 +25,50 @@
             <div class="col">
               <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
               <div class="btn-group btn-group-sm">
-                <button onclick="append()" class="btn btn-default">
-                  <span class="fal fa-plus mr-1"></span> 新增
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default">
-                  <span class="fal fa-times mr-1"></span> 删除
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default">
-                  <span class="fal fa-save mr-1"></span> 保存
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="cancelbutton" disabled onclick="rejectChanges()" class="btn btn-default">
-                  <span class="fal fa-ban mr-1"></span> 取消
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+                <button name="searchbutton" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
                 <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-animated">
-                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
+                  <button name="searchmemenu" class="dropdown-item js-waves-on" > 我的记录 </button>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
+                  <button name="searchcustommenu" class="dropdown-item js-waves-on" > 自定义查询 </button>
                 </div>
               </div>
+              <div class="btn-group btn-group-sm">
+                <button  name="appendbutton" class="btn btn-default">
+                  <span class="fal fa-plus mr-1"></span> 新增
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="deletebutton" disabled   class="btn btn-default">
+                  <span class="fal fa-times mr-1"></span> 删除
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="savebutton" disabled  class="btn btn-default">
+                  <span class="fal fa-save mr-1"></span> 保存
+                </button>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button name="cancelbutton" disabled   class="btn btn-default">
+                  <span class="fal fa-ban mr-1"></span> 取消
+                </button>
+              </div>
+
               <div class="btn-group btn-group-sm hidden-xs">
-                <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button type="button" name="importbutton" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                 <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-animated">
-                  <a class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()">
+                  <a class="dropdown-item js-waves-on" name="downloadmenu" href="javascript:void()">
                     <span class="fal fa-download"></span> 下载模板
                   </a>
                 </div>
               </div>
               <div class="btn-group btn-group-sm hidden-xs">
-                <button onclick="exportexcel()" class="btn btn-default">
+                <button name="exportbutton" class="btn btn-default">
                   <span class="fal fa-file-export mr-1"></span>  导出
                 </button>
               </div>
@@ -96,22 +97,6 @@
                     collapsible:false,
                     maximized:false,
                     iconCls:'fal fa-window',
-                    onBeforeClose:function(){
-                      var that = $(this);
-                      if(companyhasmodified()){
-                        $.messager.confirm('确认','你确定要放弃保存修改的记录?',function(r){
-                        if (r){
-                          var opts = that.panel('options');
-                          var onBeforeClose = opts.onBeforeClose;
-                          opts.onBeforeClose = function(){};
-                          that.panel('close');
-                          opts.onBeforeClose = onBeforeClose;
-                          hook = false;
-                        }
-                        });
-                        return false;
-                      }
-                    },
                     onOpen:function(){
                        $(this).window('vcenter');
                        $(this).window('hcenter');
@@ -120,17 +105,17 @@
                     },
                     onMaximize:function(){
                     }
-                    " style="width:820px;height:420px;display:none">
+                    " style="width:720px;height:420px;display:none">
   <!-- toolbar -->
   <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
     <div class="d-flex flex-row-reverse pr-4">
       <div class="btn-group btn-group-sm mr-1">
-        <button name="saveitembutton" onclick="savecompanyitem()" class="btn btn-default">
+        <button name="saveitembutton" class="btn btn-default">
           <i class="fal fa-save"></i> 保存
         </button>
       </div>
       <div class="btn-group btn-group-sm mr-1" id="deleteitem-btn-group">
-        <button onclick="deletecompanyitem()" class="btn btn-danger">
+        <button name="deleteitembutton" class="btn btn-danger">
           <i class="fal fa-trash-alt"></i> 删除
         </button>
       </div>
@@ -142,15 +127,7 @@
         <form id="company_form"
               class="easyui-form form-horizontal p-1"
               method="post"
-              data-options="novalidate:true,
-                            onChange: function(target){
-                              hook = true;
-                              $('button[name*=\'saveitembutton\']').prop('disabled', false);
-                             },
-                             onLoadSuccess:function(data){
-                               hook = false;
-                               $('button[name*=\'saveitembutton\']').prop('disabled', true);
-                             }">
+          >
           @Html.AntiForgeryToken()
           <!--Primary Key-->
           @Html.HiddenFor(model => model.Id)
@@ -276,516 +253,563 @@
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script>
-        var $dg = $('#companies_datagrid');
-        var EDITINLINE = true;
-        var company = null;
-    var editIndex = undefined;
-    //下载Excel导入模板
-
-    //执行导出下载Excel
-    function exportexcel() {
-      const filterRules = JSON.stringify($dg.datagrid('options').filterRules);
-      console.log(filterRules);
-      $.messager.progress({ title: '请等待',msg:'正在执行导出...' });
-      let formData = new FormData();
-      formData.append('filterRules', filterRules);
-      formData.append('sort', 'Id');
-      formData.append('order', 'asc');
-      $.postDownload('/Companies/ExportExcel', formData).then(res => {
-        $.messager.progress('close');
-        toastr.success('导出成功!');
-      }).catch(err => {
-        //console.log(err);
-        $.messager.progress('close');
-        $.messager.alert('导出失败', err.statusText, 'error');
-      });
-
-    }
-            //弹出明细信息
-    function showdetailswindow(id, index) {
-      const company = $dg.datagrid('getRows')[index];
-      opencompanydetailwindow(company, 'Modified');
-    }
-        function reload() {
-               $dg.datagrid('uncheckAll');
-               $dg.datagrid('reload');
-        }
-            //新增记录
-       function append() {
-                company = {
-                    Address: '-',
-                    RegisterDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-                };
-                if (!EDITINLINE) {
-                    //弹出新增窗口
-                    opencompanydetailwindow(company, 'Added');
-                } else {
-                    if (endEditing()) {
-                        //对必填字段进行默认值初始化
-                       $dg.datagrid('insertRow',
-                            {
-                                index: 0,
-                                row: company
-                            });
-                        editIndex = 0;
-                       $dg.datagrid('selectRow', editIndex)
-                            .datagrid('beginEdit', editIndex);
-                        hook = true;
-                    }
-                }
-        }
-            //删除编辑的行
-        function removeit() {
-                if (this.$dg.datagrid('getChecked').length <= 0 && EDITINLINE) {
-                    if (editIndex !== undefined) {
-                        const delindex = editIndex;
-                       $dg.datagrid('cancelEdit', delindex)
-                            .datagrid('deleteRow', delindex);
-                        hook = true;
-                    } else {
-                        const rows =$dg.datagrid('getChecked');
-                        rows.slice().reverse().forEach(row => {
-                            const rowindex =$dg.datagrid('getRowIndex', row);
-                           $dg.datagrid('deleteRow', rowindex);
-                            hook = true;
-                        });
-                    }
-                } else {
-                    deletechecked();
-                }
-        }
-            //删除该行
-        function deleteRow(id) {
-            $.messager.confirm('确认', '你确定要删除该记录?', result => {
-                if (result) {
-                    dodeletechecked([id]);
-                }
-            })
-        }
-            //删除选中的行
-         function deletechecked() {
-                const id =$dg.datagrid('getChecked').filter(item => item.Id != null && item.Id > 0).map(item => {
-                    return item.Id;
-                });
-                if (id.length > 0) {
-                    $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length} </span> 行记录?`, result => {
-                        if (result) {
-                            dodeletechecked(id);
-                        }
-                    });
-                } else {
-                    $.messager.alert('提示', '请先选择要删除的记录!', 'question');
-                }
-        }
-            //执行删除
-        function dodeletechecked(id) {
-            $.post('/Companies/DeleteChecked', { id: id })
-                .done(response => {
-                    if (response.success) {
-                        toastr.error(`成功删除[${id.length}]行记录`);
-                        reload();
-                    } else {
-                        $.messager.alert('错误', response.err, 'error');
-                    }
-                })
-                .fail((jqXHR, textStatus, errorThrown) => {
-                    $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-                });
-        }
-            //开启编辑状态
-    function onClickCell(index, field) {
-
-      company = $dg.datagrid('getRows')[index];
-      const _actions = ['action', 'ck'];
-      if (!EDITINLINE || $.inArray(field, _actions) >= 0) {
-        return;
+    class company {
+      constructor() {
+        //this.$dg = $('#companies_datagrid');
+        this.EDITINLINE = true;
+        this.MODELSTATE = null;
+        this.item = null;
+        this.editIndex = undefined;
+        this.id = null;
+        this.init();
       }
+      init() {
+        this.$searchbutton = $('button[name="searchbutton"]');
+        this.$appendbutton = $('button[name="appendbutton"]');
+        this.$deletebutton = $('button[name="deletebutton"]');
+        this.$savebutton = $('button[name="savebutton"]');
+        this.$cancelbutton = $('button[name="cancelbutton"]');
+        this.$importbutton = $('button[name="importbutton"]');
+        this.$downloadmenu = $('a[name="downloadmenu"]');
+        this.$exportbutton = $('button[name="exportbutton"]');
+        this.$searchmemenu = $('a[name="searchmemenu"]');
+        this.$searchcustommenu = $('a[name="searchcustommenu"]');
+        this.$saveitembutton = $('button[name="saveitembutton"]');
+        this.$deleteitembutton = $('button[name="deleteitembutton"]');
+        this.$detailwindow = $("#companydetailwindow");
+        this.$form = $('#company_form');
 
-      if (editIndex !== index) {
-        if (endEditing()) {
-          $dg.datagrid('selectRow', index)
-            .datagrid('beginEdit', index);
-          hook = true;
-          editIndex = index;
-          const ed = $dg.datagrid('getEditor', { index: index, field: field });
-          if (ed) {
-            ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
-          }
-        } else {
-          $dg.datagrid('selectRow', editIndex);
-        }
-      }
-    }
-            //关闭编辑状态
-    function endEditing() {
-
-            if (editIndex === undefined) {
-                return true;
-            }
-            if (this.$dg.datagrid('validateRow', editIndex)) {
-                $dg.datagrid('endEdit', editIndex);
-                return true;
-            } else {
-                const invalidinput = $('input.validatebox-invalid', $dg.datagrid('getPanel'));
-                const fieldnames = invalidinput.map((index, item) => {
-                    return $(item).attr('placeholder') || $(item).attr('id');
-                });
-                $.messager.alert('提示', `${Array.from(fieldnames)} 输入有误.`, 'error');
-                return false;
-            }
-        }
-            //提交保存后台数据库
-        function acceptChanges() {
-            if (endEditing()) {
-                if ($dg.datagrid('getChanges').length > 0) {
-                    const inserted = $dg.datagrid('getChanges', 'inserted').map(item => {
-                        item.TrackingState = 1;
-                        return item;
-                    });
-                    const updated = $dg.datagrid('getChanges', 'updated').map(item => {
-                        item.TrackingState = 2
-                        return item;
-                    });
-                    const deleted = $dg.datagrid('getChanges', 'deleted').map(item => {
-                        item.TrackingState = 3
-                        return item;
-                    });
-                    //过滤已删除的重复项
-                    const changed = inserted.concat(updated.filter(item => {
-                        return !deleted.includes(item);
-                    })).concat(deleted);
-                    //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
-                    $.post('/Companies/AcceptChanges', { companies: changed })
-                        .done(response => {
-                            //$.messager.progress('close');
-                            //console.log(response);
-                            if (response.success) {
-                                toastr.success('保存成功');
-                                $dg.datagrid('acceptChanges');
-                                reload();
-                                hook = false;
-                            } else {
-                                $.messager.alert('错误', response.err, 'error');
-                            }
-                        })
-                        .fail((jqXHR, textStatus, errorThrown) => {
-                            //$.messager.progress('close');
-                            $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-                        });
-                }
-            }
-        }
-        function rejectChanges() {
-            $dg.datagrid('rejectChanges');
-            editIndex = undefined;
-            hook = false;
-        }
-    $(document).ready(function () {
-      //定义datagrid结构
-      $dg.datagrid({
-        rownumbers: true,
-        checkOnSelect: false,
-        selectOnCheck: false,
-        idField: 'Id',
-        sortName: 'Id',
-        sortOrder: 'desc',
-        remoteFilter: true,
-        singleSelect: true,
-        method: 'get',
-        onClickCell: onClickCell,
-        clientPaging: false,
-        pagination: true,
-        striped: true,
-        filterRules: [],
-        onHeaderContextMenu: function (e, field) {
-          e.preventDefault();
-          $(this).datagrid('columnMenu').menu('show', {
-            left: e.pageX,
-            top: e.pageY
-          });
-        },
-        onBeforeLoad: function () {
-          const that = $(this);
-          document.addEventListener('panel.onfullscreen', () => {
-            setTimeout(() => {
-              that.datagrid('resize');
-            }, 200)
-          })
-        },
-        onLoadSuccess: function (data) {
-          editIndex = undefined;
-          $("button[name*='deletebutton']").prop('disabled', true);
-          $("button[name*='savebutton']").prop('disabled', true);
-          $("button[name*='cancelbutton']").prop('disabled', true);
-        },
-        onCheckAll: function (rows) {
-          if (rows.length > 0) {
-            $("button[name*='deletebutton']").prop('disabled', false);
-          }
-        },
-        onUncheckAll: function () {
-          $("button[name*='deletebutton']").prop('disabled', true);
-        },
-        onCheck: function () {
-          $("button[name*='deletebutton']").prop('disabled', false);
-        },
-        onUncheck: function () {
-          const checked = $(this).datagrid('getChecked').length > 0;
-          $("button[name*='deletebutton']").prop('disabled', !checked);
-        },
-        onSelect: function (index, row) {
-          company = row;
-        },
-        onBeginEdit: function (index, row) {
-          //const editors = $(this).datagrid('getEditors', index);
-
-        },
-        onEndEdit: function (index, row) {
-          editIndex = undefined;
-        },
-        onBeforeEdit: function (index, row) {
-          editIndex = index;
-          row.editing = true;
-          $("button[name*='deletebutton']").prop('disabled', false);
-          $("button[name*='cancelbutton']").prop('disabled', false);
-          $("button[name*='savebutton']").prop('disabled', false);
-          $(this).datagrid('refreshRow', index);
-        },
-        onAfterEdit: function (index, row) {
-          row.editing = false;
-          editIndex = undefined;
-          $(this).datagrid('refreshRow', index);
-        },
-        onCancelEdit: function (index, row) {
-          row.editing = false;
-          editIndex = undefined;
-          $("button[name*='deletebutton']").prop('disabled', true);
-          $("button[name*='savebutton']").prop('disabled', true);
-          $("button[name*='cancelbutton']").prop('disabled', true);
-          $(this).datagrid('refreshRow', index);
-        },
-        frozenColumns: [[
-          /*开启CheckBox选择功能*/
-          { field: 'ck', checkbox: true },
-          {
-            field: 'action',
-            title: '操作',
-            width: 85,
-            sortable: false,
-            resizable: true,
-            formatter: function showdetailsformatter(value, row, index) {
-              if (!row.editing) {
-                return `<div class="btn-group">\
-                                                         <button onclick="showdetailswindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-edit"></i> </button>\
-                                                         <button onclick="deleteRow('${row.Id}',${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="删除记录" ><i class="fal fa-times"></i> </button>\
-                                                    </div>`;
-              } else {
-                return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
-              }
-            }
-          }
-        ]],
-        columns: [[
-
-          {    /*名称*/
-            field: 'Name',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Name)</span>',
-            width: 200,
-            hidden: false,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '@Html.DescriptionFor(model => model.Name)', required: true, validType: 'length[0,50]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {    /*组织代码*/
-            field: 'Code',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Code)</span>',
-            width: 120,
-            hidden: false,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '@Html.DescriptionFor(model => model.Code)', required: true, validType: 'length[0,12]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {    /*地址*/
-            field: 'Address',
-            title: '@Html.DisplayNameFor(model => model.Address)',
-            width: 200,
-            hidden: false,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '@Html.DescriptionFor(model => model.Address)', required: false, validType: 'length[0,50]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {    /*联系人*/
-            field: 'Contect',
-            title: '@Html.DisplayNameFor(model => model.Contect)',
-            width: 120,
-            hidden: false,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '@Html.DescriptionFor(model => model.Contect)', required: false, validType: 'length[0,12]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {    /*联系电话*/
-            field: 'PhoneNumber',
-            title: '@Html.DisplayNameFor(model => model.PhoneNumber)',
-            width: 120,
-            hidden: false,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '@Html.DescriptionFor(model => model.PhoneNumber)', required: false, validType: 'length[0,20]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {   /*注册日期*/
-            field: 'RegisterDate',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.RegisterDate)</span>',
-            width: 140,
-            align: 'right',
-            hidden: false,
-            editor: {
-              type: 'datebox',
-              options: { prompt: '@Html.DescriptionFor(model => model.RegisterDate)', required: true }
-            },
-            formatter: dateformatter,
-            sortable: true,
-            resizable: true
-          },
-        ]]
-      }).datagrid('columnMoving')
-        .datagrid('resetColumns')
-        .datagrid('enableFilter', [
-          {   /*Id*/
-            field: 'Id',
-            type: 'numberbox',
-            op: ['equal', 'notequal', 'less', 'lessorequal', 'greater', 'greaterorequal']
-          },
-          {     /*注册日期*/
-            field: 'RegisterDate',
-            type: 'dateRange',
-            options: {
-              onChange: value => {
-                $dg.datagrid('addFilterRule', {
-                  field: 'RegisterDate',
-                  op: 'between',
-                  value: value
-                });
-
-                $dg.datagrid('doFilter');
-              }
-            }
-          },
-        ])
-        .datagrid('load', '/Companies/GetData');
-    }
-    );
-
-  </script>
-  <script type="text/javascript">
-    //判断新增编辑状态
-    var MODELSTATE = 'Added';
-    var companyid = null;
-    function opencompanydetailwindow(data, state) {
-      MODELSTATE = state;
-      initcompanydetailview();
-      companyid = (data.Id || 0);
-      $("#companydetailwindow").window("open");
-      $('#company_form').form('reset');
-      $('#company_form').form('load', data);
-    }
-    //删除当前记录
-    function deletecompanyitem() {
-      $.messager.confirm('确认', '你确定要删除该记录?', result => {
-        if (result) {
-          const url = `/Companies/Delete/${companyid}`;
-          $.get(url).done(res => {
-            if (res.success) {
-              toastr.success("删除成功");
-              $("#companydetailwindow").window("close");
-              reload();
-            } else {
-              $.messager.alert("错误", res.err, "error");
-            }
-          });
-        }
-      });
-    }
-    //async 保存数据
-    async function savecompanyitem() {
-      const $companyform = $('#company_form');
-      if ($companyform.form('enableValidation').form('validate')) {
-        let company = $companyform.serializeJSON();
-        let url = '/Companies/Edit';
-        //判断是新增或是修改方法
-        if (MODELSTATE === 'Added') {
-          url = '/Companies/Create';
-        }
-        var token = $('input[name="__RequestVerificationToken"]', $companyform).val();
-        //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: {
-            __RequestVerificationToken: token,
-            company: company
-          },
-          dataType: 'json',
-          contentType: 'application/x-www-form-urlencoded; charset=utf-8'
+        document.addEventListener('panel.onfullscreen', () => {
+          this.$dg.datagrid('resize');
         })
+        this.$searchbutton.on('click', this.reloadData.bind(this));
+        this.$appendbutton.on('click', this.appendItem.bind(this));
+        this.$deletebutton.on('click', this.removeItem.bind(this));
+        this.$savebutton.on('click', this.acceptChanges.bind(this));
+        this.$cancelbutton.on('click', this.rejectChanges.bind(this));
+        this.$exportbutton.on('click', this.exportexcel.bind(this));
+        this.$importbutton.on('click', () => {
+          importExcel.upload();
+        });
+        this.$downloadmenu.on('click', () => {
+          importExcel.downloadtemplate();
+        })
+        this.$saveitembutton.on('click', this.saveItem.bind(this));
+        this.$deleteitembutton.on('click', this.deleteItem.bind(this));
+        this.$dg = $('#companies_datagrid').datagrid({
+          rownumbers: true,
+          checkOnSelect: false,
+          selectOnCheck: false,
+          idField: 'Id',
+          sortName: 'Id',
+          sortOrder: 'desc',
+          remoteFilter: true,
+          singleSelect: true,
+          method: 'get',
+          clientPaging: false,
+          pagination: true,
+          striped: true,
+          filterRules: [],
+          onClickCell: (index, field) => {
+            this.onClickCell(index, field);
+          },
+          onHeaderContextMenu: (e, field) => {
+            e.preventDefault();
+            this.showContextMenu(e, field);
+          },
+          onBeforeLoad: () => {
+
+          },
+          onLoadSuccess: () => {
+            this.editIndex = undefined;
+            this.$deletebutton.prop('disabled', true);
+            this.$savebutton.prop('disabled', true);
+            this.$cancelbutton.prop('disabled', true);
+            this.bindActionEvents();
+          },
+          onCheckAll: (rows) => {
+            if (rows.length > 0) {
+              this.$deletebutton.prop('disabled', false);
+            }
+          },
+          onUncheckAll: () => {
+            this.$deletebutton.prop('disabled', true);
+          },
+          onCheck: () => {
+            this.$deletebutton.prop('disabled', false);
+          },
+          onUncheck: () => {
+            const checked = this.$dg.datagrid('getChecked').length > 0;
+            this.$deletebutton.prop('disabled', !checked);
+          },
+          onSelect: (index, row) => {
+            this.item = row;
+          },
+          onBeginEdit: function (index, row) {
+            //const editors = $(this).datagrid('getEditors', index);
+
+          },
+          onEndEdit: (index, row) => {
+            this.editIndex = undefined;
+          },
+          onBeforeEdit: (index, row) => {
+            row.editing = true;
+            this.editIndex = index;
+            this.$deletebutton.prop('disabled', false);
+            this.$savebutton.prop('disabled', false);
+            this.$cancelbutton.prop('disabled', false);
+            this.$dg.datagrid('refreshRow', index);
+          },
+          onAfterEdit: (index, row) => {
+            row.editing = false;
+            this.editIndex = undefined;
+            this.$dg.datagrid('refreshRow', index);
+          },
+          onCancelEdit: (index, row) => {
+            row.editing = false;
+            this.editIndex = undefined;
+            this.$deletebutton.prop('disabled', true);
+            this.$savebutton.prop('disabled', true);
+            this.$cancelbutton.prop('disabled', true);
+            this.$dg.datagrid('refreshRow', index);
+          },
+          frozenColumns: [[
+            /*开启CheckBox选择功能*/
+            { field: 'ck', checkbox: true },
+            {
+              field: 'action',
+              title: '操作',
+              width: 85,
+              sortable: false,
+              resizable: true,
+              formatter: (value, row, index) => {
+
+                if (!row.editing) {
+                  return `<div class="btn-group">\
+                              <button name="actionbutton" data-cmd="edit"  data-index="${index}" data-id="${row.Id}" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-edit"></i> </button>\
+                              <button name="actionbutton" data-cmd="delete" data-index="${index}" data-id="${row.Id}" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="删除记录" ><i class="fal fa-times"></i> </button>\
+                        </div>`;
+                } else {
+                  return `<button class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" disabled title="查看明细"  ><i class="fal fa-edit"></i> </button>`;
+                }
+              }
+            }
+          ]],
+          columns: [[
+            {    /*名称*/
+              field: 'Name',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.Name)</span>',
+              width: 200,
+              hidden: false,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Name)', required: true, validType: 'length[0,50]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {    /*组织代码*/
+              field: 'Code',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.Code)</span>',
+              width: 120,
+              hidden: false,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Code)', required: true, validType: 'length[0,12]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {    /*地址*/
+              field: 'Address',
+              title: '@Html.DisplayNameFor(model => model.Address)',
+              width: 200,
+              hidden: false,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Address)', required: false, validType: 'length[0,50]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {    /*联系人*/
+              field: 'Contect',
+              title: '@Html.DisplayNameFor(model => model.Contect)',
+              width: 120,
+              hidden: false,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.Contect)', required: false, validType: 'length[0,12]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {    /*联系电话*/
+              field: 'PhoneNumber',
+              title: '@Html.DisplayNameFor(model => model.PhoneNumber)',
+              width: 120,
+              hidden: false,
+              editor: {
+                type: 'textbox',
+                options: { prompt: '@Html.DescriptionFor(model => model.PhoneNumber)', required: false, validType: 'length[0,20]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {   /*注册日期*/
+              field: 'RegisterDate',
+              title: '<span class="required">@Html.DisplayNameFor(model => model.RegisterDate)</span>',
+              width: 140,
+              align: 'right',
+              hidden: false,
+              editor: {
+                type: 'datebox',
+                options: { prompt: '@Html.DescriptionFor(model => model.RegisterDate)', required: true }
+              },
+              formatter: dateformatter,
+              sortable: true,
+              resizable: true
+            },
+          ]]
+        }).datagrid('columnMoving')
+          .datagrid('resetColumns')
+          .datagrid('enableFilter', [
+            {     /*注册日期*/
+              field: 'RegisterDate',
+              type: 'dateRange',
+              options: {
+                onChange: value => {
+                  $dg.datagrid('addFilterRule', {
+                    field: 'RegisterDate',
+                    op: 'between',
+                    value: value
+                  });
+
+                  $dg.datagrid('doFilter');
+                }
+              }
+            },
+          ])
+          .datagrid('load', '/Companies/GetData');
+      }
+      //动态绑定datagrid操作时间
+      bindActionEvents() {
+        $('button[name="actionbutton"]').off('click').on('click', $('button[name="actionbutton"]'), (e) => {
+          console.log('-------')
+          console.log(e)
+          let $button = null;
+          if ($(e.target).is(':button')) {
+            $button = $(e.target);
+          } else {
+            $button = $(e.target).parent();
+          }
+          const action = $button.data('cmd');
+          const id = $($button).data('id');
+          const index = $($button).data('index');
+          if (action == 'edit') {
+            this.editItem(id, index);
+          } else {
+            this.deleteRow(id);
+          }
+
+        });
+
+      }
+      //执行导出下载Excel
+      exportexcel() {
+        const filterRules = JSON.stringify(this.$dg.datagrid('options').filterRules);
+        $.messager.progress({ title: '请等待', msg: '正在执行导出...' });
+        let formData = new FormData();
+        formData.append('filterRules', filterRules);
+        formData.append('sort', 'Id');
+        formData.append('order', 'asc');
+        $.postDownload('/Companies/ExportExcel', formData).then(res => {
+          $.messager.progress('close');
+          toastr.success('导出成功!');
+        }).catch(err => {
+          //console.log(err);
+          $.messager.progress('close');
+          $.messager.alert('导出失败', err.statusText, 'error');
+        });
+
+      }
+      //显示快捷菜单
+      showContextMenu(e, index) {
+        this.$dg.datagrid('columnMenu').menu('show', {
+          left: e.pageX,
+          top: e.pageY
+        });
+      }
+      //弹出编辑信息
+      editItem(id, index) {
+        this.MODELSTATE = "Modified"
+        this.item = this.$dg.datagrid('getRows')[index];
+        this.showDetailWindow(this.item);
+      }
+      //重载或查询数据
+      reloadData() {
+        this.$dg.datagrid('unselectAll');
+        this.$dg.datagrid('uncheckAll');
+        this.$dg.datagrid('reload');
+      }
+      //新增记录
+      appendItem() {
+        this.item = {
+          Address: '-',
+          RegisterDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        };
+        if (!this.EDITINLINE) {
+          //弹出新增窗口
+          this.MODELSTATE = 'Added';
+          this.showDetailWindow(this.item);
+        } else {
+          if (this.endEditing()) {
+            //对必填字段进行默认值初始化
+            this.$dg.datagrid('insertRow',
+              {
+                index: 0,
+                row: this.item
+              });
+            this.editIndex = 0;
+            this.$dg.datagrid('selectRow', this.editIndex)
+              .datagrid('beginEdit', this.editIndex);
+            this.hook = true;
+          }
+        }
+      }
+      //删除编辑的行
+      removeItem() {
+        if (this.$dg.datagrid('getChecked').length <= 0 && this.EDITINLINE) {
+          if (this.editIndex !== undefined) {
+            const delindex = this.editIndex;
+            this.$dg.datagrid('cancelEdit', delindex)
+              .datagrid('deleteRow', delindex);
+            this.hook = true;
+          } else {
+            const rows = this.$dg.datagrid('getChecked');
+            rows.slice().reverse().forEach(row => {
+              const rowindex = this.$dg.datagrid('getRowIndex', row);
+              this.$dg.datagrid('deleteRow', rowindex);
+              this.hook = true;
+            });
+          }
+          this.$savebutton.prop('disabled', false);
+          this.$cancelbutton.prop('disabled', false);
+        } else {
+          this.deletechecked();
+        }
+      }
+      //删除该行
+      deleteRow(id) {
+        $.messager.confirm('确认', '你确定要删除该记录?', result => {
+          if (result) {
+            this.dodeletechecked([id]);
+          }
+        })
+      }
+      //删除选中的行
+      deletechecked() {
+        const id = this.$dg.datagrid('getChecked').filter(item => item.Id > 0).map(item => {
+          return item.Id;
+        });
+        if (id.length > 0) {
+          $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length} </span> 行记录?`, result => {
+            if (result) {
+              this.dodeletechecked(id);
+            }
+          });
+        } else {
+          $.messager.alert('提示', '请先选择要删除的记录!', 'question');
+        }
+      }
+      //执行删除
+      dodeletechecked(id) {
+        $.post('/Companies/DeleteChecked', { id: id })
           .done(response => {
-            //$.messager.progress('close');
             if (response.success) {
-              hook = false;
-              $companyform.form('disableValidation');
-              $dg.datagrid('reload');
-              $('#companydetailwindow').window("close");
-              toastr.success("保存成功");
+              toastr.error(`成功删除[${id.length}]行记录`);
+              this.reloadData();
             } else {
-              $.messager.alert("错误", response.err, "error");
+              $.messager.alert('错误', response.err, 'error');
             }
           })
           .fail((jqXHR, textStatus, errorThrown) => {
-            //$.messager.progress('close');
             $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
           });
       }
-    }
-    //关闭窗口
-    function closecompanydetailwindow() {
-      $('#companydetailwindow').window('close');
-    }
-
-    //判断是否有没有保存的记录
-    function companyhasmodified() {
-      return hook;
-    }
-
-
-    function initcompanydetailview() {
-      //判断是否显示功能按钮
-      if (MODELSTATE === 'Added') {
-        $('#deleteitem-btn-group').hide();
-      } else {
-        $('#deleteitem-btn-group').show();
-      }
-
-      //回车光标移动到下个输入控件
-      //日期类型 注册日期
-      $('#RegisterDate').datebox('textbox').bind('keydown', function (e) {
-        if (e.keyCode == 13) {
-          $(e.target).emulateTab();
+      //开启编辑状态
+      onClickCell(index, field) {
+        console.log('onClickCell')
+        this.item = this.$dg.datagrid('getRows')[index];
+        const _actions = ['action', 'ck'];
+        if (!this.EDITINLINE || $.inArray(field, _actions) >= 0) {
+          return;
         }
-      });
+
+        if (this.editIndex !== index) {
+          if (this.endEditing()) {
+            this.$dg.datagrid('selectRow', index)
+              .datagrid('beginEdit', index);
+            this.hook = true;
+            this.editIndex = index;
+            const ed = this.$dg.datagrid('getEditor', { index: index, field: field });
+            if (ed) {
+              ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+            }
+          } else {
+            this.$dg.datagrid('selectRow', index);
+          }
+        }
+      }
+      //关闭编辑状态
+      endEditing() {
+        if (this.editIndex === undefined) {
+          return true;
+        }
+        if (this.$dg.datagrid('validateRow', this.editIndex)) {
+          this.$dg.datagrid('endEdit', this.editIndex);
+          return true;
+        } else {
+          const invalidinput = $('input.validatebox-invalid', this.$dg.datagrid('getPanel'));
+          const fieldnames = invalidinput.map((index, item) => {
+            return $(item).attr('placeholder') || $(item).attr('id');
+          });
+          $.messager.alert('提示', `${Array.from(fieldnames)} 输入有误.`, 'error');
+          return false;
+        }
+      }
+      //提交保存后台数据库
+      acceptChanges() {
+        if (this.endEditing()) {
+          if (this.$dg.datagrid('getChanges').length > 0) {
+            const inserted = this.$dg.datagrid('getChanges', 'inserted').map(item => {
+              item.TrackingState = 1;
+              return item;
+            });
+            const updated = this.$dg.datagrid('getChanges', 'updated').map(item => {
+              item.TrackingState = 2
+              return item;
+            });
+            const deleted = this.$dg.datagrid('getChanges', 'deleted').map(item => {
+              item.TrackingState = 3
+              return item;
+            });
+            //过滤已删除的重复项
+            const changed = inserted.concat(updated.filter(item => {
+              return !deleted.includes(item);
+            })).concat(deleted);
+            //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
+            $.post('/Companies/AcceptChanges', { companies: changed })
+              .done(response => {
+                //$.messager.progress('close');
+                //console.log(response);
+                if (response.success) {
+                  toastr.success('保存成功');
+                  this.$dg.datagrid('acceptChanges');
+                  this.reloadData();
+                  this.hook = false;
+                } else {
+                  $.messager.alert('错误', response.err, 'error');
+                }
+              })
+              .fail((jqXHR, textStatus, errorThrown) => {
+                //$.messager.progress('close');
+                $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+              });
+          }
+        }
+      }
+      //取消变更
+      rejectChanges() {
+        this.$dg.datagrid('rejectChanges');
+        this.editIndex = undefined;
+        this.hook = false;
+      }
+      //弹出编辑窗体
+      showDetailWindow(data) {
+        this.id = (data.Id || 0);
+        this.$detailwindow.window("open");
+        this.$form.form('reset');
+        this.$form.form('load', data);
+      }
+      //删除当前记录
+      deleteItem() {
+        $.messager.confirm('确认', '你确定要删除该记录?', result => {
+          if (result) {
+            const url = `/Companies/Delete/${this.item.Id}`;
+            $.get(url).done(res => {
+              if (res.success) {
+                toastr.success("删除成功");
+                this.$detailwindow.window("close");
+                this.reloadData();
+              } else {
+                $.messager.alert("错误", res.err, "error");
+              }
+            });
+          }
+        });
+      }
+      //保存当然编辑
+      saveItem() {
+        if (this.$form.form('enableValidation').form('validate')) {
+          let company = this.$form.serializeJSON();
+          let url = '/Companies/Edit';
+          //判断是新增或是修改方法
+          if (this.MODELSTATE === 'Added') {
+            url = '/Companies/Create';
+          }
+          var token = $('input[name="__RequestVerificationToken"]', this.$form).val();
+          //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+              __RequestVerificationToken: token,
+              company: company
+            },
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8'
+          })
+            .done(response => {
+              //$.messager.progress('close');
+              if (response.success) {
+                this.hook = false;
+                this.$form.form('disableValidation');
+                this.$dg.datagrid('reload');
+                this.$detailwindow.window("close");
+                toastr.success("保存成功");
+              } else {
+                $.messager.alert("错误", response.err, "error");
+              }
+            })
+            .fail((jqXHR, textStatus, errorThrown) => {
+              $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
+            });
+        }
+      }
+      //关闭窗口
+      closedetailwindow() {
+        this.$detailwindow.window('close');
+      }
     }
+
+
+
+
+    $(() => {
+      var mycompany = new company();
+      console.log(mycompany);
+    })
+
+
+
+
+
+
+
+
+
+
   </script>
+
 }
