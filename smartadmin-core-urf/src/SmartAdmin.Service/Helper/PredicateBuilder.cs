@@ -13,7 +13,7 @@ using System.Text.Json.Serialization;
 namespace SmartAdmin
 {
 
-  internal class AutoNumberToStringConverter : JsonConverter<object>
+  internal sealed class AutoNumberToStringConverter : JsonConverter<object>
   {
     public override bool CanConvert(Type typeToConvert)
     {
