@@ -331,7 +331,7 @@
     function onClickRow(index, row) {
       const id = row.Id;
       if (row.Exception) {
-        bootbox.alert({
+        bootbox.confirm({
           size:'large',
           title: row.Level,
           message: `<p> ${row.Message}</p>
@@ -341,19 +341,23 @@
 
                     ${row.Exception}
                                   </div>`,
-          callback: function () {
-            setLogState(id, index);
+          callback: function (result) {
+            if (result) {
+              setLogState(id, index);
+            }
           }
         });
       } else {
-        bootbox.alert({
+        bootbox.confirm({
           title: row.Level,
           message: `<p> ${row.Message}</p>
   <p> ${row.RequestForm} </p>
                    <p> ${row.Properties } </p>
               `,
-          callback: function () {
-            setLogState(id, index);
+          callback: function (result) {
+            if (result) {
+              setLogState(id, index);
+            }
           }
         });
       }
