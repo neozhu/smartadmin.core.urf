@@ -40,7 +40,8 @@
           保存
         </button>
       </div>
-      <div class="card-body">
+      <div class="card-body enable-loader">
+        <div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>
         <div class="table-responsive">
           <table id="menu-tree" style="width:auto;height:auto">
           </table>
@@ -216,6 +217,9 @@
           checkOnSelect: true,
           onSelect: onSelect,
           onUnselect: onUnselect,
+          onBeforeLoad: function () {
+            $('.enable-loader').removeClass('enable-loader')
+          },
           columns: [[
             {
               field: 'ck',

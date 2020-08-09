@@ -19,7 +19,8 @@
         </div>
 
       </div>
-      <div class="panel-container show">
+      <div class="panel-container enable-loader show">
+        <div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>
         <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
           <div class="row no-gutters align-items-center">
             <div class="col">
@@ -252,6 +253,10 @@
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script>
+    //全屏事件
+    document.addEventListener('panel.onfullscreen', () => {
+      $dg.treegrid('resize');
+    });
         var $dg = $('#customers_datagrid');
         var EDITINLINE = true;
         var customer = null;
@@ -475,12 +480,7 @@
           });
         },
         onBeforeLoad: function () {
-          const that = $(this);
-          document.addEventListener('panel.onfullscreen', () => {
-            setTimeout(() => {
-              that.datagrid('resize');
-            }, 200)
-          })
+          $('.enable-loader').removeClass('enable-loader')
         },
         onLoadSuccess: function (data) {
           editIndex = undefined;

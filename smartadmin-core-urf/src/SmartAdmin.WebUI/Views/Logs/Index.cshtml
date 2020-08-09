@@ -43,7 +43,8 @@
         </div>
 
       </div>
-      <div class="panel-container show">
+      <div class="panel-container enable-loader show">
+        <div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>
         <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-faded bg-subtlelight-fade ">
           <div class="row no-gutters align-items-center">
             <div class="col">
@@ -81,7 +82,10 @@
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
   <script src="~/js/statistics/chartjs/chartjs.bundle.js"></script>
   <script type="text/javascript">
-
+    //全屏事件
+    document.addEventListener('panel.onfullscreen', () => {
+      $dg.treegrid('resize');
+    });
     //-------NLogLevel---------//
     var levelfiltersource = [{ value: '', text: 'All' }];
     var leveldatasource = [];
@@ -395,13 +399,7 @@
           });
         },
         onBeforeLoad: function () {
-          //datagrid resize when jarvisWidgets resized.
-          const that = $(this);
-          document.addEventListener('panel.onfullscreen', () => {
-            setTimeout(() => {
-              that.datagrid('resize');
-            }, 200)
-          })
+          $('.enable-loader').removeClass('enable-loader')
         },
         columns: [[
           { /*Id*/
