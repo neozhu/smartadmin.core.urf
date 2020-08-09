@@ -282,12 +282,7 @@
 
     function removeData() {
       deletechecked();
-      if (editIndex !== undefined) {
-        $dg.datagrid('rejectChanges');
-        editIndex = undefined;
-
-      }
-        hook = false;
+      hook = false;
     }
     function deletechecked() {
       const id = $dg.datagrid('getChecked').filter(item => item.Id != null && item.Id > 0).map(item => {

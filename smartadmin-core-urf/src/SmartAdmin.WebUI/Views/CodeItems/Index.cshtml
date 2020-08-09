@@ -181,8 +181,6 @@
     }
     function appendData() {
         if (endEditing()) {
-            //$dg.datagrid("appendRow", { Status: 0 });
-            //editIndex = $dg.datagrid("getRows").length - 1;
             $dg.datagrid("insertRow", {
                 index: 0,
                 row: { CodeType: prevcodetype, Description: prevdescription, IsDisabled: 0 }
@@ -271,7 +269,7 @@
             }
             function getChanges() {
                 var rows = $dg.datagrid("getChanges");
-                alert(rows.length + " rows are changed!");
+        
             }
     //显示帮助信息
         function dohelp() {
