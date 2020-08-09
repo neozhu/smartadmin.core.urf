@@ -33,35 +33,35 @@
               <div class="col">
                 <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
                 <div class="btn-group btn-group-sm">
-                  <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+                  <button name="searchbutton" onclick="reloadData()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
                 </div>
                 <div class="btn-group">
-                  <a href="javascript:updatejavascript()" class="btn btn-sm btn-primary"> <i class="fal fa-code-commit"></i> 更新JS脚本 </a>
+                  <button name="updatejsbutton" onclick="updatejavascript()" class="btn btn-sm btn-primary"> <i class="fal fa-code-commit"></i> 更新JS脚本 </button>
                 </div>
                 <div class="btn-group btn-group-sm">
-                  <button onclick="append()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 新增 </button>
+                  <button name="appendbutton" onclick="appendData()" class="btn btn-default"> <span class="fal fa-plus mr-1"></span> 新增 </button>
                 </div>
                 <div class="btn-group btn-group-sm">
-                  <button name="deletebutton" disabled onclick="removeit()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
+                  <button name="deletebutton" disabled onclick="removeData()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除 </button>
                 </div>
                 <div class="btn-group btn-group-sm">
-                  <button name="savebutton" disabled onclick="accept()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
+                  <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default"> <span class="fal fa-save mr-1"></span> 保存 </button>
                 </div>
                 <div class="btn-group btn-group-sm">
-                  <button name="cancelbutton" disabled onclick="reject()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span>  取消  </button>
+                  <button name="cancelbutton" disabled onclick="rejectChanges()" class="btn btn-default"> <span class="fal fa-ban mr-1"></span>  取消  </button>
                 </div>
 
                 <div class="btn-group btn-group-sm hidden-xs">
-                  <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                  <button name="importbutton" type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                   <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Toggle Dropdown</span>
                   </button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()"><span class="fal fa-download"></span> 下载模板 </a>
+                    <button name="downloadbutton" type="button" class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()"><span class="fal fa-download"></span> 下载模板 </button>
                   </div>
                 </div>
                 <div class="btn-group btn-group-sm ">
-                  <button onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  导出 </button>
+                  <button name="exportbutton" onclick="exportexcel()" class="btn btn-default"> <span class="fal fa-file-excel mr-1"></span>  导出 </button>
                 </div>
 
               </div>
@@ -105,6 +105,8 @@
     document.addEventListener('panel.onfullscreen', () => {
       $dg.treegrid('resize');
     });
+
+
             var entityname = "CodeItem";
             //更新javascript
     function updatejavascript() {
@@ -139,7 +141,7 @@
             //datagrid 增删改查操作
             var $dg = $("#codeitems_datagrid");
             var editIndex = undefined;
-    function reload() {
+    function reloadData() {
       $dg.datagrid('uncheckAll');
       $dg.datagrid('reload');
     }
@@ -177,7 +179,7 @@
             }
         }
     }
-    function append() {
+    function appendData() {
         if (endEditing()) {
             //$dg.datagrid("appendRow", { Status: 0 });
             //editIndex = $dg.datagrid("getRows").length - 1;
@@ -190,8 +192,8 @@
                 .datagrid("beginEdit", editIndex);
         }
     }
-    function removeit() {
-      if ($dg.datagrid('getChecked').length <= 0 && EDITINLINE) {
+    function removeData() {
+      if ($dg.datagrid('getChecked').length <= 0 ) {
         if (editIndex == undefined) { return }
         $dg.datagrid("cancelEdit", editIndex)
           .datagrid("deleteRow", editIndex);
@@ -202,9 +204,9 @@
     }
     //删除该行
     function deletechecked() {
-      const id = $dg.datagrid('getChecked').filter(item => item.Id != null && item.Id > 0).map(item => {
+      const id = $dg.datagrid('getChecked').map(item => {
         return item.Id;
-      });;
+      });
       if (id.length > 0) {
         $.messager.confirm('确认', `你确定要删除这 <span class='badge badge-icon position-relative'>${id.length} </span> 行记录?`, result => {
           if (result) {
@@ -212,7 +214,7 @@
               .done(response => {
                 if (response.success) {
                   toastr.error(`成功删除[${id.length}]行记录`);
-                  reload();
+                  reloadData();
                 } else {
                   $.messager.alert('错误', response.err, 'error');
                 }
@@ -226,7 +228,7 @@
         $.messager.alert('提示', '请先选择要删除的记录!', 'question');
       }
     }
-    function accept() {
+    function acceptChanges() {
       if (endEditing()) {
         if ($dg.datagrid("getChanges").length > 0) {
           const inserted = $dg.datagrid('getChanges', 'inserted').map(item => {
@@ -250,7 +252,7 @@
             if (response.success) {
               toastr.success('保存成功');
               $dg.datagrid('acceptChanges');
-              reload();
+              reloadData();
             } else {
               $.messager.alert('错误', response.err, 'error');
             }
@@ -263,7 +265,7 @@
 
       }
     }
-            function reject() {
+            function rejectChanges() {
                 $dg.datagrid("rejectChanges");
                 editIndex = undefined;
             }

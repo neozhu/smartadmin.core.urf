@@ -88,14 +88,10 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpPost]
     public async Task<ActionResult> SaveData(CodeItem[] codeitems)
     {
-      if (ModelState.IsValid)
-      {
+
         try
         {
-          foreach (var item in codeitems)
-          {
-            this._codeItemService.ApplyChanges(item);
-          }
+          this._codeItemService.ApplyChanges(codeitems);
           var result = await this._unitOfWork.SaveChangesAsync();
           return Json(new { success = true, result });
         }
@@ -104,12 +100,7 @@ namespace SmartAdmin.WebUI.Controllers
         {
           return Json(new { success = false, err = e.GetBaseException().Message });
         }
-      }
-      else
-      {
-        var modelStateErrors = string.Join(",", ModelState.Keys.SelectMany(key => ModelState[key].Errors.Select(n => n.ErrorMessage)));
-        return Json(new { success = false, err = modelStateErrors });
-      }
+     
     }
     //导出Excel
     [HttpPost]
