@@ -21,7 +21,7 @@ namespace SmartAdmin.Data.Models
       IHttpContextAccessor httpContextAccessor) : base(options)
     {
       _httpContextAccessor = httpContextAccessor;
-      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor.HttpContext?.User.Identity;
+      var claimsidentity = (ClaimsIdentity)this._httpContextAccessor?.HttpContext?.User.Identity;
       var tenantclaim = claimsidentity?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid");
       _tenantId = Convert.ToInt32(tenantclaim?.Value);
       _userName = claimsidentity?.Name;
