@@ -112,6 +112,12 @@
           placeholder: '新角色(汉字 英文字母 数字 下划线组成，2-20位)',
           required: true,
           title: "添加新角色",
+          buttons: {
+           cancel: {
+            label: "取消",
+            className: 'btn-secondary',
+           }
+          },
           callback: function (result) {
             if (result != null) {
               $.get(`/RoleManage/CreateRole?name=${result}`).done(() => {
@@ -154,6 +160,12 @@
           }
           
          ],
+         buttons: {
+           cancel: {
+            label: "取消",
+            className: 'btn-secondary',
+           }
+          },
         callback: function (result) {
           if (result != null) {
             $.post('/RoleManage/AddToRoles', { userName: userName, roles: result }).done(() => {
