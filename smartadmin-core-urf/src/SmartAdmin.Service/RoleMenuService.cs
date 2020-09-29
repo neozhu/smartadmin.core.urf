@@ -107,7 +107,7 @@ namespace SmartAdmin.Service
     }
 
     public async Task<IEnumerable<ListItem>> NavDataSource(string[] roles) {
-      var menus =await this._menurepository.Queryable().Where(x => x.IsEnabled)
+      var menus =await this._menurepository.Queryable()
           .OrderBy(x => x.LineNum).ToListAsync();
       var owneritems = await this.Queryable()
         .Where(x => roles.Contains(x.RoleName)).ToListAsync();
@@ -126,7 +126,8 @@ namespace SmartAdmin.Service
             Text=menu.Title,
             Route=menu.Controller,
             Tags= menu.Title,
-            I18n= $"{menu.Controller}_{menu.Action}"
+            I18n= $"{menu.Controller}_{menu.Action}",
+            Disabled=!menu.IsEnabled
           };
 
           if (menus.Where(x => x.ParentId == menu.Id).Any())
