@@ -54,7 +54,7 @@
                                 }
                             }
                             <text>
-                                <a href="@item.Route" title="@item.Title" data-filter-tags="@item.Tags">
+                                <a href="@item.Route" title="@item.Title" target="@item.Target" data-filter-tags="@item.Tags">
                                     <span class="nav-link-text" data-i18n="@item.I18n">@item.Text.AsRaw()</span>
                                     @if (item.Span.HasValue())
                                     {
@@ -80,7 +80,7 @@
                                                 <li class="@(pageName == subItem.Href.ToPage() ? "active" : "")">
                                                 </text>
                                             }
-                                            <a href="@subItem.Route" title="@subItem.Title" data-filter-tags="@subItem.Tags">
+                                            <a href="@subItem.Route" title="@subItem.Title" target="@item.Target" data-filter-tags="@subItem.Tags">
                                                 <span class="nav-link-text" data-i18n="@subItem.I18n">@subItem.Text.AsRaw()</span>
                                             </a>
                                         @:</li>
@@ -103,7 +103,7 @@
             else
             {
                 <li class="@(pageName == group.Href.ToPage() ? "active" : "")">
-                    <a href="@group.Route" title="@group.Title" data-filter-tags="@group.Tags">
+                    <a href="@group.Route" title="@group.Title" target="@group.Target" data-filter-tags="@group.Tags">
                         <i class="@group.Icon"></i>
                         <span class="nav-link-text" data-i18n="@group.I18n">@group.Title.AsRaw()</span>
                     </a>

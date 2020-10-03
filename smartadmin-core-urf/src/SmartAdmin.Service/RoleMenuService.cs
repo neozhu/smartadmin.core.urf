@@ -127,6 +127,7 @@ namespace SmartAdmin.Service
             Route=menu.Controller,
             Tags= menu.Title,
             I18n= $"{menu.Controller}_{menu.Action}",
+            Target=menu.Target,
             Disabled=!menu.IsEnabled
           };
 
@@ -157,6 +158,7 @@ namespace SmartAdmin.Service
             Text = menu.Title,
             Route = menu.Url,
             Tags = menu.Title,
+            Target=menu.Target,
             I18n = $"{menu.Controller}_{menu.Action}"
           };
 

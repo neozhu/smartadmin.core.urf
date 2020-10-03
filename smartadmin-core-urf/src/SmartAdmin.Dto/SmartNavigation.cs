@@ -54,7 +54,8 @@ namespace SmartAdmin.Dto
         public string Route { get; set; }
         public string Tags { get; set; }
         public string I18n { get; set; }
-        public bool Disabled { get; set; }
+    public string Target { get; set; }
+    public bool Disabled { get; set; }
         public List<ListItem> Items { set; get; } = new List<ListItem>();
         public Span Span { get; set; } = new Span();
         public string[] Roles { get; set; }

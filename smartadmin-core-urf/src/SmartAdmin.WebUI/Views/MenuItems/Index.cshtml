@@ -204,6 +204,7 @@
                 Controller: '#',
                 Action: '#',
                 IconCls: '',
+                Target:'_self',
                 IsEnabled:true,
 
               }
@@ -450,6 +451,26 @@
               editor: {
                 type: 'textbox',
                 options: { prompt: '@Html.DescriptionFor(model => model.Icon)', required: false, validType: 'length[0,30]' }
+              },
+              sortable: true,
+              resizable: true
+            },
+            {
+              field: 'Target',
+              title: '@Html.DisplayNameFor(model => model.Target)',
+              width: 160,
+              editor: {
+                type: 'combobox',
+                options: {
+                  prompt: '@Html.DescriptionFor(model => model.Target)',
+                  required: false,
+                  data: [{ value: '_self', text: '_self' },
+                    { value: '_blank', text: '_blank' },
+                    { value: '_parent', text: '_parent' },
+                    { value: '_top', text: '_top' }
+                   ],
+                  validType: 'length[0,30]'
+                }
               },
               sortable: true,
               resizable: true
