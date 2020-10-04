@@ -104,3 +104,52 @@ jQuery.extend({
   }
 });
 
+(function ($) {
+  $.fn.fromJSON = function (data) {
+    var $form = $(this)
+    //var data = jsonobj;
+    $.each(data, function (key, value) {
+      var $elem = $('[name="' + key + '"]', $form)
+      var type = $elem.first().attr('type')
+      if (type == 'radio') {
+        $('[name="' + key + '"][value="' + value + '"]').prop('checked', true)
+      } else if (type == 'checkbox' && (value == true || value == 'true')) {
+        $('[name="' + key + '"]').prop('checked', true)
+      } else {
+        $elem.val(value)
+      }
+    })
+  };
+  $.fn.clearForm = function (options) {
+
+    // This is the easiest way to have default options.
+    var settings = $.extend({
+      // These are the defaults.
+
+      formId: this.closest('form')
+
+    }, options);
+
+    var $form = $(settings.formId);
+
+    //reset jQuery Validate's internals
+    $form.validate().resetForm();
+    //reset unobtrusive validation summary, if it exists
+    $form.find("[data-valmsg-summary=true]")
+      .removeClass("validation-summary-errors")
+      .addClass("validation-summary-valid")
+      .find("ul").empty();
+
+    //reset unobtrusive field level, if it exists
+    $form.find("[data-valmsg-replace]")
+      .removeClass("field-validation-error")
+      .addClass("field-validation-valid")
+      .empty();
+    //reset unobtrusive field vaild/invalid status
+    $form.find("[data-val=true]")
+      .removeClass("is-valid")
+      .removeClass("is-invalid")
+
+    return $form;
+  }
+}(jQuery));

@@ -99,19 +99,6 @@
                     iconCls:'fal fa-window',
                     onBeforeClose:function(){
                       var that = $(this);
-                      if(customerhasmodified()){
-                        $.messager.confirm('确认','你确定要放弃保存修改的记录?',function(r){
-                        if (r){
-                          var opts = that.panel('options');
-                          var onBeforeClose = opts.onBeforeClose;
-                          opts.onBeforeClose = function(){};
-                          that.panel('close');
-                          opts.onBeforeClose = onBeforeClose;
-                          hook = false;
-                        }
-                        });
-                        return false;
-                      }
                     },
                     onOpen:function(){
                        $(this).window('vcenter');
@@ -141,82 +128,43 @@
     <div class="container">
       <div class="panel-content">
         <form id="customer_form"
-              class="easyui-form form-horizontal p-1"
-              method="post"
-              data-options="novalidate:true,
-                            onChange: function(target){
-                              hook = true;
-                              $('button[name*=\'saveitembutton\']').prop('disabled', false);
-                             },
-                             onLoadSuccess:function(data){
-                               hook = false;
-                               $('button[name*=\'saveitembutton\']').prop('disabled', true);
-                             }">
+              class="form-horizontal p-1"
+              
+              method="post">
+
+
           @Html.AntiForgeryToken()
           <!--Primary Key-->
           @Html.HiddenFor(model => model.Id)
-          <fieldset class="form-group">
+          <fieldset>
             <!-- begin row -->
             <!--名称-->
-            <div class="row h-100 justify-content-center align-items-center">
+            <div class="form-group   row h-100 justify-content-center align-items-center">
               <label class="col-md-2 pr-1 form-label text-right"><span class="text-danger">*</span> @Html.DisplayNameFor(model => model.Name)</label>
               <div class="col-md-4 mb-1 pl-1">
-                <input id="@Html.IdFor(model => model.Name)"
-                       name="@Html.NameFor(model => model.Name)"
-                       value="@Html.ValueFor(model => model.Name)"
-                       tabindex="0" required
-                       class="easyui-textbox"
-                       style="width:100%"
-                       type="text"
-                       data-options="prompt:'@Html.DescriptionFor(model => model.Name)',
-								 required:true,
-                                 validType: 'length[0,50]'
-                                 " />
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger  " })
               </div>
               <label class="col-md-2 pr-1 form-label text-right ">@Html.DisplayNameFor(model => model.Contect)</label>
               <div class="col-md-4 mb-1 pl-1">
-                <input id="@Html.IdFor(model => model.Contect)"
-                       name="@Html.NameFor(model => model.Contect)"
-                       value="@Html.ValueFor(model => model.Contect)"
-                       tabindex="1" required
-                       class="easyui-textbox"
-                       style="width:100%"
-                       type="text"
-                       data-options="prompt:'@Html.DescriptionFor(model => model.Contect)',
-								 required:true,validType: 'length[0,12]'
-                                 " />
+                @Html.EditorFor(model => model.Contect, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
+                @Html.ValidationMessageFor(m => m.Contect, "", new { @class = "text-danger  " })
               </div>
               <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.PhoneNumber)</label>
               <div class="col-md-4 mb-1 pl-1">
-                <input id="@Html.IdFor(model => model.PhoneNumber)"
-                       name="@Html.NameFor(model => model.PhoneNumber)"
-                       value="@Html.ValueFor(model => model.PhoneNumber)"
-                       tabindex="2"
-                       class="easyui-textbox"
-                       style="width:100%"
-                       type="text"
-                       data-options="prompt:'@Html.DescriptionFor(model => model.PhoneNumber)',
-								 required:false,validType: 'length[0,20]'
-                                 
-                                 " />
+                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger  " })
               </div>
               <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Address)</label>
               <div class="col-md-4 mb-1 pl-1">
-                <input id="@Html.IdFor(model => model.Address)"
-                       name="@Html.NameFor(model => model.Address)"
-                       value="@Html.ValueFor(model => model.Address)"
-                       tabindex="3"
-                       class="easyui-textbox"
-                       style="width:100%"
-                       type="text"
-                       data-options="prompt:'@Html.DescriptionFor(model => model.Address)',
-								        required:true, validType: 'length[0,50]'
-                                 " />
+                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
+                @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger  " })
               </div>
 
             </div>
           </fieldset>
-        </form>
+
+      </form>
       </div>
     </div>
   </div>
@@ -234,11 +182,13 @@
 })
 
 @section HeadBlock {
-  
+
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
 }
 @section ScriptsBlock {
+  <script src="~/js/plugin/jquery.validation/jquery.validate.js"></script>
+  <script src="~/js/plugin/jquery.validation/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
   <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
@@ -258,7 +208,7 @@
       $dg.treegrid('resize');
     });
         var $dg = $('#customers_datagrid');
-        var EDITINLINE = true;
+        var EDITINLINE = false;
         var customer = null;
     var editIndex = undefined;
     //下载Excel导入模板
@@ -603,14 +553,15 @@
             },
             sortable: true,
             resizable: true,
-      
+
           }
         ]]
-      }).datagrid('columnMoving')
-        .datagrid('resetColumns')
+      })
         .datagrid('enableFilter', [
         ])
         .datagrid('load', '/Customers/GetData');
+
+      
     }
     );
 
@@ -625,7 +576,10 @@
       customerid = (data.Id || 0);
       $("#customerdetailwindow").window("open");
       $('#customer_form').form('reset');
-      $('#customer_form').form('load', data);
+      //$('#customer_form').form('load', data);
+      $('#customer_form').fromJSON(data)
+      $("#customer_form").clearForm();
+    
     }
     //删除当前记录
     function deletecustomeritem() {
@@ -647,7 +601,10 @@
     //async 保存数据
     async function savecustomeritem() {
       const $customerform = $('#customer_form');
-      if ($customerform.form('enableValidation').form('validate')) {
+
+
+
+      if ($customerform.valid()) {
         let customer = $customerform.serializeJSON();
         let url = '/Customers/Edit';
         //判断是新增或是修改方法
@@ -670,7 +627,6 @@
             //$.messager.progress('close');
             if (response.success) {
               hook = false;
-              $customerform.form('disableValidation');
               $dg.datagrid('reload');
               $('#customerdetailwindow').window("close");
               toastr.success("保存成功");

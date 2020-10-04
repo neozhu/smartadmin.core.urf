@@ -53,6 +53,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="wwwroot\js\plugin\jquery.validation\" />
   </ItemGroup>
 
   <ItemGroup>
