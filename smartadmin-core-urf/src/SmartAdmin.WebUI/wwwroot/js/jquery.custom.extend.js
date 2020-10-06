@@ -59,27 +59,13 @@ jQuery.extend({
   },
   postDownload: function (url, formData, onCompleted) {
     return new Promise(function (resolve, reject) {
-      var filename = '';
       var xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
-      xhr.responseType = 'blob';
+      xhr.responseType = 'arraybuffer';
       xhr.send(formData);
       xhr.overrideMimeType("application/vnd.ms-excel");
       xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          //console.log(xhr.getResponseHeader('Content-Disposition'));
-          var header = xhr.getResponseHeader('Content-Disposition');
-          if (header) {
-            var regx = /filename[^;=\n]*=((['\"]).*?\2|[^;\n]*)/g;
-            filename = regx.exec(header)[1];
-            //console.log(regx.exec(header));
-          }
-          var blob = xhr.response;
-          saveAs(blob, filename);
-          if (onCompleted !== undefined)
-            onCompleted(filename);
-
-        } else if (xhr.status === 500) {
+        if (xhr.status === 500) {
           reject({
             status: this.status,
             statusText: this.statusText
@@ -92,14 +78,68 @@ jQuery.extend({
           statusText: this.statusText
         });
       };
-      xhr.onload = function (e) {
-        resolve({
-          filename: filename,
-          status: this.status,
-          statusText: xhr.statusText
-        });
+      xhr.onload = function () {
+        if (this.status === 200) {
+          var filename = "";
+          var disposition = xhr.getResponseHeader('Content-Disposition');
+          if (disposition && disposition.indexOf('attachment') !== -1) {
+            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+          }
+          var type = xhr.getResponseHeader('Content-Type');
+
+          var blob;
+          if (typeof File === 'function') {
+            try {
+              blob = new File([this.response], filename, { type: type });
+            } catch (e) { /* Edge */ }
+          }
+          if (typeof blob === 'undefined') {
+            blob = new Blob([this.response], { type: type });
+          }
+
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+            window.navigator.msSaveBlob(blob, filename);
+          } else {
+            var URL = window.URL || window.webkitURL;
+            var downloadUrl = URL.createObjectURL(blob);
+
+            if (filename) {
+              // use HTML5 a[download] attribute to specify filename
+              var a = document.createElement("a");
+              // safari doesn't support this yet
+              if (typeof a.download === 'undefined') {
+                window.location.href = downloadUrl;
+              } else {
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+              }
+            } else {
+              window.location.href = downloadUrl;
+            }
+
+            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+
+
+          }
+          resolve({
+            filename: filename,
+            status: this.status,
+            statusText: xhr.statusText
+          });
+        }
+        else {
+          reject({
+            status: this.status,
+            statusText: this.statusText
+          });
+        }
       };
-     
+
     });
   }
 });

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="wwwroot\js\plugin\jquery.validation\" />
+    <Folder Include="wwwroot\js\plugin\snowflakeid\" />
   </ItemGroup>
 
   <ItemGroup>
