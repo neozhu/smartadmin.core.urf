@@ -145,7 +145,8 @@
             .removeData("unobtrusiveContainer");
     }
 
-    function validationInfo(form) {
+  function validationInfo(form) {
+    console.log('validationInfo')
         var $form = $(form),
             result = $form.data(data_validation),
             onResetProxy = $.proxy(onReset, form),

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
@@ -57,62 +58,60 @@ namespace SmartAdmin.WebUI.Controllers
       }
 
     }
-    //编辑 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<JsonResult> Edit(Customer customer)
+    public async Task<IActionResult> AddOrEdit(int id = 0)
     {
-      if (ModelState.IsValid)
+
+      if (id == 0)
       {
-        try
-        {
-          this.customerService.Update(customer);
-          var result = await this.unitOfWork.SaveChangesAsync();
-          return Json(new { success = true, result = result });
-        }
-        catch (Exception e)
-        {
-          return Json(new { success = false, err = e.GetBaseException().Message });
-        }
+        var model = new Customer();
+        return View(model);
       }
       else
       {
-        var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
-        return Json(new { success = false, err = modelStateErrors });
-        //DisplayErrorMessage(modelStateErrors);
+        var model = await this.customerService.FindAsync(id);
+        return View(model);
+
       }
-      //return View(work);
     }
-    //新建
     [HttpPost]
     [ValidateAntiForgeryToken]
-
-    public async Task<JsonResult> Create([Bind("Name,Contect,PhoneNumber,Address")] Customer customer)
+    public async Task<IActionResult> AddOrEdit(int id, [Bind("Id,Name,Contect,PhoneNumber,Address")] Customer customer)
     {
       if (ModelState.IsValid)
       {
-        try
+        //Insert
+        if (id == 0)
         {
           this.customerService.Insert(customer);
           await this.unitOfWork.SaveChangesAsync();
-          return Json(new { success = true });
-        }
-        catch (Exception e)
-        {
-          return Json(new { success = false, err = e.GetBaseException().Message });
-        }
 
-        //DisplaySuccessMessage("Has update a Work record");
-        //return RedirectToAction("Index");
+        }
+        //Update
+        else
+        {
+          try
+          {
+            this.customerService.Update(customer);
+            await this.unitOfWork.SaveChangesAsync();
+          }
+          catch (DbUpdateConcurrencyException)
+          {
+            if (!await this.customerService.ExistsAsync(customer.Id))
+            { return NotFound(); }
+            else
+            { throw; }
+          }
+        }
+        return Json(new { success = true });
       }
       else
       {
         var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
         return Json(new { success = false, err = modelStateErrors });
-        //DisplayErrorMessage(modelStateErrors);
       }
-      //return View(work);
+      
     }
+     
     //删除当前记录
     //GET: Customers/Delete/:id
     [HttpGet]
@@ -217,6 +216,28 @@ namespace SmartAdmin.WebUI.Controllers
         return Json(new { success = false, err=e.GetBaseException().Message });
       }
     }
+    //下载模板
+    public async Task<IActionResult> Download(string file)
+    {
 
+      this.Response.Cookies.Append("fileDownload", "true");
+      var path = Path.Combine(this._webHostEnvironment.ContentRootPath, file);
+      var downloadFile = new FileInfo(path);
+      if (downloadFile.Exists)
+      {
+        var fileName = downloadFile.Name;
+        var mimeType = MimeTypeConvert.FromExtension(downloadFile.Extension);
+        var fileContent = new byte[Convert.ToInt32(downloadFile.Length)];
+        using (var fs = downloadFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+          await fs.ReadAsync(fileContent, 0, Convert.ToInt32(downloadFile.Length));
+        }
+        return this.File(fileContent, mimeType, fileName);
+      }
+      else
+      {
+        throw new FileNotFoundException($"文件 {file} 不存在!");
+      }
+    }
   }
 }

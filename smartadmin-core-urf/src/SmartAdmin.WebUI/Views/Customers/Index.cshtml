@@ -107,67 +107,17 @@
                     onRestore:function(){
                     },
                     onMaximize:function(){
+                    },
+                    onLoad:function(){
+                     $('form').removeData('validator');
+                     $('form').removeData('unobtrusiveValidation');
+                     $.validator.unobtrusive.parse('form');
+ 
+
                     }
                     " style="width:820px;height:420px;display:none">
   <!-- toolbar -->
-  <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
-    <div class="d-flex flex-row-reverse pr-4">
-      <div class="btn-group btn-group-sm mr-1">
-        <button name="saveitembutton" onclick="savecustomeritem()" class="btn btn-default">
-          <i class="fal fa-save"></i> 保存
-        </button>
-      </div>
-      <div class="btn-group btn-group-sm mr-1" id="deleteitem-btn-group">
-        <button onclick="deletecustomeritem()" class="btn btn-danger">
-          <i class="fal fa-trash-alt"></i> 删除
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="panel-container show">
-    <div class="container">
-      <div class="panel-content">
-        <form id="customer_form"
-              class="form-horizontal p-1"
-              
-              method="post">
-
-
-          @Html.AntiForgeryToken()
-          <!--Primary Key-->
-          @Html.HiddenFor(model => model.Id)
-          <fieldset>
-            <!-- begin row -->
-            <!--名称-->
-            <div class="form-group   row h-100 justify-content-center align-items-center">
-              <label class="col-md-2 pr-1 form-label text-right"><span class="text-danger">*</span> @Html.DisplayNameFor(model => model.Name)</label>
-              <div class="col-md-4 mb-1 pl-1">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
-                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger  " })
-              </div>
-              <label class="col-md-2 pr-1 form-label text-right ">@Html.DisplayNameFor(model => model.Contect)</label>
-              <div class="col-md-4 mb-1 pl-1">
-                @Html.EditorFor(model => model.Contect, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
-                @Html.ValidationMessageFor(m => m.Contect, "", new { @class = "text-danger  " })
-              </div>
-              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.PhoneNumber)</label>
-              <div class="col-md-4 mb-1 pl-1">
-                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
-                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger  " })
-              </div>
-              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Address)</label>
-              <div class="col-md-4 mb-1 pl-1">
-                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control form-control-sm rounded-0" } })
-                @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger  " })
-              </div>
-
-            </div>
-          </fieldset>
-
-      </form>
-      </div>
-    </div>
-  </div>
+  
 </div>
 
 
@@ -187,7 +137,7 @@
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
 }
 @section ScriptsBlock {
-  <script src="~/js/plugin/jquery.validation/jquery.validate.js"></script>
+  <script src="~/js/plugin/jquery.validation/jquery.validate.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.validation/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
   <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
@@ -565,95 +515,14 @@
     }
     );
 
-  </script>
-  <script type="text/javascript">
-    //判断新增编辑状态
-    var MODELSTATE = 'Added';
-    var customerid = null;
-    function openCustomerDetailWindow(data, state) {
-      MODELSTATE = state;
-      initcustomerdetailview();
-      customerid = (data.Id || 0);
+
+    function openCustomerDetailWindow(data) {
+      const customerid = (data.Id || 0);
       $("#customerdetailwindow").window("open");
-      $('#customer_form').form('reset');
-      //$('#customer_form').form('load', data);
-      $('#customer_form').fromJSON(data)
-      $("#customer_form").clearForm();
-    
-    }
-    //删除当前记录
-    function deletecustomeritem() {
-      $.messager.confirm('确认', '你确定要删除该记录?', result => {
-        if (result) {
-          const url = `/Customers/Delete/${customerid}`;
-          $.get(url).done(res => {
-            if (res.success) {
-              toastr.success("删除成功");
-              $("#customerdetailwindow").window("close");
-              reload();
-            } else {
-              $.messager.alert("错误", res.err, "error");
-            }
-          });
-        }
-      });
-    }
-    //async 保存数据
-    async function savecustomeritem() {
-      const $customerform = $('#customer_form');
+      $('#customerdetailwindow').window('refresh', '/customers/addoredit/' + customerid);
 
-
-
-      if ($customerform.valid()) {
-        let customer = $customerform.serializeJSON();
-        let url = '/Customers/Edit';
-        //判断是新增或是修改方法
-        if (MODELSTATE === 'Added') {
-          url = '/Customers/Create';
-        }
-        var token = $('input[name="__RequestVerificationToken"]', $customerform).val();
-        //$.messager.progress({ title: '请等待', msg: '正在保存数据...', interval: 200 });
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: {
-            __RequestVerificationToken: token,
-            customer: customer
-          },
-          dataType: 'json',
-          contentType: 'application/x-www-form-urlencoded; charset=utf-8'
-        })
-          .done(response => {
-            //$.messager.progress('close');
-            if (response.success) {
-              hook = false;
-              $dg.datagrid('reload');
-              $('#customerdetailwindow').window("close");
-              toastr.success("保存成功");
-            } else {
-              $.messager.alert("错误", response.err, "error");
-            }
-          })
-          .fail((jqXHR, textStatus, errorThrown) => {
-            //$.messager.progress('close');
-            $.messager.alert('异常', `${jqXHR.status}: ${jqXHR.statusText} `, 'error');
-          });
-      }
-    }
-    //关闭窗口
-    function closecustomerdetailwindow() {
-      $('#customerdetailwindow').window('close');
-    }
-
-    //判断是否有没有保存的记录
-    function customerhasmodified() {
-      return hook;
-    }
-
-
-    function initcustomerdetailview() {
-      //判断是否显示功能按钮
 
     }
   </script>
+ 
 }
