@@ -48,6 +48,9 @@ namespace SmartAdmin.WebUI.Data.Models
       [Display(Name = "已处理", Description = "已处理")]
       [DefaultValue(false)]
       public bool Resolved { get; set; }
-    }
+    [Display(Name = "User-Agent", Description = "User-Agent")]
+    [MaxLength(128)]
+    public string UserAgent { get; set; }
+  }
   
 }

@@ -70,14 +70,16 @@ namespace SmartAdmin.WebUI.Controllers
     public async Task<JsonResult> SetRead(int id) {
       //await this.notificationService.Queryable().Where(x => x.Id == id).UpdateAsync(x => new Notification() { Read = true });
       //this.hub.Clients.All.broadcastChanged();
-      return Json(new { success = true });
+      var result = await Task.FromResult(true);
+      return Json(new { success = result });
     }
     [HttpGet]
     public async Task<JsonResult> SetAllRead(string userName)
     {
       //await this.notificationService.Queryable().Where(x => x.To == userName || x.To=="ALL").UpdateAsync(x => new Notification() { Read = true });
       //this.hub.Clients.All.broadcastChanged();
-      return Json(new { success = true });
+      var result = await Task.FromResult(true);
+      return Json(new { success = result });
     }
     //GET: Notifications/Index
     //[OutputCache(Duration = 60, VaryByParam = "none")]

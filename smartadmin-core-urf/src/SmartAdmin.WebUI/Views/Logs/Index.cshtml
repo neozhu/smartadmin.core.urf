@@ -401,15 +401,7 @@
         onBeforeLoad: function () {
           $('.enable-loader').removeClass('enable-loader')
         },
-        columns: [[
-          { /*Id*/
-            field: 'Id',
-            title: '<span class="required">@Html.DisplayNameFor(model => model.Id)</span>',
-            width: 120,
-            sortable: true,
-            resizable: true,
-            hidden: true
-          },
+       columns: [[
           {    /*主机名*/
             field: 'MachineName',
             title: '@Html.DisplayNameFor(model => model.MachineName)',
@@ -468,10 +460,18 @@
             sortable: true,
             resizable: true
           },
+          {    /*User-Agent*/
+      field: 'UserAgent',
+            title: '@Html.DisplayNameFor(model => model.UserAgent)',
+            width: 260,
+            hidden: false,
+            sortable: true,
+            resizable: true
+          },
           {    /*使用账号*/
             field: 'Identity',
             title: '@Html.DisplayNameFor(model => model.Identity)',
-            width: 160,
+            width: 130,
             hidden: false,
             sortable: true,
             resizable: true
@@ -479,14 +479,14 @@
           {  /*已处理*/
             field: 'Resolved',
             title: '<span class="required">@Html.DisplayNameFor(model => model.Resolved)</span>',
-            width: 120,
+            width: 100,
             align: 'center',
             hidden: false,
             formatter: booleanformatter,
             sortable: true,
             resizable: true
           },
-          {    /*异常信息*/
+          @*{    /*异常信息*/
             field: 'Exception',
             title: '@Html.DisplayNameFor(model => model.Exception)',
             width: 260,
@@ -494,34 +494,20 @@
             sortable: true,
             resizable: true
           },
-          {    /*事件属性*/
-            field: 'RequestForm',
-            title: '@Html.DisplayNameFor(model => model.RequestForm)',
-            width: 160,
-            hidden: false,
-            sortable: true,
-            resizable: true
-          },
+
           {    /*事件属性*/
             field: 'Properties',
             title: '@Html.DisplayNameFor(model => model.Properties)',
-            width: 160,
+            width: 260,
             hidden: false,
             sortable: true,
             resizable: true
           },
-          {    /*网站*/
-            field: 'SiteName',
-            title: '@Html.DisplayNameFor(model => model.SiteName)',
-            width: 130,
-            hidden: false,
-            sortable: true,
-            resizable: true
-          },
+
           {    /*日志*/
             field: 'Logger',
             title: '@Html.DisplayNameFor(model => model.Logger)',
-            width: 130,
+            width: 180,
             hidden: false,
             sortable: true,
             resizable: true
@@ -529,11 +515,11 @@
           {    /*站点*/
             field: 'Callsite',
             title: '@Html.DisplayNameFor(model => model.Callsite)',
-            width: 300,
+            width: 180,
             hidden: false,
             sortable: true,
             resizable: true
-          },
+          },*@
 
         ]]
       })

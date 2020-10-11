@@ -7,14 +7,14 @@ using SmartAdmin.WebUI.Data.Models;
 
 namespace SmartAdmin.WebUI.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+  public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+  {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+    }
 
-        public DbSet<Tenant> Tenants { get; set; }
+    public DbSet<Tenant> Tenants { get; set; }
     public DbSet<Log> Logs { get; set; }
   }
 }
