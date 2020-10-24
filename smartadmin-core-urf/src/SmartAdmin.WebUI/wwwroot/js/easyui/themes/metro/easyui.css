@@ -3393,7 +3393,7 @@
   overflow: hidden;
   width: 1px;
   height: 1px;
-  left: -999px;
+  left: -100px;
 }
 .checkbox {
   position: relative;
@@ -3424,7 +3424,7 @@
   overflow: hidden;
   width: 1px;
   height: 1px;
-  left: -999px;
+  left: -100px;
 }
 .sidemenu .tree-hit {
   background-image: none;

@@ -367,6 +367,13 @@
 .tabs-header-right .tabs li .tabs-inner{
 	display: inherit;
 }
+.tabs-tool{
+	position: relative;
+}
+.tabs-header:not(.tabs-header-plain) .tabs-tool{
+	border-top-color: transparent;
+	border-right-color: transparent;
+}
 
 .combo-panel{
 	position: absolute;

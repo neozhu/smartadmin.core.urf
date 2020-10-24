@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.7
+ * EasyUI for jQuery 1.9.8
  * 
  * Copyright (c) 2009-2020 www.jeasyui.com. All rights reserved.
  *
@@ -272,7 +272,7 @@
 						'.datagrid-group-title,.datagrid-group-expander{display:inline-block;vertical-align:bottom;height:100%;line-height:'+opts.groupHeight+'px;padding:0 4px;}' +
 						'.datagrid-group-title{position:relative;}' +
 						'.datagrid-group-expander{width:'+opts.expanderWidth+'px;text-align:center;padding:0}' +
-						'.datagrid-row-expander{margin:'+Math.floor((opts.groupHeight-16)/2)+'px 0;display:inline-block;width:16px;height:16px;cursor:pointer}' +
+						'.datagrid-group-expander .datagrid-row-expander{margin:'+Math.floor((opts.groupHeight-16)/2)+'px 0;display:inline-block;width:16px;height:16px;cursor:pointer}' +
 						'</style>'
 					);
 				}
