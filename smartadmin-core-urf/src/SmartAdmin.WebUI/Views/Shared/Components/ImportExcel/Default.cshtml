@@ -23,7 +23,7 @@
       },
       //下载Excel导入模板
       downloadtemplate: function () {
-        const url = '@(Model.url)/Download?file=/ExcelTemplate/@(Model.tpl)';
+        const url = '@(Model.url)/Download?file=ExcelTemplate\\@(Model.tpl)';
         $.fileDownload(url)
           .done(() => {
             toastr.success('模板下载完成!');
