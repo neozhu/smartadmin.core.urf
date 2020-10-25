@@ -23,13 +23,13 @@
       },
       //下载Excel导入模板
       downloadtemplate: function () {
-        const url ='@(Model.tpl)?file=ExcelTemplate/@(Model.entity).xlsx'
+        const url = '@(Model.url)/Download?file=/ExcelTemplate/@(Model.tpl)';
         $.fileDownload(url)
           .done(() => {
             toastr.success('模板下载完成!');
           })
           .fail(() => {
-            $.messager.alert('错误', '没有下载到导入模板[@(Model.entity).xlsx]文件!', 'error');
+            $.messager.alert('错误', '没有下载到导入模板[@(Model.tpl)]文件!', 'error');
           });
       },
       init: function () {
@@ -55,7 +55,7 @@
           theme: 'dragdrop',
           extensions: ['xlsx', 'xls', 'csv'],
           upload: {
-            url: "@Model.url",
+            url: "@(Model.url)/ImportExcel",
             data: {
               autosave:@Json.Serialize(Model.autosave),
               model: '@Model.entity',

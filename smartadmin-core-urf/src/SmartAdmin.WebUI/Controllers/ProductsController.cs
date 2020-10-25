@@ -235,7 +235,7 @@ namespace SmartAdmin.WebUI.Controllers
         }
     //下载模板
     public async Task<IActionResult> Download(string file) {
-      
+       
       this.Response.Cookies.Append("fileDownload", "true");
       var path = Path.Combine(this._webHostEnvironment.ContentRootPath, file);
       var downloadFile = new FileInfo(path);
