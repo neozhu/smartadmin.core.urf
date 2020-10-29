@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.8
+ * EasyUI for jQuery 1.9.9
  * 
  * Copyright (c) 2009-2020 www.jeasyui.com. All rights reserved.
  *
@@ -72,7 +72,11 @@ var _1c=_1b.selectingAmpm;
 if(!_1c){
 _1c=_1b.ampm[0];
 }
-return (h<10?"0"+h:h)+":"+(m<10?"0"+m:m)+" "+_1c;
+var v=(h<10?"0"+h:h)+":"+(m<10?"0"+m:m);
+if(!_1b.hour24){
+v+=" "+_1c;
+}
+return v;
 };
 function _19(_1d){
 var _1e=$(_1d).data("timepicker").options;
@@ -130,6 +134,9 @@ _2b.find(".title-am").addClass("title-selected");
 if(_26.selectingAmpm==_26.ampm[1]){
 _2b.find(".title-pm").addClass("title-selected");
 }
+if(_26.hour24){
+_2b.find(".ampm").hide();
+}
 };
 function _23(_2c){
 var _2d=$(_2c).data("timepicker").options;
@@ -145,7 +152,16 @@ _32=_33;
 var _35=_2d.selectingType=="hour"?_2d.selectingHour:_2d.selectingMinute;
 var _36=_35/(_2d.selectingType=="hour"?12:60)*360;
 _36=parseFloat(_36).toFixed(4);
-var _37={transform:"rotate("+_36+"deg)"};
+var _37={transform:"rotate("+_36+"deg)",};
+if(_2d.hour24&&_2d.selectingType=="hour"){
+if(_35==0){
+_37.top=_2d.hourDistance[0]+"px";
+}else{
+if(_35<=12){
+_37.top=_2d.hourDistance[1]+"px";
+}
+}
+}
 var _38={width:_31+"px",height:_32+"px",marginLeft:-_31/2+"px",marginTop:-_32/2+"px"};
 var _39=[];
 _39.push("<div class=\"clock\">");
@@ -154,6 +170,29 @@ _39.push("<div class=\"hand\">");
 _39.push("<div class=\"drag\"></div>");
 _39.push("</div>");
 var _3a=_3b();
+if(_2d.hour24&&_2d.selectingType=="hour"){
+for(var i=0;i<_3a.length;i++){
+var _3c=parseInt(_3a[i],10);
+_3c+=12;
+if(_3c==24){
+_3c="00";
+}
+var cls="item f-column f-content-center";
+if(_3c==_35){
+cls+=" item-selected";
+}
+var _36=_3c/(_2d.selectingType=="hour"?12:60)*360*Math.PI/180;
+var x=(_34-20)*Math.sin(_36);
+var y=-(_34-20)*Math.cos(_36);
+_36=parseFloat(_36).toFixed(4);
+x=parseFloat(x).toFixed(4);
+y=parseFloat(y).toFixed(4);
+var _3d={transform:"translate("+x+"px,"+y+"px)"};
+var _3d="transform:translate("+x+"px,"+y+"px)";
+_39.push("<div class=\""+cls+"\" style=\""+_3d+"\">"+(_3c)+"</div>");
+}
+_34-=_2d.hourDistance[1]-_2d.hourDistance[0];
+}
 for(var i=0;i<_3a.length;i++){
 var _3c=_3a[i];
 var cls="item f-column f-content-center";
@@ -234,7 +273,7 @@ $(this).timepicker("setValue",_47.originalValue);
 });
 }};
 $.fn.timepicker.parseOptions=function(_48){
-return $.extend({},$.fn.combo.parseOptions(_48),$.parser.parseOptions(_48,[]));
+return $.extend({},$.fn.combo.parseOptions(_48),$.parser.parseOptions(_48,[{hour24:"boolean"}]));
 };
 $.fn.timepicker.defaults=$.extend({},$.fn.combo.defaults,{closeText:"Close",okText:"Ok",buttons:[{text:function(_49){
 return $(_49).timepicker("options").okText;
@@ -245,6 +284,6 @@ $(this).closest("div.combo-panel").panel("close");
 return $(_4b).timepicker("options").closeText;
 },handler:function(_4c){
 $(this).closest("div.combo-panel").panel("close");
-}}],editable:false,ampm:["am","pm"],value:"",selectingHour:12,selectingMinute:0,selectingType:"hour"});
+}}],editable:false,ampm:["am","pm"],value:"",selectingHour:12,selectingMinute:0,selectingType:"hour",hour24:false,hourDistance:[20,50]});
 })(jQuery);
 

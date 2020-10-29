@@ -9,6 +9,7 @@ Version 1.9.x
  * pagination: Add 'onBeforeSelectPage' event.
  * combo: Prevent from conflicting with svg.
  * window: Add 'fixed' property.
+ * timepicker: Add 'hour24' property.
 
 Version 1.9.0
 -------------
