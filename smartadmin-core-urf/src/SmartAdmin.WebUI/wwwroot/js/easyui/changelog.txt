@@ -5,6 +5,7 @@ Version 1.9.x
  * propertygrid: The css style of the row expander will affact that in the detailview. fixed.
 * Improvement
  * datagrid: The 'sorter' function on the column accepts the entire row as the sorting parameters.
+ * datagrid: Add 'hformatter' and 'hstyler' properties for the colomns.
  * datebox: Add 'getDate' and 'setDate' methods.
  * pagination: Add 'onBeforeSelectPage' event.
  * combo: Prevent from conflicting with svg.
