@@ -11,6 +11,7 @@ Version 1.9.x
  * combo: Prevent from conflicting with svg.
  * window: Add 'fixed' property.
  * timepicker: Add 'hour24' property.
+ * layout: Add 'stopCollapsing' method.
 
 Version 1.9.0
 -------------
