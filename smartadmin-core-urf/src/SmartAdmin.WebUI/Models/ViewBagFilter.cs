@@ -52,14 +52,14 @@ namespace SmartAdmin.WebUI.Models
         controller.ViewBag.TenantId = tenantid;
         controller.ViewBag.Email = email;
         controller.ViewBag.Twitter = givenname;
-        controller.ViewBag.Avatar = _settings.Theme.Avatar;
-        controller.ViewBag.AvatarM = _settings.Theme.AvatarM;
+        controller.ViewBag.Avatar = avatarurl;
+        controller.ViewBag.AvatarM = avatarurl;
         controller.ViewBag.Version = _settings.Version;
         controller.ViewBag.ThemeVersion = _settings.Theme.ThemeVersion;
         controller.ViewBag.Logo = _settings.Logo;
         controller.ViewBag.LogoM = _settings.LogoM;
-        controller.ViewBag.Copyright = $"2020 © { _settings.AppName} &nbsp; { _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='粤ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 粤ICP备{_settings.ICP}号 </a>";
-        controller.ViewBag.CopyrightInverse = $"2020 © { _settings.AppName} &nbsp;{ _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='粤ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 粤ICP备{_settings.ICP}号 </a>";
+        controller.ViewBag.Copyright = $"2020 © { _settings.AppName} &nbsp; { _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='苏ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 苏ICP备{_settings.ICP}号 </a>";
+        controller.ViewBag.CopyrightInverse = $"2020 © { _settings.AppName} &nbsp;{ _settings.Author} <a href='http://beian.miit.gov.cn/' class='text-primary fw-500' title='苏ICP备{_settings.ICP}号' target='_blank'>工业和信息化部备案管理系统网站 苏ICP备{_settings.ICP}号 </a>";
       }
     }
 

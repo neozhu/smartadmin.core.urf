@@ -75,7 +75,7 @@
 		</div>
 		<div>
 			<a href="#" data-toggle="dropdown" title="@(ViewBag.Email)" class="header-icon d-flex align-items-center justify-content-center ml-2">
-				<img src="~/img/demo/avatars/@(ViewBag.Avatar)" class="profile-image rounded-circle" alt="@(ViewBag.GivenName)"> 
+				<img src="~/img/avatars/@(ViewBag.Avatar)" asp-append-version="true" class="profile-image rounded-circle" alt="@(ViewBag.GivenName)"> 
 			</a>
 			<div class="dropdown-menu dropdown-menu-animated dropdown-lg">
 				<partial name="_DropdownMenu"/>

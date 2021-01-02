@@ -20,8 +20,28 @@
   <div class="card p-4 rounded-plus bg-faded">
     <form id="js-login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
       <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
-      <div class="form-group row">
+      <div class="row no-gutters row-grid">
+        <div class="col-12">
+          <div class="d-flex flex-column align-items-center justify-content-center pb-4">
+            <div class="avatars">
+              <img id="avatar_lg" src="~/img/avatars/@(Model.Avatar)" asp-append-version="true"
+                   style="width:129.5px"
+                   class="rounded-circle shadow-2 img-thumbnail" alt="">
 
+              <div class="overlay">
+                <div class="text">
+                  <h5 class="mb-0 fw-700 text-center mt-3">
+                    单击修改照片
+                  </h5>
+                </div>
+              </div>
+              <input type="file" name="upload_avatar" class="image" id="upload_avatar" style="display:none" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <input type="hidden" asp-for="Input.Avatar"   />
         <div class="col-6 pr-1">
           <label class="col-xl-12 form-label">用户名</label>
           <input type="text" asp-for="Input.UserName" class="form-control" placeholder="登录用户名" />
@@ -46,12 +66,12 @@
           <span class="invalid-feedback" asp-validation-for="Input.PhoneNumber">请输入正确的手机号码.</span>
           <div class="help-block">你的手机号码</div>
         </div>
-        
+
       </div>
       <div class="form-group row">
         <div class="col-6 pr-1">
           <label class="form-label" asp-for="Input.TenantId">租户</label>
-          <select   asp-for="Input.TenantId" asp-items="@(new SelectList(Model.Tenants, "Id", "Name"))" class="form-control" placeholder="选择默认租户" value="" required="required"></select>
+          <select asp-for="Input.TenantId" asp-items="@(new SelectList(Model.Tenants, "Id", "Name"))" class="form-control" placeholder="选择默认租户" value="" required="required"></select>
           <span class="invalid-feedback" asp-validation-for="Input.TenantId">请选择租户.</span>
 
         </div>
@@ -85,9 +105,153 @@
   </div>
 </div>
 
+<div class="modal fade copper-modal-right" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-right  ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title h4">修改照片</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fal fa-times"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="panel-container show">
+          <div class="panel-content">
+            <div class="row">
+              <div class="col-12">
+                <div class="img-container">
+
+                  <img id="upload_avatar_image" />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-g">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-12">
+                <div class="docs-preview clearfix">
+                  <div class="img-preview preview-lg"></div>
+                  <div class="img-preview preview-md"></div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect waves-themed" data-dismiss="modal">Close</button>
+        <button type="button" id="getcoppedbutton" class="btn btn-primary waves-effect waves-themed">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+@section Header {
+  <link href="~/css/formplugins/cropperjs/cropper.css" rel="stylesheet" />
+  <style>
+    .overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      background-color: rgba(255, 255, 255, 0.5);
+      overflow: hidden;
+      height: 0;
+      transition: .5s ease;
+      width: 100%;
+    }
+
+    .avatars:hover .overlay {
+      height: 50%;
+      cursor: pointer;
+    }
+
+    .avatars {
+      position: relative;
+      border-radius: 50%;
+    }
+
+    .text {
+      color: #333;
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    img {
+      display: block !important;
+      /* This rule is very important, please don't ignore this */
+      max-width: 100%;
+    }
+  </style>
+}
 @section Scripts {
+  <script src="~/js/formplugins/cropperjs/cropper.js"></script>
   <partial name="_ValidationScriptsPartial" />
   <script>
+
+    $(() => {
+      let image = document.getElementById('upload_avatar_image');
+      let avatarimg = document.getElementById('avatar_lg');
+      let avatar = document.getElementById('Input_Avatar');
+
+      let av = document.getElementById('upload_avatar_image');
+      let $modal = $('.copper-modal-right');
+      let cropper = null;
+      $('.avatars > .overlay').click(function () {
+        document.getElementById('upload_avatar').click();
+      })
+      $(document).on('show.bs.modal', '.modal', function (event) {
+        var zIndex = 1040 + (10 * $('.modal:visible').length);
+        $(this).css('z-index', zIndex);
+        setTimeout(function () {
+          $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        }, 0);
+      });
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          preview: '.img-preview',
+          width: 120,
+          height: 120,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+      $('#upload_avatar').change(function (event) {
+        var files = event.target.files;
+        var done = function (url) {
+          image.src = url;
+          $modal.modal('toggle')
+        };
+        if (files && files.length > 0) {
+          reader = new FileReader();
+          reader.onload = function (event) {
+            done(reader.result);
+          };
+          reader.readAsDataURL(files[0]);
+        }
+      });
+      $('#getcoppedbutton').click(function () {
+
+        const imageData = cropper.getImageData();
+        const base64str = cropper.getCroppedCanvas().toDataURL();
+        avatarimg.src = base64str;
+        avatar.value = base64str;
+        //console.log(imageData, canvasData)
+      });
+    })
+
     $("#js-login-btn").click(function (event) {
       // Fetch form to apply custom Bootstrap validation
       var form = $("#js-login");

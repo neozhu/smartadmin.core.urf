@@ -1,11 +1,11 @@
 <div class="dropdown-header bg-trans-gradient d-flex flex-row py-4 rounded-top">
 	<div class="d-flex flex-row align-items-center mt-1 mb-1 color-white">
 		<span class="mr-2">
-			<img src="~/img/demo/avatars/@(ViewBag.Avatar)" class="rounded-circle profile-image" alt="@(Settings.Theme.User)">
+			<img src="~/img/avatars/@(ViewBag.Avatar)" asp-append-version="true" class="rounded-circle profile-image" alt="@(Settings.Theme.User)">
 		</span>
 		<div class="info-card-text">
 			<div class="fs-lg text-truncate text-truncate-lg">@(ViewBag.GivenName)</div>
-			<span class="text-truncate text-truncate-md opacity-80">@(ViewBag.Role)</span>
+			<span class="text-truncate text-truncate-md opacity-80">@(ViewBag.Role??ViewBag.Email)</span>
 		</div>
 	</div>
 </div>

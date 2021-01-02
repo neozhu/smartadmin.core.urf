@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,7 +24,9 @@ namespace SmartAdmin.WebUI.Controllers
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     public AccountManageController(
+      IWebHostEnvironment webHostEnvironment,
               ILogger<AccountManageController> logger,
               UserManager<ApplicationUser> userManager,
               ApplicationDbContext dbContext,
@@ -30,6 +34,7 @@ namespace SmartAdmin.WebUI.Controllers
               SignInManager<ApplicationUser> signInManager
 
                                ) {
+      _webHostEnvironment = webHostEnvironment;
       _logger = logger;
       _userManager = userManager;
       _dbContext = dbContext;
@@ -70,6 +75,7 @@ namespace SmartAdmin.WebUI.Controllers
       if (this.ModelState.IsValid)
       {
         var tenant =await this._dbContext.Tenants.FindAsync(model.TenantId);
+        this.saveToAvatar(model.Avatar, model.Username);
         var user = new ApplicationUser
         {
           UserName = model.Username,
@@ -78,7 +84,7 @@ namespace SmartAdmin.WebUI.Controllers
           TenantId = model.TenantId,
           Email = model.Email,
           PhoneNumber = model.PhoneNumber,
-          AvatarUrl = "ng.jpg",
+          AvatarUrl = $"{model.Username}.png",
           GivenName = model.GivenName,
           EnabledChat = false
 
@@ -122,6 +128,80 @@ namespace SmartAdmin.WebUI.Controllers
         var modelStateErrors = string.Join(",", ModelState.Keys.SelectMany(key => ModelState[key].Errors.Select(n => n.ErrorMessage)));
         return Json(new { success = false, err = modelStateErrors });
       }
+    }
+
+    //修改账号
+    [HttpPost]
+    public async Task<JsonResult> UpdateUser(AccountUpdateModel model)
+    {
+      var tenant = await this._dbContext.Tenants.FindAsync(model.TenantId);
+      var user = this._dbContext.Users.Find(model.Id);
+
+      this.saveToAvatar(model.Avatar, user.UserName);
+      user.GivenName = model.GivenName;
+      user.Email = model.Email;
+      user.PhoneNumber = model.PhoneNumber;
+      user.TenantId = model.TenantId;
+      user.TenantName = tenant.Name;
+      user.TenantDb = tenant.ConnectionStrings;
+      user.AvatarUrl = $"{user.UserName}.png";
+
+
+      await this._dbContext.SaveChangesAsync();
+      var clamins = await this._userManager.GetClaimsAsync(user);
+      var tenantclamin = clamins.Where(x => x.Type == "http://schemas.microsoft.com/identity/claims/tenantid").FirstOrDefault();
+      if (tenantclamin != null)
+      {
+        await this._userManager.RemoveClaimAsync(user, tenantclamin);
+      }
+      var emailclamin = clamins.Where(x => x.Type == System.Security.Claims.ClaimTypes.Email).FirstOrDefault();
+      if (emailclamin != null)
+      {
+        await this._userManager.RemoveClaimAsync(user, emailclamin);
+      }
+      var phoneclamin = clamins.Where(x => x.Type == System.Security.Claims.ClaimTypes.MobilePhone).FirstOrDefault();
+      if (phoneclamin != null)
+      {
+        await this._userManager.RemoveClaimAsync(user, phoneclamin);
+      }
+      var nameclamin = clamins.Where(x => x.Type == System.Security.Claims.ClaimTypes.GivenName).FirstOrDefault();
+      if (nameclamin != null)
+      {
+        await this._userManager.RemoveClaimAsync(user, nameclamin);
+      }
+      var avatarclamin = clamins.Where(x => x.Type == "http://schemas.microsoft.com/identity/claims/avatarurl").FirstOrDefault();
+      if (avatarclamin != null)
+      {
+        await this._userManager.RemoveClaimAsync(user, avatarclamin);
+      }
+
+      await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/tenantid", user.TenantId.ToString()));
+      await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.GivenName, user.GivenName ?? ""));
+      await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.Email));
+      await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.MobilePhone, user.PhoneNumber ?? ""));
+      await this._userManager.AddClaimAsync(user, new System.Security.Claims.Claim("http://schemas.microsoft.com/identity/claims/avatarurl", user.AvatarUrl ?? ""));
+      return Json(new { success = true });
+    }
+    private void saveToAvatar(string imgbase64string, string username)
+    {
+      var base64string = "";
+      var avatarPath = Path.Combine(this._webHostEnvironment.WebRootPath, $"img\\avatars\\{username}.png");
+      if (imgbase64string.Contains("data:image"))
+      {
+        base64string = imgbase64string.Substring(imgbase64string.LastIndexOf(',') + 1);
+      }
+      else
+      {
+        base64string = imgbase64string;
+      }
+      var imageBytes = Convert.FromBase64String(base64string);
+      using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+      {
+        ms.Write(imageBytes, 0, imageBytes.Length);
+        var image = System.Drawing.Image.FromStream(ms, true);
+        image.Save(avatarPath, System.Drawing.Imaging.ImageFormat.Png);
+      }
+
     }
     public async Task<JsonResult> SetUnLockout(string[] userid)
     {

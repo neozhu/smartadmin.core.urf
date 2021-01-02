@@ -14,6 +14,51 @@
   <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/plugin/jquery.fileuploader/jquery.fileuploader-theme-dragdrop.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/plugin/jquery.fileuploader/font/font-fileuploader.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/css/formplugins/cropperjs/cropper.css" rel="stylesheet"  asp-append-version="true" />
+  <style>
+    .overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      background-color: rgba(255, 255, 255, 0.5);
+      overflow: hidden;
+      height: 0;
+      transition: .5s ease;
+      width: 100%;
+    }
+
+    .avatars:hover .overlay {
+      height: 50%;
+      cursor: pointer;
+    }
+
+    .avatars {
+      position: relative;
+      border-radius: 50%;
+    }
+
+    .text {
+      color: #333;
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    img {
+      display: block !important;
+      /* This rule is very important, please don't ignore this */
+      max-width: 100%;
+    }
+    /*.img-container {
+      min-height: 400px;
+      margin-bottom:0px;
+    }*/
+  </style>
 }
 
 <div class="row">
@@ -43,7 +88,7 @@
                 <button name="resetpasswordbutton" onclick="resetpassword()" class="btn btn-sm btn-primary"> <i class="fal fa-key mr-1"></i> 重置密码 </button>
               </div>
               <div class="btn-group ">
-                <button  name="lockoutbutton" onclick="setlockout()" class="btn btn-sm btn-danger"> <i class="fal fa-user-lock mr-1"></i> 禁用账号 </button>
+                <button name="lockoutbutton" onclick="setlockout()" class="btn btn-sm btn-danger"> <i class="fal fa-user-lock mr-1"></i> 禁用账号 </button>
               </div>
               <div class="btn-group ">
                 <button name="unlockbutton" onclick="setunlockout()" class="btn btn-sm btn-success"> <i class="fal fa-unlock-alt mr-1"></i> 恢复账号 </button>
@@ -54,10 +99,10 @@
               <div class="btn-group btn-group-sm ">
                 <button name="deletebutton" disabled onclick="removeusers()" class="btn btn-default"> <span class="fal fa-times mr-1"></span> 删除账号 </button>
               </div>
- 
+
 
               <div class="btn-group btn-group-sm hidden-xs ">
-                <button  name="importbutton" type="button" onclick="importexcel('ApplicationUser')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                <button name="importbutton" type="button" onclick="importexcel('ApplicationUser')" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
                 <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
@@ -105,6 +150,7 @@
   <script src="~/js/plugin/filesaver/jquery.fileDownload.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.fileuploader/jquery.fileuploader.min.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+  <script src="~/js/formplugins/cropperjs/cropper.js" asp-append-version="true"></script>
   <script type="text/javascript">
     //全屏事件
     document.addEventListener('panel.onfullscreen', () => {
@@ -163,7 +209,9 @@
     }
 
     var $dg = $('#users_datagrid');
-
+    function edituser(user) {
+      showedituserform(user)
+    }
     function registuser() {
       showregisterform();
     }
@@ -213,6 +261,9 @@
         pagination: true,
          clientPaging: false,
         striped: true,
+        onDblClickRow: function (index, row) {
+          edituser(row);
+        },
         onBeforeLoad: function () {
           $('.enable-loader').removeClass('enable-loader')
         },
@@ -300,17 +351,6 @@
             editor: {
               type: 'textbox',
               options: { prompt: '电话号码', required: false, validType: 'length[0,128]' }
-            },
-            sortable: true,
-            resizable: true
-          },
-          {
-            field: 'AvatarUrl',
-            title: '头像',
-            width: 120,
-            editor: {
-              type: 'textbox',
-              options: { prompt: '头像', required: false, validType: 'length[0,128]' }
             },
             sortable: true,
             resizable: true

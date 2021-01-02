@@ -1,12 +1,12 @@
 <div class="info-card">
-	<img src="~/img/demo/avatars/@(ViewBag.Avatar)" class="profile-image rounded-circle" alt="@(ViewBag.GivenName)">
+	<img src="~/img/avatars/@(ViewBag.Avatar)" asp-append-version="true" class="profile-image rounded-circle" alt="@(ViewBag.GivenName)">
 	<div class="info-card-text">
-		<a href="#" class="d-flex align-items-center text-white">
+		<a href="/account/profile" class="d-flex align-items-center text-white">
 			<span class="text-truncate text-truncate-sm d-inline-block">
 				@(ViewBag.GivenName)
 			</span>
 		</a>
-    <span class="d-inline-block text-truncate text-truncate-sm">@(ViewBag.Role)</span>
+    <span class="d-inline-block text-truncate text-truncate-sm">@(ViewBag.Role ?? ViewBag.Email)</span>
 	</div>
 	<img src="~/img/card-backgrounds/cover-5-lg.png" class="cover" alt="cover">
 	<a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar" data-focus="nav_filter_input">
