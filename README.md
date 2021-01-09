@@ -53,7 +53,7 @@
 ## 快速上手开发
 + 开发环境
   >- Visual Studio .Net 2019
-  >- .Net Core 3.1
+  >- .Net  5.0.1
   >- Sql Server(LocalDb)
 + 附加数据库
   > 使用SQL Server Management Studio 附加.\src\SmartAdmin.Data\db\smartadmindb.mdf 数据库(如果是localdb,那么不需要修改数据库连接配置)
@@ -86,7 +86,7 @@ namespace SmartAdmin.Data.Models
         public virtual string Address { get; set; }
         [Display(Name = "联系人", Description = "联系人")]
         [MaxLength(12)]
-        public virtual string Contect { get; set; }
+        public virtual string Contact { get; set; }
         [Display(Name = "联系电话", Description = "联系电话")]
         [MaxLength(20)]
         public virtual string PhoneNumber { get; set; }
