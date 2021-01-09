@@ -178,16 +178,16 @@
                                  validType: 'length[0,50]'
                                  " />
               </div>
-              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Contect)</label>
+              <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Contact)</label>
               <div class="col-md-4 mb-1 pl-1">
-                <input id="@Html.IdFor(model => model.Contect)"
-                       name="@Html.NameFor(model => model.Contect)"
-                       value="@Html.ValueFor(model => model.Contect)"
+                <input id="@Html.IdFor(model => model.Contact)"
+                       name="@Html.NameFor(model => model.Contact)"
+                       value="@Html.ValueFor(model => model.Contact)"
                        tabindex="3"
                        class="easyui-textbox"
                        style="width:100%"
                        type="text"
-                       data-options="prompt:'@Html.DescriptionFor(model => model.Contect)',
+                       data-options="prompt:'@Html.DescriptionFor(model => model.Contact)',
 								 required:false,
                                  validType: 'length[0,12]'
                                  " />
@@ -435,13 +435,13 @@
               resizable: true
             },
             {    /*联系人*/
-              field: 'Contect',
-              title: '@Html.DisplayNameFor(model => model.Contect)',
+              field: 'Contact',
+              title: '@Html.DisplayNameFor(model => model.Contact)',
               width: 120,
               hidden: false,
               editor: {
                 type: 'textbox',
-                options: { prompt: '@Html.DescriptionFor(model => model.Contect)', required: false, validType: 'length[0,12]' }
+                options: { prompt: '@Html.DescriptionFor(model => model.Contact)', required: false, validType: 'length[0,12]' }
               },
               sortable: true,
               resizable: true

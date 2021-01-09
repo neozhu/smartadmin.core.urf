@@ -56,7 +56,7 @@ namespace SmartAdmin.WebUI.Controllers
                              Name = n.Name,
                              Code = n.Code,
                              Address = n.Address,
-                             Contect = n.Contect,
+                             Contact = n.Contact,
                              PhoneNumber = n.PhoneNumber,
                              RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
                            }).ToList();

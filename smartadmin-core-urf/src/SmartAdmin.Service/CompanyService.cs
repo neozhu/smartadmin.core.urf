@@ -49,7 +49,7 @@ namespace SmartAdmin.Service
         Name = n.Name,
         Code = n.Code,
         Address = n.Address,
-        Contect = n.Contect,
+        Contect = n.Contact,
         PhoneNumber = n.PhoneNumber,
         RegisterDate = n.RegisterDate.ToString("yyyy-MM-dd HH:mm:ss")
       }).ToList();

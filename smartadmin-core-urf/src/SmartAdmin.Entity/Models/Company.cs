@@ -25,7 +25,7 @@ namespace SmartAdmin.Data.Models
         public virtual string Address { get; set; }
         [Display(Name = "联系人", Description = "联系人")]
         [MaxLength(12)]
-        public virtual string Contect { get; set; }
+        public virtual string Contact { get; set; }
         [Display(Name = "联系电话", Description = "联系电话")]
         [MaxLength(20)]
         public virtual string PhoneNumber { get; set; }
