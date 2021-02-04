@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
-    <PackageReference Include="sqlSugarCore" Version="5.0.2.1" />
+    <PackageReference Include="sqlSugarCore" Version="5.0.2.4" />
   </ItemGroup>
 
   <ItemGroup>

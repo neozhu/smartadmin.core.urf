@@ -273,8 +273,8 @@ namespace SmartAdmin
           var datearray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var start = Convert.ToDateTime(datearray[0] + " 00:00:00", CultureInfo.CurrentCulture);
           var end = Convert.ToDateTime(datearray[1] + " 23:59:59", CultureInfo.CurrentCulture);
-          var greater = Expression.GreaterThan(memberExpression, Expression.Constant(start, type));
-          var less = Expression.LessThan(memberExpression, Expression.Constant(end, type));
+          var greater = Expression.GreaterThanOrEqual(memberExpression, Expression.Constant(start, type));
+          var less = Expression.LessThanOrEqual(memberExpression, Expression.Constant(end, type));
           return Expression.Lambda<Func<T, bool>>(greater, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(less, parameterExpression));
         case "int":
@@ -282,35 +282,37 @@ namespace SmartAdmin
           var intarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var min = Convert.ToInt32(intarray[0], CultureInfo.CurrentCulture);
           var max = Convert.ToInt32(intarray[1], CultureInfo.CurrentCulture);
-          var maxthen = Expression.GreaterThan(memberExpression, Expression.Constant(min, type));
-          var minthen = Expression.LessThan(memberExpression, Expression.Constant(max, type));
+          var maxthen = Expression.GreaterThanOrEqual(memberExpression, Expression.Constant(min, type));
+          var minthen = Expression.LessThanOrEqual(memberExpression, Expression.Constant(max, type));
           return Expression.Lambda<Func<T, bool>>(maxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(minthen, parameterExpression));
         case "decimal":
           var decarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var dmin = Convert.ToDecimal(decarray[0], CultureInfo.CurrentCulture);
           var dmax = Convert.ToDecimal(decarray[1], CultureInfo.CurrentCulture);
-          var dmaxthen = Expression.GreaterThan(memberExpression, Expression.Constant(dmin, type));
-          var dminthen = Expression.LessThan(memberExpression, Expression.Constant(dmax, type));
+          var dmaxthen = Expression.GreaterThanOrEqual(memberExpression, Expression.Constant(dmin, type));
+          var dminthen = Expression.LessThanOrEqual(memberExpression, Expression.Constant(dmax, type));
           return Expression.Lambda<Func<T, bool>>(dmaxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(dminthen, parameterExpression));
         case "float":
           var farray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
           var fmin = Convert.ToDecimal(farray[0], CultureInfo.CurrentCulture);
           var fmax = Convert.ToDecimal(farray[1], CultureInfo.CurrentCulture);
-          var fmaxthen = Expression.GreaterThan(memberExpression, Expression.Constant(fmin, type));
-          var fminthen = Expression.LessThan(memberExpression, Expression.Constant(fmax, type));
+          var fmaxthen = Expression.GreaterThanOrEqual(memberExpression, Expression.Constant(fmin, type));
+          var fminthen = Expression.LessThanOrEqual(memberExpression, Expression.Constant(fmax, type));
           return Expression.Lambda<Func<T, bool>>(fmaxthen, parameterExpression)
             .And(Expression.Lambda<Func<T, bool>>(fminthen, parameterExpression));
         case "string":
           var strarray = ((string)fieldValue).Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-          var smin = strarray[0];
-          var smax = strarray[1];
-          var strmethod = typeof(string).GetMethod("Contains");
-          var mm = Expression.Call(memberExpression, strmethod, Expression.Constant(smin, type));
-          var nn = Expression.Call(memberExpression, strmethod, Expression.Constant(smax, type));
-          return Expression.Lambda<Func<T, bool>>(mm, parameterExpression)
-            .Or(Expression.Lambda<Func<T, bool>>(nn, parameterExpression));
+          var strstart = strarray[0];
+          var strend = strarray[1];
+          var strmethod = typeof(string).GetMethod("CompareTo", new[] { typeof(string) });
+          var callcomparetostart = Expression.Call(memberExpression, strmethod, Expression.Constant(strstart, type));
+          var callcomparetoend = Expression.Call(memberExpression, strmethod, Expression.Constant(strend, type));
+          var strgreater = Expression.GreaterThanOrEqual(callcomparetostart, Expression.Constant(0));
+          var strless = Expression.LessThanOrEqual(callcomparetoend, Expression.Constant(0));
+          return Expression.Lambda<Func<T, bool>>(strgreater, parameterExpression)
+            .And(Expression.Lambda<Func<T, bool>>(strless, parameterExpression));
         default:
           return x => true;
       }
