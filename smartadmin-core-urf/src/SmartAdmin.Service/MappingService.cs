@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using URF.Core.EF;
 using System.Data.Common;
+using System.Linq.Dynamic.Core;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using SmartAdmin.Dto;
@@ -223,7 +224,7 @@ namespace SmartAdmin.Service
                      SourceFieldName = x.SourceFieldName
                    }).ToArrayAsync();
 
-      var query = (await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync()).ToList();
+      var query = (await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync()).ToList();
       var datarows = query.Select(n => new
       {
         EntitySetName = n.EntitySetName,

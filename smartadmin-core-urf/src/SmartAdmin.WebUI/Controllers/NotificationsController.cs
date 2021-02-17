@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Consul;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +11,8 @@ using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Dto;
 using SmartAdmin.Service;
-using SmartAdmin.WebUI.Extensions;
 using SmartAdmin.WebUI.Hubs;
 using URF.Core.Abstractions;
-using URF.Core.EF;
 namespace SmartAdmin.WebUI.Controllers
 {
   /// <summary>
@@ -96,7 +94,7 @@ namespace SmartAdmin.WebUI.Controllers
                            .Query(filters).CountAsync();
       var pagerows = ( await this._notificationService
                                  .Query(filters)
-                                 .OrderBy(n => n.OrderBy(sort, order))
+                                 .OrderBy(n => n.OrderBy($"{sort} {order}"))
                                  .Skip(page - 1).Take(rows).SelectAsync())
                                  .Select(n => new
                                  {

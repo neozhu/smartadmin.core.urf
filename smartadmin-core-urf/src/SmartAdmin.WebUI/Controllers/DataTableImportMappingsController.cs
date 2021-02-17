@@ -1,16 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;
-using URF.Core.EF;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -54,7 +54,7 @@ namespace SmartAdmin.WebUI.Controllers
                            .Query(filters).CountAsync();
       var pagerows = (await this._dataTableImportMappingService
                              .Query(filters)
-                           .OrderBy(n => n.OrderBy(sort, order))
+                           .OrderBy(n => n.OrderBy($"{sort} {order}"))
                            .Skip(page - 1).Take(rows).SelectAsync())
                            .Select(n => new
              {

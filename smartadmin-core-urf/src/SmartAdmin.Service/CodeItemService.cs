@@ -12,6 +12,7 @@ using System.Data;
 using Microsoft.Extensions.Logging;
 using URF.Core.EF;
 using System.Collections.Generic;
+using System.Linq.Dynamic.Core;
 using SmartAdmin.Dto;
 
 namespace SmartAdmin.Service
@@ -102,7 +103,7 @@ namespace SmartAdmin.Service
                      SourceFieldName = x.SourceFieldName
                    }).ToArrayAsync();
 
-      var query = (await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync()).ToList();
+      var query = (await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync()).ToList();
       var datarows = query.Select(n => new
       {
         Id = n.Id,

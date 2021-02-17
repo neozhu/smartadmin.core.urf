@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
 using SmartAdmin.Dto;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Data.Models;
 using URF.Core.Abstractions;
-using URF.Core.EF;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -123,7 +118,7 @@ namespace SmartAdmin.WebUI.Controllers
       var pagerows = (await this._roleMenuService
         .Query()
         .Include(r => r.MenuItem)
-        .OrderBy(n => n.OrderBy(sort, order))
+        .OrderBy(n => n.OrderBy($"{sort} {order}"))
         .Skip(offset).Take(limit)
         .SelectAsync())
         .Select(n =>

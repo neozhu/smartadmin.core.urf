@@ -11,6 +11,7 @@ using System.IO;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using URF.Core.EF;
+using System.Linq.Dynamic.Core;
 using SmartAdmin.Dto;
 
 // Sample to extend ProductService, scoped to only ProductService vs. application wide
@@ -42,7 +43,7 @@ namespace SmartAdmin.Service
                SourceFieldName = x.SourceFieldName
              }).ToArrayAsync();
 
-      var works = (await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync()).ToList();
+      var works = (await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync()).ToList();
       var datarows = works.Select(n => new
       {
         Id = n.Id,

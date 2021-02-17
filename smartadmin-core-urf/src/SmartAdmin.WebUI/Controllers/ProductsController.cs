@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
-using URF.Core.EF;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -43,7 +43,7 @@ namespace SmartAdmin.WebUI.Controllers
                              .Query(filters).CountAsync();
         var pagerows = (await this.productService
                              .Query(filters)
-                           .OrderBy(n => n.OrderBy(sort, order))
+                           .OrderBy(n => n.OrderBy($"{sort} {order}"))
                            .Skip(page - 1).Take(rows).SelectAsync())
                            .ToList();
         var pagelist = new { total = total, rows = pagerows };

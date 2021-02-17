@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +9,11 @@ using Microsoft.Extensions.Logging;
 using SmartAdmin.Dto;
 using TrackableEntities.Common.Core;
 using URF.Core.Services;
+using System.Linq.Dynamic.Core;
 
 namespace SmartAdmin.Service
 {
-    public class ServiceX<TEntity> : Service<TEntity>, IServiceX<TEntity> where TEntity : class, ITrackable
+  public class ServiceX<TEntity> : Service<TEntity>, IServiceX<TEntity> where TEntity : class, ITrackable
     {
         private readonly IRepositoryX<TEntity> repository;
     public readonly IDataTableImportMappingService _mappingservice;
@@ -106,7 +105,7 @@ namespace SmartAdmin.Service
                SourceFieldName = x.SourceFieldName
              }).ToArrayAsync();
 
-      var result = await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync();
+      var result = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();
       
       return await NPOIHelper.ExportExcelAsync(entityName, result, expcolopts);
     }

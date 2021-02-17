@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -71,7 +70,7 @@ namespace SmartAdmin.WebUI.Controllers
       var pagerows = await this.dbContext
                                  .Logs
                                  .Where(filters)
-                                 .OrderBy(sort, order)
+                                 .OrderBy($"{sort} {order}")
                                  .Skip(page - 1).Take(rows)
                                  .AsNoTracking()
                                  .ToListAsync();

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
-using SmartAdmin.Dto;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
 
@@ -104,7 +101,7 @@ namespace SmartAdmin.WebUI.Controllers
       var filters = PredicateBuilder.FromFilter<Tenant>(filterRules);
       var totalCount = 0;
 
-      var tenants = this._dbContext.Tenants.Where(filters).OrderByName(sort, order);
+      var tenants = this._dbContext.Tenants.Where(filters).OrderBy($"{sort} {order}");
        
       totalCount =await tenants.CountAsync();
       var pagerows =(await tenants.Skip(( page - 1 ) * rows).Take(rows).ToListAsync())

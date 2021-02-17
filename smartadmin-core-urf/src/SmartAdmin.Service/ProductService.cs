@@ -42,7 +42,7 @@ namespace SmartAdmin.Service
     //           SourceFieldName = x.SourceFieldName
     //         }).ToArrayAsync();
 
-    //  var products = (await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync()).ToList();
+    //  var products = (await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync()).ToList();
        
     //  return await NPOIHelper.ExportExcelAsync("Product", products, expcolopts);
     //}

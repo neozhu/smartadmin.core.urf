@@ -10,7 +10,7 @@ using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
-using URF.Core.EF;
+using System.Linq.Dynamic.Core;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -47,7 +47,7 @@ namespace SmartAdmin.WebUI.Controllers
         var pagerows = (await this.companyService
                              .Query(filters)
                               .AsNoTracking()
-                           .OrderBy(n => n.OrderBy(sort, order))
+                           .OrderBy(n => n.OrderBy($"{sort} {order}"))
                            .Skip(page - 1).Take(rows)
                            .SelectAsync())
                            .Select(n => new

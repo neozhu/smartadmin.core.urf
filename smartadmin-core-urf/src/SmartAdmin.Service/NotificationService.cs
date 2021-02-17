@@ -1,17 +1,14 @@
-﻿using System.Threading;
+﻿using System;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SmartAdmin.Data.Models;
+using SmartAdmin.Dto;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.Services;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System;
-using System.Threading.Tasks;
-using System.IO;
-using System.Data;
-using Microsoft.Extensions.Logging;
-using URF.Core.EF;
-using SmartAdmin.Dto;
 
 namespace SmartAdmin.Service
 {
@@ -71,7 +68,7 @@ namespace SmartAdmin.Service
            SourceFieldName = x.SourceFieldName
          })
          .ToArrayAsync();
-      var notifications = await this.Query(filters).OrderBy(n => n.OrderBy(sort, order)).SelectAsync();
+      var notifications = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();
 
       return await NPOIHelper.ExportExcelAsync("Notification", notifications, expcolopts);
     }

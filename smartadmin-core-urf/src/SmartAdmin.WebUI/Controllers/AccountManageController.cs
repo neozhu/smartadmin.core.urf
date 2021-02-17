@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
 using SmartAdmin.Dto;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
@@ -295,7 +295,7 @@ namespace SmartAdmin.WebUI.Controllers
       var filters = PredicateBuilder.FromFilter<ApplicationUser>(filterRules);
       var totalCount = 0;
 
-      var users = this._userManager.Users.Where(filters).OrderByName(sort, order);
+      var users = this._userManager.Users.Where(filters).OrderBy($"{sort}  {order}");
        
       totalCount =await users.CountAsync();
       var datalist =await users.Skip(( page - 1 ) * rows).Take(rows).ToListAsync();
@@ -326,7 +326,7 @@ namespace SmartAdmin.WebUI.Controllers
       var filters = PredicateBuilder.FromFilter<Tenant>(filterRules);
       var totalCount = 0;
 
-      var tenants = this._dbContext.Tenants.Where(filters).OrderByName(sort, order);
+      var tenants = this._dbContext.Tenants.Where(filters).OrderBy($"{sort}  {order}");
        
       totalCount =await tenants.CountAsync();
       var pagerows =(await tenants.Skip(( page - 1 ) * rows).Take(rows).ToListAsync())

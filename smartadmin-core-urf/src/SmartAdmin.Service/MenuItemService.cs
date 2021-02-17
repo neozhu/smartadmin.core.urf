@@ -1,24 +1,16 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SmartAdmin.Data.Models;
+using SmartAdmin.Dto;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.Services;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
-using URF.Core.EF.Trackable;
-using System.ComponentModel;
-using System.IO;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using URF.Core.EF;
-using System.Data.Common;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using SmartAdmin.Dto;
 
 namespace SmartAdmin.Service
 {
@@ -124,7 +116,7 @@ namespace SmartAdmin.Service
 
       var menuitems = (await this.Query(filters)
          .Include(p => p.Parent)
-         .OrderBy(n => n.OrderBy(sort, order))
+         .OrderBy(n => n.OrderBy($"{sort} {order}"))
          .SelectAsync())
          .Select(n=>new {
           

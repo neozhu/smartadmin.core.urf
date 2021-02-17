@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +13,6 @@ using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
-using URF.Core.EF;
 
 namespace SmartAdmin.WebUI.Controllers
 {
@@ -49,7 +48,7 @@ namespace SmartAdmin.WebUI.Controllers
       //int pagenum = offset / limit +1;
       var pagerows = ( await menuItemService
                                  .Query(filters).Include(m => m.Parent)
-                                 .OrderBy(n => n.OrderBy(sort, order))
+                                 .OrderBy(n => n.OrderBy($"{sort} {order}"))
                                  .Skip(page - 1).Take(rows)
                                  .SelectAsync())
                                  .Select(n => new
@@ -82,7 +81,7 @@ namespace SmartAdmin.WebUI.Controllers
                  .Queryable()
                  .Where(x=>x.ParentId== parentid)
                  .Where(filters).Include(y => y.Parent)
-                 .OrderBy(sort, order)
+                 .OrderBy($"{sort} {order}")
                  .Skip(page - 1).Take(rows)
                  .ToListAsync())
                  .Select(n => new
