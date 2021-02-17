@@ -1,6 +1,6 @@
 # 基于领域驱动设计(DDD)超轻量级快速开发架构
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_0.jpg)
-**smartadmin.core.urf 这个项目是基于asp.net core 3.1(最新)基础上参照领域驱动设计（DDD）的理念，并参考目前最为了流行的abp架构开发的一套轻量级的快速开发web application 技术架构,专注业务核心需求，减少重复代码，开始构建和发布，让初级程序员也能开发出专业并且漂亮的Web应用程序**
+**smartadmin.core.urf 这个项目是基于asp.net 5(最新)基础上参照领域驱动设计（DDD）的理念，并参考目前最为了流行的abp架构开发的一套轻量级的快速开发web application 技术架构,专注业务核心需求，减少重复代码，开始构建和发布，让初级程序员也能开发出专业并且漂亮的Web应用程序**
 
 >域驱动设计（DDD）是一种通过将实现与不断发展的模型相连接来满足复杂需求的软件开发方法。域驱动设计的前提如下：
 > - 将项目的主要重点放在核心领域和领域逻辑上；
