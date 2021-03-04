@@ -1,75 +1,75 @@
-# 基于领域驱动设计(DDD)超轻量级快速开发架构
+# Domain Driven Design (DDD) ultra-lightweight rapid development architecture(support .net 5.0)
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_0.jpg)
-**smartadmin.core.urf 这个项目是基于asp.net 5(最新)基础上参照领域驱动设计（DDD）的理念，并参考目前最为了流行的abp架构开发的一套轻量级的快速开发web application 技术架构,专注业务核心需求，减少重复代码，开始构建和发布，让初级程序员也能开发出专业并且漂亮的Web应用程序**
+**smartadmin.core.urf offers a complete, modular and layered software architecture based on Domain Driven Design principles and patterns. It also provides the necessary infrastructure to implement this architecture, focusing on the core of the business Demand, reduce duplication coding,  allow junior programmers to develop professional and beautiful Web applications**
 
->域驱动设计（DDD）是一种通过将实现与不断发展的模型相连接来满足复杂需求的软件开发方法。域驱动设计的前提如下：
-> - 将项目的主要重点放在核心领域和领域逻辑上；
-> - 将复杂的设计基于领域模型；
-> - 启动技术专家和领域专家之间的创造性合作，以迭代方式完善解决特定领域问题的概念模型。
-## Demo 网站
+>Domain-driven design (DDD) is the concept that the structure and language of software code (class names, class methods, class variables) should match the business domain. For example, if a software processes loan applications, it might have classes such as LoanApplication and Customer, and methods such as AcceptOffer and Withdraw.
+DDD connects the implementation to an evolving model.
+Domain-driven design is predicated on the following goals:
+> - placing the project's primary focus on the core domain and domain logic;
+> - basing complex designs on a model of the domain;
+> - initiating a creative collaboration between technical and domain experts to iteratively refine a conceptual model that addresses particular domain problems.。
+## Demo Site
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/login.png)
 
-[演示站点(http://139.196.107.159:1060)](http://139.196.107.159:1060/Identity/Account/Login) 
+[Demo (http://139.196.107.159:1060)](http://139.196.107.159:1060/Identity/Account/Login) 
 
-账号:**demo** 密码:**123456** 
+UserName:**demo** Password:**123456** 
 
-[演示站点(http://106.52.105.140:6200)](http://106.52.105.140:6200/)
-> 喜欢请给个 **Star**  每一颗Star都是鼓励我继续更新的动力 谢谢
-> 如果你用于自己公司及盈利性的项目，希望给与金钱上的赞助，并且保留原作者的版权
-## 分层
-**smartadmin.core.urf遵行DDD设计模式来实现应用程序的四层模型**
-- 表示层(Presentation Layer)：用户操作展示界面，使用[SmartAdmin - Responsive WebApp](https://www.gotbootstrap.com/themes/smartadmin/4.5.1/intel_analytics_dashboard.html)模板+[Jquery EasyUI](https://www.jeasyui.com/)
-- 应用层(Application Layer)：在表示层与域层之间，实现具体应用程序逻辑,业务用例,Project：**StartAdmin.Service.csproj**
-- 域层(Domain Layer)：包括业务对象(**Entity**)和核心(域)业务规则，应用程序的核心,使用EntityFrmework Core Code-first + Repository实现
-- 基础结构层(Infrastructure Layer)：提供通用技术功能，这些功能主要有第三方库来支持，比如日志:**Nlog**,服务发现：**Swagger UI**,事件总线(EventBus):**[dotnetcore/CAP](https://github.com/dotnetcore/CAP)**,认证与授权:**Microsoft.AspNetCore.Identity**,后面会具体介绍
+[Demo (http://106.52.105.140:6200)](http://106.52.105.140:6200/)
+> Please give me **Star** if you like it. Every Star is a motivation to encourage me to continue updating.
+> 
+## Layers
+**smartadmin.core.urf follow the DDD design pattern to implement the four-layer model of the application**
+- Presentation Layer：This layer is the part where interaction with external systems happens. This layer is the gateway to the effects that a human, an application or a message will have on the domain. Requests will be accepted from this layer and the response will be shaped in this layer and displayed to the user.the project use [SmartAdmin - Responsive WebApp](https://www.gotbootstrap.com/themes/smartadmin/4.5.1/intel_analytics_dashboard.html) and [Jquery EasyUI](https://www.jeasyui.com/)
+- Application Layer：It is the layer where business process flows are handled. The capabilities of the application can be observed in this layer. Domain entities are created and subject to update here. Depending on the usage scenarios, topics such as transaction management are also resolved here. In this layer, execution of work commands and reactions to domain events are coded. The code snippet for handling the CreateUser work command is given below as an example. In this example, by creating an object of User that comes from the Domain Layer and storing this object in the data storage, request for user creation is resolved.the project：**StartAdmin.Service.csproj**
+- Domain Layer：This will be the core of the application. It is the layer where all business rules related to the problem to be solved are included. In this layer; entities, value objects, aggregates, factories and interfaces will take place. This layer should be kept away from dependencies as much as possible. Third party libraries should not be added as much as possible, as it should not take other layers as a reference.the project use EntityFrmework Core Code-first and  Repository Implement 
+- Infrastructure Layer：This layer will be the layer that accesses external services such as database, messaging systems and email services. The IUserRepository interface designed in the domain layer and used in the application layer will be implemented in this layer and gain an identity.the project use:**Nlog**,service discovery：**Swagger UI**,EventBus:**[dotnetcore/CAP](https://github.com/dotnetcore/CAP)**,Authentication and Authorization:**Microsoft.AspNetCore.Identity**,etc.
 
-## 内容
+## Project
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/project.png)
-+ 域层(Domain Layer)
-  * 实体(Entity,BaseEntity) 通常实体就是映射到关系数据库中的表，这里说名一下最佳做法和惯例：
-  >- 在域层定义:本项目就是**(SmartAdmin.Entity.csproj)**
-  >- 继承一个基类 Entity，添加必要审计类比如：创建时间，最后修改时间等
-  >- 必须要有一个主键最好是GRUID(不推荐复合主键),但本项目使用递增的int类型
-  >- 字段不要过多的冗余,可以通过定义关联关系
-  >- 字段属性和方法尽量使用virtual关键字。有些ORM和动态代理工具需要
-    * 存储库(Repositories) 封装基本数据操作方法（CRUD）,本项目应用 [URF.Core](https://github.com/urfnet/URF.Core)实现
-   * 域服务
-   * 技术指标
-+ 应用层
-  * 应用服务：用于实现应用程序的用例。它们用于将域逻辑公开给表示层，从表示层（可选）使用DTO（数据传输对象）作为参数调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离。对应本项目：(SmartAdmin.Service.csproj)
-  * 数据传输对象(DTO)：用于在应用程序层和表示层或其他类型的客户端之间传输数据,通常，使用DTO作为参数从表示层（可选）调用应用程序服务。它使用域对象执行某些特定的业务逻辑，并（可选）将DTO返回到表示层。因此，表示层与域层完全隔离.对应本项目：(SmartAdmin.Dto.csproj)
-  * Unit of work:管理和控制应用程序中操作数据库连接和事务 ，本项目使用 [URF.Core](https://github.com/urfnet/URF.Core)实现
++ Domain Layer
+  * Entities are one of the core concepts of DDD (Domain Driven Design). Eric Evans describe it as "An object that is not fundamentally defined by its attributes, but rather by a thread of continuity and identity，it still follows some good practices：
+  >- Domain Layer:**(SmartAdmin.Entity.csproj)**
+  >- Inherit a base class "Entity",Add necessary audit classes such as: creation time, last modification time, etc.
+  >- There must be a primary key, preferably GRUID (composite primary key is not recommended), but this project uses an incremental int type
+  >- The field should not be too redundant, you can define the association relationship
+  >- Use virtual keywords as much as possible for field properties and methods. Some ORM and dynamic proxy tools require
+   * Repositories: wrapper basic data operation method (CRUD),the Project [URF.Core](https://github.com/urfnet/URF.Core)
 
-+ 基础服务层
-  * UI样式定义:根据用户喜好选择多种页面显示模式
-  * 租户管理：使用EntityFrmework Core提供的Global Filter实现简单多租户应用
-  * 账号管理: 对登录系统账号维护，注册，注销，锁定，解锁，重置密码，导入、导出等功能
-  * 角色管理：使用Microsoft身份库管理角色，用户及其权限管理
-  * 导航菜单：系统主导航栏配置
-  * 角色授权：配置角色显示的菜单
-  * 键值对配置：常用的数据字典维护，如何正确使用和想法后面会介绍
-  * 导入&导出配置：使用Excel导入导出做一个可配置的功能
-  * 系统日志：asp.net core 自带的日志+Nlog把所有日志保存到数据库方便查询和分析
-  * 消息订阅：集中订阅CAP分布式事件总线的消息
-  * WebApi: Swagger UI Api服务发现和在线调试工具
-  * CAP： CAP看板查看发布和订阅的消息
++ Application Layer
+  * Application Services：Application services are used to implement the use cases of an application. They are used to expose domain logic to the presentation layer.the project:SmartAdmin.Service.csproj
+  * Data Transfer Objects：Data Transfer Objects (DTO) are used to transfer data between the Application Layer and the Presentation Layer or other type of clients.Typically, an application service is called from the presentation layer (optionally) with a DTO as the parameter. It uses domain objects to perform some specific business logic and (optionally) returns a DTO back to the presentation layer. Thus, the presentation layer is completely isolated from domain layer.the project：(SmartAdmin.Dto.csproj)
+  * Unit of work:Unit Of Work (UOW) implementation provides an abstraction and control on a database connection and transaction scope in an application.the project [URF.Core](https://github.com/urfnet/URF.Core)
 
-## 快速上手开发
-+ 开发环境
++ Infrastructure
+  * UI Layerout config:Choose a variety of page display modes according to user preferences
+  * Multi-Tenant： Global Filter of EntityFrmework Core
+  * Account: Maintenance of login system account, registration, logout, lock, unlock, reset password, import, export and other functions
+  * Role：Microsoft Identity server
+  * Navigation menu：System navigation bar configuration
+  * Role authorization：Configure the menu that the role displays
+  * Key-value configuration：Common data dictionary maintenance
+  * Import & export configuration：Excel import and export to make a configurable feature
+  * Logging：asp.net core logging and Nlog
+  * Message publish-subscribe：CAP distributed event bus
+  * WebApi: Swagger UI Api
+  * CAP： CAP
+
+## get started
++ development environment 
   >- Visual Studio .Net 2019
   >- .Net  5.0.1
   >- Sql Server(LocalDb)
-+ 附加数据库
-  > 使用SQL Server Management Studio 附加.\src\SmartAdmin.Data\db\smartadmindb.mdf 数据库(如果是localdb,那么不需要修改数据库连接配置)
-+ 打开解决方案
 
-> **第一个简单的需求开始** \
-> 新增 Company 企业信息 完成CRUD 导入导出功能
++ Open the solution
 
-+ 新建实体对象(Entity)
-> 在SmartAdmin.Entity.csproj项目的Models目录下新增一个Company.cs类
+> **Start with the simple requirement** \
+> develop CRUD, import and export function with Company object
+
++ Create Company Entity 
+> SmartAdmin.Entity.csproj>Models new Company.cs class
 ```javascript
-//记住：定义实体对象最佳做法，继承基类，使用virtual关键字,尽可能的定义每个属性，名称，类型，长度，校验规则，索引，默认值等
+//Note: define the best practices of entity objects, inherit the base class, use the virtual keyword, and define every attribute, name, type, length, verification rule, index, default value, etc. as much as possible
 namespace SmartAdmin.Data.Models
 {
     public partial class Company : URF.Core.EF.Trackable.Entity
@@ -102,11 +102,11 @@ namespace SmartAdmin.Data.Models
 //在 SmartAdmin.Data.csproj 项目 SmartDbContext.cs 添加
 public virtual DbSet<Company> Companies { get; set; }
 ```
-+ 添加服务对象 Service
-> 在项目 SmartAdmin.Service.csproj 中添加**ICompanyService.cs**,**CompanyService.cs** 就是用来实现业务需求 用例的地方
++ Add Service Layer
+> the project SmartAdmin.Service.csproj add **ICompanyService.cs**,**CompanyService.cs** implement business requirements and use cases
 ```javascript
 //ICompany.cs
-//根据实际业务用例来创建方法，默认的CRUD,增删改查不需要再定义
+//Create methods based on actual business use cases, the default CRUD, additions, deletions, and changes do not need to be defined
 namespace SmartAdmin.Service
 {
   // Example: extending IService<TEntity> and/or ITrackableRepository<TEntity>, scope: ICustomerService
@@ -120,7 +120,7 @@ namespace SmartAdmin.Service
 }
 ```
 ```javascript
-// 具体实现接口的方法
+// implementation of the interface method
 namespace SmartAdmin.Service
 {
   public class CompanyService : Service<Company>, ICompanyService
@@ -233,7 +233,7 @@ namespace SmartAdmin.Service
   }
 }
 ```
-+ 添加Controller
++ new Controller
 > MVC Controller
 ```javascript
 namespace SmartAdmin.WebUI.Controllers
@@ -1198,29 +1198,29 @@ namespace SmartAdmin.WebUI.Controllers
 }
 
 ```
-> 上面View层的代码非常的复杂，但都是固定格式，可以用scaffold快速生成
-+ 配置依赖注入(DI),注册服务
-> 打开 startup.cs 在 public void ConfigureServices(IServiceCollection services)
-> 注册服务 
+> The code of the View layer above is very complicated, but they are all in a fixed format and can be quickly generated with scaffold
++ Configure dependency injection (DI), register services
+> Open startup.cs 在 public void ConfigureServices(IServiceCollection services)
+> register services 
 services.AddScoped<IRepositoryX<Customer>, RepositoryX<Customer>>(); \
 services.AddScoped<ICustomerService, CustomerService>();
-+ 更新数据库
-> EF Core Code-First 同步更新数据库 \
-> 在 Visual Studio.Net \
-> Package Manager Controle 运行 \
++ migration database
+> EF Core Code-First migration \
+> in Visual Studio.Net \
+> Package Manager Controle run \
 >PM>:add-migration create_Company \
 >PM>:update-database \
->PM>:更新完成
-+ Debug 运行项目
+>PM>:migration
++ Debug project
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_1.jpg)
 
 ## 高级应用
-> CAP 分布式事务的解决方案及应用场景 \
-> nuget 安装组件 \
+> CAP The solution and application scenario of distributed transaction \
+> nuget install \
 >PM> Install-Package DotNetCore.CAP \
 >PM> Install-Package DotNetCore.CAP.RabbitMQ \
 >PM> Install-Package DotNetCore.CAP.SqlServer \
-+ 配置Startup.cs
++ config Startup.cs
 ```javascript
 public void ConfigureServices(IServiceCollection services)
     {
@@ -1239,16 +1239,10 @@ public void ConfigureServices(IServiceCollection services)
       });
     }
 ```
-+ 发布消息
-+ 订阅消息
++ Publish messages
++ Subscribe messages
 
-## roadmap
-+ 支持My SQL数据库
-+ 还会继续重构和完善代码
-+ 开发Scaffold MVC模板,生成定制化的Controller 和 View 减少开发人员重复工作
-+ 完善授权访问策略(policy-based authorization)
-+ 开发Visual Sutdio.net代码生成插件(类似国内做比较好的52abp)
 
-## 我的联系方式，qq群，赞助二维码
-![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)![赞助](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/wx.jpg)
+## contact information
+![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)!
 
