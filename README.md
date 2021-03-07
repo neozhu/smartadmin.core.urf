@@ -60,7 +60,34 @@ UserName:**demo** Password:**123456**
   >- Visual Studio .Net 2019
   >- .Net  5.0.1
   >- Sql Server(LocalDb)
-
++ dependence packages 
+  >-  Include="AutoMapper" Version="10.1.1" 
+  >-  Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" 
+  >-  Include="DotNetCore.CAP" Version="3.1.2" 
+  >-  Include="DotNetCore.CAP.Dashboard" Version="3.1.2" 
+  >-  Include="DotNetCore.CAP.RabbitMQ" Version="3.1.2" 
+  >-  Include="DotNetCore.CAP.SqlServer" Version="3.1.2" 
+  >-  Include="DotNetCore.NPOI" Version="1.2.3" 
+  >-  Include="Mapster" Version="7.1.5"
+  >-  Include="MediatR" Version="9.0.0" 
+  >-  Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" 
+  >-  Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" 
+  >-  Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.3"
+  >-  Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.3" 
+  >-  Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.3" 
+  >-  Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" 
+  >-  Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" 
+  >-  Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" 
+  >-  Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.3"
+  >-  Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.3" 
+  >-  Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.3">
+  >-  Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" 
+  >-  Include="NLog" Version="4.7.8"
+  >-  Include="NLog.Extensions.Logging" Version="1.7.1" 
+  >-  Include="NLog.Web.AspNetCore" Version="4.11.0" 
+  >-  Include="Swashbuckle.AspNetCore" Version="6.1.0" 
+  >-  Include="System.Data.SqlClient" Version="4.8.2"
+  >-  Include="System.Linq.Dynamic.Core" Version="1.2.8"
 + Open the solution
 
 > **Start with the simple requirement** \
