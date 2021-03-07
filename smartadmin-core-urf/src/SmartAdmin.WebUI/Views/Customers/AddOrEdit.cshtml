@@ -2,119 +2,92 @@
 @{
   Layout = null;
 }
-<form id="customer_form"
-      class="form-horizontal p-0 m-0"
-      asp-action="AddOrEdit" asp-route-id="@Model.Id" onsubmit="return submitsaveitem(this);"
-      method="post">
-  <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade sticky-top">
-    <div class="d-flex flex-row-reverse pr-4">
-      <div class="btn-group btn-group-sm mr-1">
-        <button name="saveitembutton" type="submit" class="btn btn-default">
-          <i class="fal fa-save"></i> 保存
-        </button>
-      </div>
-      @if (Model.Id > 0)
-      {
-      <div class="btn-group btn-group-sm mr-1" id="deleteitem-btn-group">
-        <button onclick="deleteitem(@Model.Id)" type="button" class="btn btn-danger">
-          <i class="fal fa-trash-alt"></i> 删除
-        </button>
-      </div>
-      }
-    </div>
-  </div>
+<div id="panel-1" class="panel">
+
   <div class="panel-container show">
-    <div class="container">
-      <div class="panel-content">
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
- 
-        <!--Primary Key-->
-        <input type="hidden" asp-for="Id" />
-        <fieldset>
-          <!-- begin row -->
-          <!--名称-->
-          <div class="form-group   row h-100 justify-content-center align-items-center">
-            <label class="col-md-2 pr-1 form-label text-right"><span class="text-danger">*</span> @Html.DisplayNameFor(model => model.Name)</label>
-            <div class="col-md-4 mb-1 pl-1">
-              <input asp-for="Name" class="form-control form-control-sm rounded-0" />
-              <span asp-validation-for="Name" class="text-danger"></span>
-
+    <div class="panel-content p-0">
+      <form id="customer-form" class="needs-validation" asp-action="AddOrEdit" novalidate>
+        <input type="hidden" asp-for="Id"/>
+        
+        <div class="panel-content">
+          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          <div class="form-row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" asp-for="Name">  </label>
+              <input type="text" class="form-control" asp-for="Name" required maxlength="50">
+              <div class="invalid-feedback" asp-validation-for="Name">
+              </div>
             </div>
-            <label class="col-md-2 pr-1 form-label text-right ">@Html.DisplayNameFor(model => model.Contect)</label>
-            <div class="col-md-4 mb-1 pl-1">
-              <input asp-for="Contect" class="form-control form-control-sm rounded-0" />
-              <span asp-validation-for="Contect" class="text-danger"></span>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" asp-for="Contect">  </label>
+              <input type="text" class="form-control" asp-for="Contect" maxlength="12">
+              <div class="invalid-feedback" asp-validation-for="Contect">
+              </div>
             </div>
-            <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.PhoneNumber)</label>
-            <div class="col-md-4 mb-1 pl-1">
-              <input asp-for="PhoneNumber" class="form-control form-control-sm rounded-0" />
-              <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <label class="col-md-2 pr-1 form-label text-right">@Html.DisplayNameFor(model => model.Address)</label>
-            <div class="col-md-4 mb-1 pl-1">
-              <input asp-for="Address" class="form-control form-control-sm rounded-0" />
-              <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-
           </div>
-        </fieldset>
+          <div class="form-row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" asp-for="PhoneNumber">  </label>
+              <input type="text" class="form-control" asp-for="PhoneNumber" maxlength="20">
+              <div class="invalid-feedback" asp-validation-for="PhoneNumber">
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" asp-for="Address">  </label>
+              <input type="text" class="form-control" asp-for="Address" maxlength="50">
+              <div class="invalid-feedback" asp-validation-for="Address">
+              </div>
+            </div>
+          </div>
 
 
-      </div>
+        </div>
+        <div class="panel-content border-faded border-left-0 border-right-0 border-bottom-0 d-flex flex-row align-items-center">
+          <button class="btn btn-primary ml-auto" type="submit">Submit</button>
+        </div>
+      </form>
+      <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+          'use strict';
+          window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+              form.addEventListener('submit', function (event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                } else {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  var request = $('#customer-form').serializeJSON();
+                  console.log(request)
+                  $.post('/Customers/AddOrEdit', {
+                    __RequestVerificationToken: request.__RequestVerificationToken,
+                    request
+                  }).done(res => {
+                    if (res.success) {
+                      $('#customer-modal').modal('toggle');
+                      reload();
+                      toastr.success("保存成功");
+                    }
+                    else {
+                      $.messager.alert('错误', res.err)
+                    }
+                  });
+                  
+                }
+                form.classList.add('was-validated');
+              }, false);
+            });
+          }, false);
+        })();
+
+      </script>
     </div>
   </div>
-</form>
-<script>
-  function submitsaveitem(form) {
-    if ($(form).valid()) {
-      try {
-        $.ajax({
-          type: 'POST',
-          url: form.action,
-          data: new FormData(form),
-          contentType: false,
-          processData: false,
-          success: function (res) {
-            console.log(res)
-            if (res.success) {
-              $('#customerdetailwindow').window('close');
-              reload();
-              toastr.success("保存成功");
-            }
-            else {
-              $.messager.alert('错误', res.err)
-            }
-          },
-          error: function (err) {
-            console.log(err)
-          }
-        })
-        //to prevent default form submit event
-        return false;
-      } catch (ex) {
-        console.log(ex)
-      }
-    } else {
-      return false;
-    }
-  }
+</div>
 
-  function deleteitem(id) {
-    $.messager.confirm('确认', '你确定要删除该记录?', result => {
-      if (result) {
-        const url = `/Customers/Delete/${id}`;
-        $.get(url).done(res => {
-          if (res.success) {
-            toastr.success("删除成功");
-            $("#customerdetailwindow").window("close");
-            reload();
-          } else {
-            $.messager.alert("错误", res.err, "error");
-          }
-        });
-      }
-    });
-  }
-</script>

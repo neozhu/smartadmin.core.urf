@@ -10,6 +10,7 @@ using SmartAdmin.Dto;
 using TrackableEntities.Common.Core;
 using URF.Core.Services;
 using System.Linq.Dynamic.Core;
+using URF.Core.EF.Trackable;
 
 namespace SmartAdmin.Service
 {
@@ -109,5 +110,18 @@ namespace SmartAdmin.Service
       
       return await NPOIHelper.ExportExcelAsync(entityName, result, expcolopts);
     }
+
+    public Task<TEntity> CreateOrEdit(TEntity entity) {
+      var item = entity as Entity;
+      if (item.Id <= 0)
+      {
+        this.Insert(entity);
+      }
+      else
+      {
+        this.Update(entity);
+      }
+      return Task.FromResult(entity);
+      }
   }
 }

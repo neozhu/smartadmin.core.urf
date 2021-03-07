@@ -88,35 +88,34 @@
     </div>
   </div>
 </div>
-<!-- 弹出窗体form表单 -->
-<div id="customerdetailwindow" class="easyui-window"
-     title="明细数据"
-     data-options="modal:true,
-                    closed:true,
-                    minimizable:false,
-                    collapsible:false,
-                    maximized:false,
-                    iconCls:'fal fa-window',
-                    onBeforeClose:function(){
-                      var that = $(this);
-                    },
-                    onOpen:function(){
-                       $(this).window('vcenter');
-                       $(this).window('hcenter');
-                    },
-                    onRestore:function(){
-                    },
-                    onMaximize:function(){
-                    },
-                    onLoad:function(){
-                                    $.validator.unobtrusive.updateValidation('form');
- 
 
-                    }
-                    " style="width:820px;height:420px;display:none">
-  <!-- toolbar -->
-  
+<!--Customer Edit Modal -->
+<div class="modal fade" id="customer-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Customer Information
+          <small class="m-0 text-muted">
+            
+          </small>
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fal fa-times"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card mb-5">
+          <div class="card-body p-0">
+            <partial name="AddOrEdit" />
+          </div>
+        </div>
+          </div>
+      
+        </div>
+  </div>
 </div>
+ 
 
 
 @await Component.InvokeAsync("ImportExcel", new ImportExcelOptions
@@ -135,6 +134,7 @@
 @section ScriptsBlock {
   <script src="~/js/plugin/jquery.validation/jquery.validate.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.validation/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
+  <script src="~/js/plugin/jquery.form.binding/jquery-json-form-binding.js" asp-append-version="true"></script>
   <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
@@ -190,8 +190,11 @@
             //新增记录
     function appendItem() {
       customer = {
-        Address: '-',
-        RegisterDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        Id:null,
+        Name: '',
+        PhoneNumber:'',
+        Contect:'',
+        Address: '-'
       };
       if (!EDITINLINE) {
         //弹出新增窗口
@@ -362,7 +365,7 @@
         sortOrder: 'desc',
         remoteFilter: true,
         singleSelect: true,
-        method: 'get',
+        method: 'post',
         onClickCell: onClickCell,
         clientPaging: false,
         pagination: true,
@@ -507,18 +510,18 @@
         ])
         .datagrid('load', '/Customers/GetData');
 
-      
+
     }
     );
 
 
     function openCustomerDetailWindow(data) {
       const customerid = (data.Id || 0);
-      $("#customerdetailwindow").window("open");
-      $('#customerdetailwindow').window('refresh', '/customers/addoredit/' + customerid);
-
+      console.log(data);
+      $('#customer-modal').modal('toggle');
+      $('#customer-form').jsonToForm(data)
 
     }
   </script>
- 
+
 }

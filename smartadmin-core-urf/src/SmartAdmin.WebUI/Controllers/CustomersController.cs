@@ -14,20 +14,27 @@ using SmartAdmin.Data.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
+using MediatR;
+using SmartAdmin.Domain.Queries;
+using SmartAdmin.Domain.Commands;
 
 namespace SmartAdmin.WebUI.Controllers
 {
   public class CustomersController : Controller
   {
+    private readonly IMediator mediator;
     private readonly ICustomerService customerService;
     private readonly IUnitOfWork unitOfWork;
     private readonly ILogger<CustomersController> _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    public CustomersController(ICustomerService customerService,
+    public CustomersController(
+          IMediator mediator,
+          ICustomerService customerService,
           IUnitOfWork unitOfWork,
           IWebHostEnvironment webHostEnvironment,
           ILogger<CustomersController> logger)
     {
+      this.mediator = mediator;
       this.customerService = customerService;
       this.unitOfWork = unitOfWork;
       this._logger = logger;
@@ -37,84 +44,74 @@ namespace SmartAdmin.WebUI.Controllers
     // GET: Customers
     public IActionResult Index() => View();
     //datagrid 数据源
-    public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
+    //public async Task<JsonResult> GetData(int page = 1, int rows = 10, string sort = "Id", string order = "asc", string filterRules = "")
+    public async Task<JsonResult> GetData(CustomerPaginationQuery request)
     {
+        //var filters = PredicateBuilder.FromFilter<Customer>(filterRules);
+        //var total = await this.customerService
+        //                     .Query(filters).CountAsync();
+        //var pagerows = (await this.customerService
+        //                     .Query(filters)
+        //                   .OrderBy(n => n.OrderBy($"{sort} {order}"))
+        //                   .Skip(page - 1).Take(rows).SelectAsync())
+        //                   .ToList();
+        //var pagelist = new { total = total, rows = pagerows };
+        //return Json(pagelist);
+        var result= await this.mediator.Send(request);
+        return Json(result);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    //public async Task<IActionResult> AddOrEdit(Customer request)
+    public async Task<IActionResult> AddOrEdit(CreateOrEditCustomerCommand request)
+    {
+      //if (ModelState.IsValid)
+      //{
+      //  //Insert
+      //  if (request.Id == 0)
+      //  {
+      //    this.customerService.Insert(request);
+      //    await this.unitOfWork.SaveChangesAsync();
+
+      //  }
+      //  //Update
+      //  else
+      //  {
+      //    try
+      //    {
+      //      this.customerService.Update(request);
+      //      await this.unitOfWork.SaveChangesAsync();
+      //    }
+      //    catch (DbUpdateConcurrencyException)
+      //    {
+      //      if (!await this.customerService.ExistsAsync(request.Id))
+      //      { return NotFound(); }
+      //      else
+      //      { throw; }
+      //    }
+      //  }
+      //  return Json(new { success = true });
+      //}
+      //else
+      //{
+      //  var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
+      //  return Json(new { success = false, err = modelStateErrors });
+      //}
       try
       {
-        var filters = PredicateBuilder.FromFilter<Customer>(filterRules);
-        var total = await this.customerService
-                             .Query(filters).CountAsync();
-        var pagerows = (await this.customerService
-                             .Query(filters)
-                           .OrderBy(n => n.OrderBy($"{sort} {order}"))
-                           .Skip(page - 1).Take(rows).SelectAsync())
-                           .ToList();
-        var pagelist = new { total = total, rows = pagerows };
-        return Json(pagelist);
+        await this.mediator.Send(request);
+        return Json(new { success = true });
       }
       catch (Exception e)
       {
-        throw e;
-      }
-
-    }
-    public async Task<IActionResult> AddOrEdit(int id = 0)
-    {
-
-      if (id == 0)
-      {
-        var model = new Customer();
-        return View(model);
-      }
-      else
-      {
-        var model = await this.customerService.FindAsync(id);
-        return View(model);
-
+        return Json(new { success = false, err = e.Message });
       }
     }
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOrEdit(int id, [Bind("Id,Name,Contect,PhoneNumber,Address")] Customer customer)
-    {
-      if (ModelState.IsValid)
-      {
-        //Insert
-        if (id == 0)
-        {
-          this.customerService.Insert(customer);
-          await this.unitOfWork.SaveChangesAsync();
 
-        }
-        //Update
-        else
-        {
-          try
-          {
-            this.customerService.Update(customer);
-            await this.unitOfWork.SaveChangesAsync();
-          }
-          catch (DbUpdateConcurrencyException)
-          {
-            if (!await this.customerService.ExistsAsync(customer.Id))
-            { return NotFound(); }
-            else
-            { throw; }
-          }
-        }
-        return Json(new { success = true });
-      }
-      else
-      {
-        var modelStateErrors = string.Join(",", this.ModelState.Keys.SelectMany(key => this.ModelState[key].Errors.Select(n => n.ErrorMessage)));
-        return Json(new { success = false, err = modelStateErrors });
-      }
-      
-    }
-     
-    //删除当前记录
-    //GET: Customers/Delete/:id
-    [HttpGet]
+      //删除当前记录
+      //GET: Customers/Delete/:id
+      [HttpGet]
     public async Task<JsonResult> Delete(int id)
     {
       try
@@ -131,15 +128,27 @@ namespace SmartAdmin.WebUI.Controllers
     }
     //删除选中的记录
     [HttpPost]
-    public async Task<JsonResult> DeleteChecked(int[] id)
+    //public async Task<JsonResult> DeleteChecked(int[] id)
+    public async Task<JsonResult> DeleteChecked(DeleteCustomerCommand request)
     {
+      //try
+      //{
+      //  foreach (var key in id)
+      //  {
+      //    await this.customerService.DeleteAsync(key);
+      //  }
+      //  await this.unitOfWork.SaveChangesAsync();
+      //  return Json(new { success = true });
+      //}
+      //catch (Exception e)
+      //{
+      //  return Json(new { success = false, err = e.GetBaseException().Message });
+      //}
+
       try
       {
-        foreach (var key in id)
-        {
-          await this.customerService.DeleteAsync(key);
-        }
-        await this.unitOfWork.SaveChangesAsync();
+
+        await this.mediator.Send(request);
         return Json(new { success = true });
       }
       catch (Exception e)

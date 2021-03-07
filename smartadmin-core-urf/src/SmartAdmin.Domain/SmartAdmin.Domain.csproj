@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Validations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.1.5" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartAdmin.Entity\SmartAdmin.Entity.csproj" />
+    <ProjectReference Include="..\SmartAdmin.Service\SmartAdmin.Service.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +22,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NLog.Extensions.Logging;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Repository;
 using SmartAdmin.Service;
@@ -94,8 +93,8 @@ namespace SmartAdmin.WebUI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-     
-     
+      
+
       #region infrastructure framework
       services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -143,6 +142,8 @@ namespace SmartAdmin.WebUI
 
       services.AddRazorPages();
       services.AddMvc().AddRazorRuntimeCompilation();
+
+      services.AddMediatR(Assembly.Load("SmartAdmin.Domain"));
 
       //Jwt Authentication
       services.AddAuthentication(opts =>

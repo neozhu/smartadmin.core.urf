@@ -14,5 +14,6 @@ namespace SmartAdmin.Service
     {
     Task ImportDataTableAsync(DataTable datatable, string username = "");
     Task<Stream> ExportExcelAsync(Expression<Func<TEntity, bool>> filters, string sort = "Id", string order = "asc");
+    Task<TEntity> CreateOrEdit(TEntity entity);
     }
 }
