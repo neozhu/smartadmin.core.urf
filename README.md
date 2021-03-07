@@ -26,7 +26,7 @@ UserName:**demo** Password:**123456**
 - Infrastructure Layer：This layer will be the layer that accesses external services such as database, messaging systems and email services. The IUserRepository interface designed in the domain layer and used in the application layer will be implemented in this layer and gain an identity.the project use:**Nlog**,service discovery：**Swagger UI**,EventBus:**[dotnetcore/CAP](https://github.com/dotnetcore/CAP)**,Authentication and Authorization:**Microsoft.AspNetCore.Identity**,etc.
 
 ## Project
-![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/project.png)
+![](https://github.com/neozhu/smartadmin.core.urf/blob/master/img/project_tree.png?raw=true)
 + Domain Layer
   * Entities are one of the core concepts of DDD (Domain Driven Design). Eric Evans describe it as "An object that is not fundamentally defined by its attributes, but rather by a thread of continuity and identity，it still follows some good practices：
   >- Domain Layer:**(SmartAdmin.Entity.csproj)**
