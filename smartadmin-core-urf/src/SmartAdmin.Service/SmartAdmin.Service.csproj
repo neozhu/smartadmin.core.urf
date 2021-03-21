@@ -6,8 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="QueryObject\**" />
+    <EmbeddedResource Remove="QueryObject\**" />
+    <None Remove="QueryObject\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
-    <PackageReference Include="sqlSugarCore" Version="5.0.2.6" />
+    <PackageReference Include="sqlSugarCore" Version="5.0.2.7" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
   </ItemGroup>
 
@@ -17,10 +23,6 @@
     <ProjectReference Include="..\SmartAdmin.Repository\SmartAdmin.Repository.csproj" />
     <ProjectReference Include="..\URF.Core\URF.Core.EF.Trackable\URF.Core.EF.Trackable.csproj" />
     <ProjectReference Include="..\URF.Core\URF.Core.Services\URF.Core.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="QueryObject\" />
   </ItemGroup>
 
 </Project>

@@ -2,16 +2,11 @@
 @{
   Layout = null;
 }
-<div id="panel-1" class="panel">
 
-  <div class="panel-container show">
-
-    <div class="panel-content p-0">
       <form id="customer-form" class="needs-validation" asp-action="AddOrEdit" novalidate>
-        <input type="hidden" asp-for="Id"/>
-        
         <div class="panel-content">
           <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           <input type="hidden" asp-for="Id"/>
           <div class="form-row">
             <div class="col-md-6 mb-3">
               <label class="form-label" asp-for="Name">  </label>
@@ -43,7 +38,7 @@
 
 
         </div>
-        <div class="panel-content border-faded border-left-0 border-right-0 border-bottom-0 d-flex flex-row align-items-center">
+        <div class="panel-content border-faded border-left-0 border-right-0 border-bottom-0 d-flex flex-row align-items-center p-2" >
           <button class="btn btn-primary ml-auto" type="submit">Submit</button>
         </div>
       </form>
@@ -87,7 +82,5 @@
         })();
 
       </script>
-    </div>
-  </div>
-</div>
+   
 

@@ -1,121 +1,121 @@
 ﻿@model SmartAdmin.Data.Models.Customer
 @{
-  ViewData["Title"] = "客户信息";
-  ViewData["PageName"] = "customers_index";
-  ViewData["Heading"] = "<i class='fal fa-window text-primary'></i> 客户信息";
-  ViewData["Category1"] = "组织架构";
-  ViewData["PageDescription"] = "";
+    ViewData["Title"] = "客户信息";
+    ViewData["PageName"] = "customers_index";
+    ViewData["Heading"] = "<i class='fal fa-window text-primary'></i> 客户信息";
+    ViewData["Category1"] = "组织架构";
+    ViewData["PageDescription"] = "";
 }
 <div class="row">
-  <div class="col-lg-12 col-xl-12">
-    <div id="panel-1" class="panel">
-      <div class="panel-hdr">
-        <h2>
-          客户信息
-        </h2>
-        <div class="panel-toolbar">
-          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
-          <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
-        </div>
-
-      </div>
-      <div class="panel-container enable-loader show">
-        <div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>
-        <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
-          <div class="row no-gutters align-items-center">
-            <div class="col">
-              <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
-              <div class="btn-group btn-group-sm">
-                <button onclick="appendItem()" class="btn btn-default">
-                  <span class="fal fa-plus mr-1"></span> 新增
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="deletebutton" disabled onclick="removeItem()" class="btn btn-default">
-                  <span class="fal fa-times mr-1"></span> 删除
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default">
-                  <span class="fal fa-save mr-1"></span> 保存
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button name="cancelbutton" disabled onclick="rejectChanges()" class="btn btn-default">
-                  <span class="fal fa-ban mr-1"></span> 取消
-                </button>
-              </div>
-              <div class="btn-group btn-group-sm">
-                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
-                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-animated">
-                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
+    <div class="col-lg-12 col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    客户信息
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"><i class="fal fa-window-minimize"></i></button>
+                    <button class="btn btn-panel bg-transparent fs-xl w-auto h-auto rounded-0" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"><i class="fal fa-expand"></i></button>
                 </div>
-              </div>
-              <div class="btn-group btn-group-sm hidden-xs">
-                <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
-                <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-animated">
-                  <a class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()">
-                    <span class="fal fa-download"></span> 下载模板
-                  </a>
-                </div>
-              </div>
-              <div class="btn-group btn-group-sm hidden-xs">
-                <button onclick="exportExcel()" class="btn btn-default">
-                  <span class="fal fa-file-export mr-1"></span>  导出
-                </button>
-              </div>
 
             </div>
+            <div class="panel-container enable-loader show">
+                <div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>
+                <div class="panel-content py-2 rounded-bottom border-faded border-left-0 border-right-0  text-muted bg-subtlelight-fade ">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <!-- 开启授权控制请参考 @@if (Html.IsAuthorize("Create") -->
+                            <div class="btn-group btn-group-sm">
+                                <button onclick="appendItem()" class="btn btn-default">
+                                    <span class="fal fa-plus mr-1"></span> 新增
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button name="deletebutton" disabled onclick="removeItem()" class="btn btn-default">
+                                    <span class="fal fa-times mr-1"></span> 删除
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button name="savebutton" disabled onclick="acceptChanges()" class="btn btn-default">
+                                    <span class="fal fa-save mr-1"></span> 保存
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button name="cancelbutton" disabled onclick="rejectChanges()" class="btn btn-default">
+                                    <span class="fal fa-ban mr-1"></span> 取消
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button onclick="reload()" class="btn btn-default"> <span class="fal fa-search mr-1"></span> 查询 </button>
+                                <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-animated">
+                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 我的记录 </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item js-waves-on" href="javascript:void()"> 自定义查询 </a>
+                                </div>
+                            </div>
+                            <div class="btn-group btn-group-sm hidden-xs">
+                                <button type="button" onclick="importExcel.upload()" class="btn btn-default"><span class="fal fa-cloud-upload mr-1"></span> 导入 </button>
+                                <button type="button" class="btn btn-default  dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-animated">
+                                    <a class="dropdown-item js-waves-on" href="javascript:importExcel.downloadtemplate()">
+                                        <span class="fal fa-download"></span> 下载模板
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="btn-group btn-group-sm hidden-xs">
+                                <button onclick="exportExcel()" class="btn btn-default">
+                                    <span class="fal fa-file-export mr-1"></span>  导出
+                                </button>
+                            </div>
 
-          </div>
+                        </div>
 
+                    </div>
+
+                </div>
+                <div class="panel-content">
+                    <div class="table-responsive">
+                        <table id="customers_datagrid">
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="panel-content">
-          <div class="table-responsive">
-            <table id="customers_datagrid">
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <!--Customer Edit Modal -->
 <div class="modal fade" id="customer-modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">
-          Customer Information
-          <small class="m-0 text-muted">
-            
-          </small>
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true"><i class="fal fa-times"></i></span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="card mb-5">
-          <div class="card-body p-0">
-            <partial name="AddOrEdit" />
-          </div>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Customer Information
+                    <small class="m-0 text-muted">
+
+                    </small>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <div class="panel-container show">
+              <div class="panel-content">
+                <partial name="AddOrEdit" />
+                </div>
+                </div>
+            </div>
+
         </div>
-          </div>
-      
-        </div>
-  </div>
+    </div>
 </div>
- 
+
 
 
 @await Component.InvokeAsync("ImportExcel", new ImportExcelOptions
@@ -128,27 +128,27 @@
 
 @section HeadBlock {
 
-  <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
-  <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
 }
 @section ScriptsBlock {
-  <script src="~/js/plugin/jquery.validation/jquery.validate.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/jquery.validation/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/jquery.form.binding/jquery-json-form-binding.js" asp-append-version="true"></script>
-  <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
-  <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
-  <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
-  <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
-  <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
-  <script>
+<script src="~/js/plugin/jquery.validation/jquery.validate.js" asp-append-version="true"></script>
+<script src="~/js/plugin/jquery.validation/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
+<script src="~/js/plugin/jquery.form.binding/jquery-json-form-binding.js" asp-append-version="true"></script>
+<script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
+<script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
+<script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
+<script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
+<script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
+<script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
+<script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
+<script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
+<script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
+<script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
+<script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
+<script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
+<script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+<script>
     //全屏事件
     document.addEventListener('panel.onfullscreen', () => {
       $dg.treegrid('resize');
@@ -522,6 +522,6 @@
       $('#customer-form').jsonToForm(data)
 
     }
-  </script>
+</script>
 
 }
