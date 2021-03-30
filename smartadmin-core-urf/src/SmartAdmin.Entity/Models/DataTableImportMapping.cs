@@ -40,6 +40,8 @@ namespace SmartAdmin.Data.Models
     [Display(Name = "验证表达式", Description = "验证表达式")]
     [MaxLength(100)]
     public virtual string RegularExpression { get; set; }
+    [Display(Name = "序号", Description = "序号")]
+    public virtual int LineNo { get; set; }
 
   }
   

@@ -10,5 +10,6 @@ namespace SmartAdmin.Dto
     public virtual string FieldName { get; set; }
     public virtual string SourceFieldName { get; set; }
     public virtual bool IgnoredColumn { get; set; }
+    public virtual int LineNo { get; set; }
   }
 }

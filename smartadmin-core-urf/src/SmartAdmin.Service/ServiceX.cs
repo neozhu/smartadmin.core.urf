@@ -97,13 +97,14 @@ namespace SmartAdmin.Service
     {
       var entityName = typeof(TEntity).Name;
       var expcolopts = await this._mappingservice.Queryable()
-             .Where(x => x.EntitySetName == entityName)
+             .Where(x => x.EntitySetName == entityName && x.IgnoredColumn)
              .Select(x => new ExpColumnOpts()
              {
                EntitySetName = x.EntitySetName,
                FieldName = x.FieldName,
                IgnoredColumn = x.IgnoredColumn,
-               SourceFieldName = x.SourceFieldName
+               SourceFieldName = x.SourceFieldName,
+               LineNo=x.LineNo
              }).ToArrayAsync();
 
       var result = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();

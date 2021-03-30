@@ -120,13 +120,19 @@ namespace SmartAdmin
 
     });
 
-    public static Task<MemoryStream> ExportExcelAsync<T>(string name, IEnumerable<T> list, ExpColumnOpts[] colopts) => Task.Run(() =>
-    {
+    public static Task<MemoryStream> ExportExcelAsync<T>(string name, IEnumerable<T> list, ExpColumnOpts[] colopts = null) => Task.Run(() => {
       //var ignoredColumns = colopts.Where(x => x.IgnoredColumn == true);
       //var columns= colopts.Where(x => x.IgnoredColumn == false);
       var stream = new MemoryStream();
       var workbook = new XSSFWorkbook();
-      var PropertyInfos = typeof(T).GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+      var PropertyInfos = typeof(T)
+      .GetProperties(System.Reflection.BindingFlags.Instance
+      | System.Reflection.BindingFlags.Public);
+      var outputproperties = from p1 in PropertyInfos
+                             join p2 in colopts on p1.Name equals p2.FieldName
+                             orderby p2.LineNo
+                             select new { p1.Name, p2.SourceFieldName, p1.PropertyType };
+
       var sheet = workbook.CreateSheet(name);
       var headerRow = sheet.CreateRow(0);
       //Below loop is create header
@@ -142,50 +148,31 @@ namespace SmartAdmin
       headstyle.FillForegroundColor = NPOI.HSSF.Util.HSSFColor.Grey25Percent.Index;
       headstyle.FillPattern = FillPattern.SolidForeground;
       var col = 0;
-      for (var i = 0; i < PropertyInfos.Length; i++)
+      foreach (var prop in outputproperties)
       {
-       
-
-        var fieldname = PropertyInfos[i].Name;
-        var fieldtype = PropertyInfos[i].PropertyType;
-        if (colopts != null &&
-       (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
-       !colopts.Any(x => x.FieldName == fieldname)
-       )
-       )
-        {
-          continue;
-        }
-        var displayname = colopts.Where(x => x.FieldName == fieldname).FirstOrDefault()?.SourceFieldName;
+        var fieldname = prop.Name;
+        var fieldtype = prop.PropertyType;
+        var displayname = prop.SourceFieldName;
         var cell = headerRow.CreateCell(col++);
         cell.SetCellValue(displayname ?? fieldname);
         cell.CellStyle = headstyle;
 
+
       }
-      var index = 1;
-      //for (var i = 0; i < list.Count(); i++)
-      foreach(var item in list)
+      var rowindex = 0;
+      foreach (var item in list)
       {
-        var row = sheet.CreateRow(index++);
-        //var item = list;
+        var row = sheet.CreateRow(++rowindex);
         col = 0;
         var style = workbook.CreateCellStyle();
         style.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
         style.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
         style.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
         style.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-        for (var l = 0; l < PropertyInfos.Length; l++)
+        foreach (var prop in outputproperties)
         {
-          var fieldname = PropertyInfos[l].Name;
-          var fieldtype = PropertyInfos[l].PropertyType;
-          if (colopts != null &&
-       (colopts.Where(n => n.FieldName == fieldname && n.IgnoredColumn == false).Any() ||
-       !colopts.Any(x => x.FieldName == fieldname)
-       )
-       )
-          {
-            continue;
-          }
+          var fieldname = prop.Name;
+          var fieldtype = prop.PropertyType;
 
           if (fieldtype == typeof(decimal) || fieldtype == typeof(Nullable<decimal>))
           {
@@ -239,9 +226,11 @@ namespace SmartAdmin
             cell.SetCellValue(val?.ToString());
           }
           cell.CellStyle = style;
-          sheet.AutoSizeColumn(col);
+          //sheet.AutoSizeColumn(col);
+
         }
       }
+
       var bookstream = new MemoryStream();
       workbook.Write(bookstream);
       var byteArray = bookstream.ToArray();

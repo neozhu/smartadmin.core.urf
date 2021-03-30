@@ -54,7 +54,7 @@ namespace SmartAdmin.WebUI.Controllers
                            .Query(filters).CountAsync();
       var pagerows = (await this._dataTableImportMappingService
                              .Query(filters)
-                           .OrderBy(n => n.OrderBy($"{sort} {order}"))
+                           .OrderBy(n => n.OrderBy($"{sort} {order}").ThenBy(x=>x.LineNo))
                            .Skip(page - 1).Take(rows).SelectAsync())
                            .Select(n => new
              {
@@ -67,7 +67,8 @@ namespace SmartAdmin.WebUI.Controllers
           SourceFieldName = n.SourceFieldName,
           IsEnabled = n.IsEnabled,
           IgnoredColumn = n.IgnoredColumn,
-          RegularExpression = n.RegularExpression
+          RegularExpression = n.RegularExpression,
+          LineNo=n.LineNo
         }).ToList();
         var pagelist = new { total = total, rows = pagerows };
         return Json(pagelist);

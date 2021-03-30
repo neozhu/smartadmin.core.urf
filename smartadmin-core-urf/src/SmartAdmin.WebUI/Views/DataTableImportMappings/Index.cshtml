@@ -400,23 +400,6 @@
           $(this).datagrid('refreshRow', index);
         },
         onBeginEdit:function(rowIndex,row){
-          var editors = $(this).datagrid('getEditors', rowIndex);
-          var n2 = $(editors[3].target).combobox({
-            value:row.IgnoredColumn
-          });
-          var n1 = $(editors[2].target).combobox({
-            value: row.IsEnabled,
-            onSelect: function (item) {
-              if (item.value === 'true') {
-                n2.combobox('setValue', 'true');
-              }
-              else {
-                n2.combobox('setValue', 'false');
-              }
-            }
-
-          });
-
       },
         onLoadSuccess: function (data) {
           editIndex = undefined;
@@ -434,11 +417,23 @@
           { field: 'FieldName', width: 140, title: '@Html.DisplayNameFor(model => model.FieldName)' },
           { field: 'TypeName', width: 140, title: '@Html.DisplayNameFor(model => model.TypeName)' },
           { field: 'IsRequired', formatter: booleanformatter, width: 100, title: '@Html.DisplayNameFor(model => model.IsRequired)' },
-          { field: 'DefaultValue', width: 140, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.DefaultValue)' },
-          { field: 'SourceFieldName', width: 140, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.SourceFieldName)' },
+          {
+            field: 'LineNo',
+            title: '@Html.DisplayNameFor(model => model.LineNo)',
+            width: 90,
+            editor: {
+              type: 'numberbox',
+              options: {
+                required: true
+              }
+            }
+          },
+        { field: 'DefaultValue', width: 140, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.DefaultValue)' },
+          
+        { field: 'SourceFieldName', width: 140, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.SourceFieldName)' },
           {
             field: 'IsEnabled', width: 100, editor: {
-              type: 'combobox',
+              type: 'checkbox',
               options: {
                 panelHeight: 'auto',
                 data: [{ value: 'true', text: '是' }, { value: 'false', text: '否' }],
@@ -449,7 +444,7 @@
           },
           {
             field: 'IgnoredColumn', width: 100, editor: {
-              type: 'combobox',
+              type: 'checkbox',
               options: {
                 panelHeight: 'auto',
                 data: [{ value: 'true', text: '是' }, { value: 'false', text: '否' }],
