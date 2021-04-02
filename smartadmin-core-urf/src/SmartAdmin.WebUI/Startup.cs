@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Messages;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +31,6 @@ using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
 using SmartAdmin.WebUI.Hubs;
 using SmartAdmin.WebUI.Models;
-using SqlSugar;
 using URF.Core.Abstractions;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.EF;
@@ -125,7 +125,12 @@ namespace SmartAdmin.WebUI
       #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
-      services.AddAutoMapper(typeof(Startup));
+      var config = new TypeAdapterConfig();
+      // Or
+      // var config = TypeAdapterConfig.GlobalSettings;
+      services.AddSingleton(config);
+
+
       services
           .AddControllersWithViews(options =>
           {
