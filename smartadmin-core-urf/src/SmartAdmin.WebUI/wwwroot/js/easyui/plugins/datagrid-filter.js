@@ -280,36 +280,18 @@
         if (input.data('textbox') && !$(this).is('select') && !$(this).hasClass('combogrid-f')) {
           input = input.textbox('textbox');
         }
-        input.unbind('.filter').bind('keydown.filter', function (e) {
+        input.unbind('.filter').bind('keydown.filter blur.filter', function (e) {
           var t = $(this);
           if (this.timer) {
             clearTimeout(this.timer);
           }
           if (e.keyCode == 13) {
             _doFilter();
-          } else if (opts.filterDelay) {
-            this.timer = setTimeout(function () {
-              _doFilter();
-            }, opts.filterDelay);
+          } else if (e.type == 'blur') {
+            _doFilter();
           }
         });
-        //if ($(this).hasClass('datebox-f')) {//datebox
-        //    input.unbind('.filter').bind('blur.filter', function (e) {
-        //        var t = $(this);
-        //        if (this.timer) {
-        //            clearTimeout(this.timer);
-        //        }
-        //        if (e.keyCode == 13) {
-        //            _doFilter();
-        //        } else {
-        //            this.timer = setTimeout(function () {
-        //                _doFilter();
-        //            }, opts.filterDelay);
-        //        }
-        //    });
-        //}
-        if ($(this).hasClass('daterange')) {//daterange
-            //console.log('daterange');
+        if ($(this).hasClass('daterange')) {
           input.unbind('.filter')
             .unbind('apply.daterangepicker')
             .bind('apply.daterangepicker', function (e,picker) {
@@ -345,7 +327,7 @@
         }
         //combobox filter
         if ($(this).is('select')) {
-          input.off('combobox.filter').on('combobox.filter', function (e) {
+          input.off('.filter').on('combobox.filter', function (e) {
             var t = $(this);
             if (this.timer) {
               clearTimeout(this.timer);
@@ -363,7 +345,7 @@
         }
         //combogrid filter
         if ($(this).hasClass('combogrid-f')) {
-          input.off('combobox.filter').on('combobox.filter', function (e) {
+          input.off('.filter').on('combobox.filter', function (e) {
             var t = $(this);
             if (this.timer) {
               clearTimeout(this.timer);
@@ -377,21 +359,7 @@
             }
           });
         }
-        //if ($(this).hasClass('inputpicker-original')) {//inputpicker
-        //    input.unbind('.filter').bind('change.filter', function (e) {
-        //        var t = $(this);
-        //        if (this.timer) {
-        //            clearTimeout(this.timer);
-        //        }
-        //        if (e.keyCode == 13) {
-        //            _doFilter();
-        //        } else {
-        //            this.timer = setTimeout(function () {
-        //                _doFilter();
-        //            }, opts.filterDelay);
-        //        }
-        //    });
-        //}
+
         function _doFilter() {
           var rule = $(target)[name]('getFilterRule', field);
           var value = input.val();
@@ -399,9 +367,16 @@
           if (value != '') {
             if ((rule && rule.value != value) || !rule) {
               var op = rule ? rule.op : (filterOpts ? filterOpts.defaultFilterOperator || opts.defaultFilterOperator : opts.defaultFilterOperator);
+              if (value.endsWith('%') || value.endsWith('*')) {
+                op = 'beginwith';
+              } else if (value.startsWith('%') || value.startsWith('*')) {
+                op = 'endwith';
+              } else if (value.indexOf('-') > 2 && value.indexOf('-') != (value.length - 1)) {
+                op = 'between';
+              }
+             
               $(target)[name]('addFilterRule', {
                 field: field,
-                //op: opts.defaultFilterOperator,
                 op: op,
                 value: value
               });

@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.11
+ * EasyUI for jQuery 1.9.14
  * 
  * Copyright (c) 2009-2021 www.jeasyui.com. All rights reserved.
  *
@@ -152,7 +152,9 @@ var _39=_2e.datagrid("getRowIndex",v);
 if(_39>=0){
 _2e.datagrid("selectRow",_39);
 }else{
+if($.easyui.indexOfArray(_37,_2d.idField,v)==-1){
 _2d.unselectedValues.push(v);
+}
 }
 ss.push(_3a(v,_2e.datagrid("getRows"))||_3a(v,_37)||_3a(v,_2d.mappingRows)||v);
 });

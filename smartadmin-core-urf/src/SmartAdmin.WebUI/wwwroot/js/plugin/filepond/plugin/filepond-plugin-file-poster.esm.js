@@ -1,5 +1,5 @@
 /*!
- * FilePondPluginFilePoster 2.2.0
+ * FilePondPluginFilePoster 2.4.2
  * Licensed under MIT, https://opensource.org/licenses/MIT/
  * Please visit https://pqina.nl/filepond/ for details.
  */
@@ -368,6 +368,15 @@ const plugin = fpAPI => {
 
     // create the file poster plugin, but only do so if the item is an image
     const didLoadItem = ({ root, props }) => {
+      updateItemPoster(root, props);
+    };
+
+    const didUpdateItemMetadata = ({ root, props, action }) => {
+      if (!/poster/.test(action.change.key)) return;
+      updateItemPoster(root, props);
+    };
+
+    const updateItemPoster = (root, props) => {
       const { id } = props;
       const item = query('GET_ITEM', id);
 
@@ -376,6 +385,10 @@ const plugin = fpAPI => {
 
       // test if is filtered
       if (!query('GET_FILE_POSTER_FILTER_ITEM')(item)) return;
+
+      if (root.ref.filePoster) {
+        view.removeChildView(root.ref.filePoster);
+      }
 
       // set preview view
       root.ref.filePoster = view.appendChildView(
@@ -399,12 +412,42 @@ const plugin = fpAPI => {
       root.dispatch('KICK');
     };
 
+    const getPosterHeight = ({ root }) => {
+      let fixedPosterHeight = root.query('GET_FILE_POSTER_HEIGHT');
+
+      // if fixed height: return fixed immediately
+      if (fixedPosterHeight) {
+        return fixedPosterHeight;
+      }
+
+      const minPosterHeight = root.query('GET_FILE_POSTER_MIN_HEIGHT');
+      const maxPosterHeight = root.query('GET_FILE_POSTER_MAX_HEIGHT');
+
+      // if natural height is smaller than minHeight: return min height
+      if (minPosterHeight && root.ref.imageHeight < minPosterHeight) {
+        return minPosterHeight;
+      }
+
+      let height =
+        root.rect.element.width * (root.ref.imageHeight / root.ref.imageWidth);
+
+      if (minPosterHeight && height < minPosterHeight) {
+        return minPosterHeight;
+      }
+      if (maxPosterHeight && height > maxPosterHeight) {
+        return maxPosterHeight;
+      }
+
+      return height;
+    };
+
     // start writing
     view.registerWriter(
       createRoute(
         {
           DID_LOAD_ITEM: didLoadItem,
-          DID_FILE_POSTER_CALCULATE_SIZE: didCalculatePreviewSize
+          DID_FILE_POSTER_CALCULATE_SIZE: didCalculatePreviewSize,
+          DID_UPDATE_ITEM_METADATA: didUpdateItemMetadata
         },
         ({ root, props }) => {
           // don't run without poster
@@ -418,9 +461,7 @@ const plugin = fpAPI => {
             // time to resize the parent panel
             root.dispatch('DID_UPDATE_PANEL_HEIGHT', {
               id: props.id,
-              height:
-                root.rect.element.width *
-                (root.ref.imageHeight / root.ref.imageWidth)
+              height: getPosterHeight({ root })
             });
 
             // done!
@@ -436,6 +477,15 @@ const plugin = fpAPI => {
     options: {
       // Enable or disable file poster
       allowFilePoster: [true, Type.BOOLEAN],
+
+      // Fixed preview height
+      filePosterHeight: [null, Type.INT],
+
+      // Min image height
+      filePosterMinHeight: [null, Type.INT],
+
+      // Max image height
+      filePosterMaxHeight: [null, Type.INT],
 
       // filters file items to determine which are shown as poster
       filePosterFilterItem: [() => true, Type.FUNCTION],

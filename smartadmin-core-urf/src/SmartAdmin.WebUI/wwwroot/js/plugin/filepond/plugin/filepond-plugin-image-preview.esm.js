@@ -1,5 +1,5 @@
 /*!
- * FilePondPluginImagePreview 4.5.0
+ * FilePondPluginImagePreview 4.6.4
  * Licensed under MIT, https://opensource.org/licenses/MIT/
  * Please visit https://pqina.nl/filepond/ for details.
  */
@@ -126,6 +126,11 @@ const getMarkupRect = (rect, size, scalar = 1) => {
     height: height || 0
   };
 };
+
+const pointsToPathShape = points =>
+  points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ');
 
 const setAttributes = (element, attr) =>
   Object.keys(attr).forEach(key => element.setAttribute(key, attr[key]));
@@ -267,10 +272,24 @@ const updateLine = (element, markup, size, scale) => {
   }
 };
 
-const createShape = node => markup => svg(node);
+const updatePath = (element, markup, size, scale) => {
+  setAttributes(element, {
+    ...element.styles,
+    fill: 'none',
+    d: pointsToPathShape(
+      markup.points.map(point => ({
+        x: getMarkupValue(point.x, size, scale, 'width'),
+        y: getMarkupValue(point.y, size, scale, 'height')
+      }))
+    )
+  });
+};
+
+const createShape = node => markup => svg(node, { id: markup.id });
 
 const createImage = markup => {
   const shape = svg('image', {
+    id: markup.id,
     'stroke-linecap': 'round',
     'stroke-linejoin': 'round',
     opacity: '0'
@@ -288,6 +307,7 @@ const createImage = markup => {
 
 const createLine = markup => {
   const shape = svg('g', {
+    id: markup.id,
     'stroke-linecap': 'round',
     'stroke-linejoin': 'round'
   });
@@ -309,6 +329,7 @@ const CREATE_TYPE_ROUTES = {
   rect: createShape('rect'),
   ellipse: createShape('ellipse'),
   text: createShape('text'),
+  path: createShape('path'),
   line: createLine
 };
 
@@ -317,13 +338,16 @@ const UPDATE_TYPE_ROUTES = {
   ellipse: updateEllipse,
   image: updateImage,
   text: updateText,
+  path: updatePath,
   line: updateLine
 };
 
 const createMarkupByType = (type, markup) => CREATE_TYPE_ROUTES[type](markup);
 
 const updateMarkupByType = (element, type, markup, size, scale) => {
-  element.rect = getMarkupRect(markup, size, scale);
+  if (type !== 'path') {
+    element.rect = getMarkupRect(markup, size, scale);
+  }
   element.styles = getMarkupStyles(markup, size, scale);
   UPDATE_TYPE_ROUTES[type](element, markup, size, scale);
 };
@@ -348,15 +372,19 @@ const toOptionalFraction = value =>
 const prepareMarkup = markup => {
   const [type, props] = markup;
 
+  const rect = props.points
+    ? {}
+    : MARKUP_RECT.reduce((prev, curr) => {
+        prev[curr] = toOptionalFraction(props[curr]);
+        return prev;
+      }, {});
+
   return [
     type,
     {
       zIndex: 0,
       ...props,
-      ...MARKUP_RECT.reduce((prev, curr) => {
-        prev[curr] = toOptionalFraction(props[curr]);
-        return prev;
-      }, {})
+      ...rect
     }
   ];
 };
@@ -722,9 +750,7 @@ const createClipView = _ =>
       const transparencyIndicator = root.query(
         'GET_IMAGE_PREVIEW_TRANSPARENCY_INDICATOR'
       );
-      if (transparencyIndicator === null) {
-        return;
-      }
+      if (transparencyIndicator === null) return;
 
       // grid pattern
       if (transparencyIndicator === 'grid') {
@@ -1349,8 +1375,16 @@ const createImageWrapperView = _ => {
     }
   };
 
-  const canCreateImageBitmap = file =>
-    'createImageBitmap' in window && isBitmap(file);
+  const canCreateImageBitmap = file => {
+    // Firefox versions before 58 will freeze when running createImageBitmap
+    // in a Web Worker so we detect those versions and return false for support
+    const userAgent = window.navigator.userAgent;
+    const isFirefox = userAgent.match(/Firefox\/([0-9]+)\./);
+    const firefoxVersion = isFirefox ? parseInt(isFirefox[1]) : null;
+    if (firefoxVersion <= 58) return false;
+
+    return 'createImageBitmap' in window && isBitmap(file);
+  };
 
   /**
    * Write handler for when preview container has been created

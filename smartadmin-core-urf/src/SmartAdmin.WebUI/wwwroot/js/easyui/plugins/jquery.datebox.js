@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.11
+ * EasyUI for jQuery 1.9.14
  * 
  * Copyright (c) 2009-2021 www.jeasyui.com. All rights reserved.
  *
@@ -211,18 +211,21 @@ var m=_39.getMonth()+1;
 var d=_39.getDate();
 return (m<10?("0"+m):m)+"/"+(d<10?("0"+d):d)+"/"+y;
 },parser:function(s){
-var _3a=$(this).datebox("calendar").calendar("options");
+var _3a=$.fn.calendar.defaults.Date;
+if($(this).data("datebox")){
+_3a=$(this).datebox("calendar").calendar("options").Date;
+}
 if(!s){
-return new _3a.Date();
+return new _3a();
 }
 var ss=s.split("/");
 var m=parseInt(ss[0],10);
 var d=parseInt(ss[1],10);
 var y=parseInt(ss[2],10);
 if(!isNaN(y)&&!isNaN(m)&&!isNaN(d)){
-return new _3a.Date(y,m-1,d);
+return new _3a(y,m-1,d);
 }else{
-return new _3a.Date();
+return new _3a();
 }
 },onSelect:function(_3b){
 }});

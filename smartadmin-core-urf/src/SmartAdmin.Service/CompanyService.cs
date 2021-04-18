@@ -39,8 +39,9 @@ namespace SmartAdmin.Service
              {
                EntitySetName = x.EntitySetName,
                FieldName = x.FieldName,
-               IgnoredColumn = x.IgnoredColumn,
-               SourceFieldName = x.SourceFieldName
+               IsExportable = x.Exportable,
+               SourceFieldName = x.SourceFieldName,
+               LineNo = x.LineNo
              }).ToArrayAsync();
 
       var works = (await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync()).ToList();

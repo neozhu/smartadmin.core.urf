@@ -16,7 +16,7 @@ namespace SmartAdmin.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SmartAdmin.Data.Models.CodeItem", b =>
@@ -210,13 +210,13 @@ namespace SmartAdmin.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("Exportable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FieldName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IgnoredColumn")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");

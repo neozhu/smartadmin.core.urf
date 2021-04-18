@@ -84,8 +84,9 @@
 {
   entity = "CodeItem",
   folder = "CodeItems",
-  url = "/CodeItems/ImportExcel",
-  tpl = "/CodeItems/Download"
+  url = "/CodeItems",
+  tpl = "CodeItem.xlsx",
+  callback= "reloadData()"
 
 })
 
@@ -98,7 +99,6 @@
   <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
-  <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
   <script type="text/javascript">
     //全屏事件

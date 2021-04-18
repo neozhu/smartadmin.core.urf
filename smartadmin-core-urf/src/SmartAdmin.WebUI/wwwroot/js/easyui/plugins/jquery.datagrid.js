@@ -1,5 +1,5 @@
 /**
- * EasyUI for jQuery 1.9.11
+ * EasyUI for jQuery 1.9.14
  * 
  * Copyright (c) 2009-2021 www.jeasyui.com. All rights reserved.
  *
@@ -389,7 +389,7 @@ var _72=css["class"]||"";
 var td=$("<td "+_70+" class=\""+_72+"\" style=\""+_71+"\""+"></td>").appendTo(tr);
 if(col.checkbox){
 td.attr("field",col.field);
-$("<div class=\"datagrid-header-check\"></div>").html("<input type=\"checkbox\"/>").appendTo(td);
+$("<div class=\"datagrid-header-check\"></div>").html("<input type=\"checkbox\">").appendTo(td);
 }else{
 if(col.field){
 td.attr("field",col.field);

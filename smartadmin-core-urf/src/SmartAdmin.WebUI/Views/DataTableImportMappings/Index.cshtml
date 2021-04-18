@@ -412,8 +412,7 @@
           { field: 'ck', checkbox: true },
         ]],
         columns: [[
-          { field: 'Id', width: 80, hidden: true, resizable: true, title: '@Html.DisplayNameFor(model => model.Id)' },
-          { field: 'EntitySetName', width: 140, resizable: true, sortable: true,title: '@Html.DisplayNameFor(model => model.EntitySetName)' },
+          { field: 'EntitySetName', width: 180, resizable: true, sortable: true,title: '@Html.DisplayNameFor(model => model.EntitySetName)' },
           { field: 'FieldName', width: 140, title: '@Html.DisplayNameFor(model => model.FieldName)' },
           { field: 'TypeName', width: 140, title: '@Html.DisplayNameFor(model => model.TypeName)' },
           { field: 'IsRequired', formatter: booleanformatter, width: 100, title: '@Html.DisplayNameFor(model => model.IsRequired)' },
@@ -435,6 +434,7 @@
             field: 'IsEnabled', width: 100, editor: {
               type: 'checkbox',
               options: {
+                id:'enabled_checkbox',
                 panelHeight: 'auto',
                 data: [{ value: 'true', text: '是' }, { value: 'false', text: '否' }],
                 required: true
@@ -443,16 +443,17 @@
             formatter: booleanformatter
           },
           {
-            field: 'IgnoredColumn', width: 100, editor: {
+            field: 'Exportable', width: 100, editor: {
               type: 'checkbox',
               options: {
+                id: 'exportable_checkbox',
                 panelHeight: 'auto',
                 data: [{ value: 'true', text: '是' }, { value: 'false', text: '否' }],
                 required: true
               }
             },
             formatter: booleanformatter,
-            title: '@Html.DisplayNameFor(model => model.IgnoredColumn)'
+            title: '@Html.DisplayNameFor(model => model.Exportable)'
           },
           { field: 'RegularExpression', width: 190, editor: { type: 'textbox', options: { required: false } }, title: '@Html.DisplayNameFor(model => model.RegularExpression)' }
         ]]

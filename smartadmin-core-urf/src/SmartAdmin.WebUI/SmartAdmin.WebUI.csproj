@@ -19,30 +19,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP" Version="5.0.0" />
-    <PackageReference Include="DotNetCore.CAP.Dashboard" Version="5.0.0" />
-    <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="5.0.0" />
-    <PackageReference Include="DotNetCore.CAP.SqlServer" Version="5.0.0" />
+    <PackageReference Include="DotNetCore.CAP" Version="5.0.1" />
+    <PackageReference Include="DotNetCore.CAP.Dashboard" Version="5.0.1" />
+    <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="5.0.1" />
+    <PackageReference Include="DotNetCore.CAP.SqlServer" Version="5.0.1" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
-    <PackageReference Include="Mapster" Version="7.1.5" />
-    <PackageReference Include="Mapster.Core" Version="1.1.5" />
+    <PackageReference Include="Mapster" Version="7.2.0" />
+    <PackageReference Include="Mapster.Core" Version="1.2.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -50,7 +50,7 @@
     <PackageReference Include="NLog" Version="4.7.9" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.7.2" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.12.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.9" />
   </ItemGroup>
@@ -118,11 +118,104 @@
     <None Include="wwwroot\js\dependency\numeral\locales\uk-ua.min.js" />
     <None Include="wwwroot\js\dependency\numeral\locales\vi.min.js" />
     <None Include="wwwroot\js\dependency\numeral\numeral.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\ar-ar.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\cs-cz.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\de-de.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\en-en.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\es-es.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\fr-fr.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\he-he.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\hu-hu.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\id-id.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\it-it.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\ja-ja.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\pl-pl.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\pt-br.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\ru-ru.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\sv_se.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\tr-tr.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\uk-ua.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\zh-cn.js" />
+    <None Include="wwwroot\js\plugin\filepond\locale\zh-tw.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-encode.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-encode.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-encode.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-encode.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-poster.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-poster.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-poster.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-poster.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-rename.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-rename.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-rename.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-rename.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-size.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-size.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-size.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-size.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-type.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-type.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-type.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-file-validate-type.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-get-file.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-get-file.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-get-file.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-get-file.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-crop.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-crop.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-crop.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-crop.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-edit.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-edit.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-edit.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-edit.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-filter.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-filter.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-filter.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-filter.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-preview.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-preview.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-preview.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-preview.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-resize.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-resize.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-resize.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-resize.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-transform.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-transform.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-transform.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-transform.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-validate-size.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-validate-size.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-validate-size.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-image-validate-size.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-media-preview.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-media-preview.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-media-preview.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-media-preview.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-pdf-preview.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-pdf-preview.esm.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-pdf-preview.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\filepond-plugin-pdf-preview.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.esm.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.esm.js.map" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.js.map" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.min.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.min.js.map" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.modern.js" />
+    <None Include="wwwroot\js\plugin\filepond\plugin\zipper.modern.js.map" />
     <None Include="wwwroot\js\plugin\plusastab\console-shim.js" />
     <None Include="wwwroot\js\plugin\plusastab\emulatetab.joelpurra.js" />
     <None Include="wwwroot\js\plugin\plusastab\jquery.simulate.js" />
     <None Include="wwwroot\js\plugin\plusastab\plusastab.joelpurra.js" />
     <None Include="wwwroot\js\plugin\plusastab\qunit-2.1.1.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\js\plugin\filepond\plugin\types.d.ts" />
+    <TypeScriptCompile Include="wwwroot\js\plugin\filepond\plugin\utils.d.ts" />
+    <TypeScriptCompile Include="wwwroot\js\plugin\filepond\plugin\zipper.d.ts" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

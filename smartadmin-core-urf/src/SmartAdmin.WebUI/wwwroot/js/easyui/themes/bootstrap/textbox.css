@@ -30,6 +30,14 @@
 .textbox textarea.textbox-text {
   line-height: normal;
 }
+.textbox.textbox-autoheight {
+  height: auto;
+}
+.textbox.textbox-autoheight textarea.textbox-text {
+  padding: 6px 4px;
+  overflow: hidden;
+  line-height: 16px;
+}
 .textbox .textbox-text::-ms-clear,
 .textbox .textbox-text::-ms-reveal {
   display: none;

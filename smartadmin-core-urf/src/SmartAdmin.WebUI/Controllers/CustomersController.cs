@@ -222,6 +222,7 @@ namespace SmartAdmin.WebUI.Controllers
         return Json(new { success = true, total, elapsedTime });
       }
       catch (Exception e) {
+        this.Response.StatusCode = 500;
         return Json(new { success = false, err=e.GetBaseException().Message });
       }
     }

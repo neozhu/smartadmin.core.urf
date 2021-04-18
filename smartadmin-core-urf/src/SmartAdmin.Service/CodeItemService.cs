@@ -99,7 +99,7 @@ namespace SmartAdmin.Service
                    {
                      EntitySetName = x.EntitySetName,
                      FieldName = x.FieldName,
-                     IgnoredColumn = x.IgnoredColumn,
+                     IsExportable = x.Exportable,
                      SourceFieldName = x.SourceFieldName
                    }).ToArrayAsync();
 

@@ -204,8 +204,9 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpPost]
     public async Task<ActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
     {
+      var filters = PredicateBuilder.FromFilter<MenuItem>(filterRules);
       var fileName = "menuitems_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
-      var stream = await menuItemService.ExportExcelAsync(filterRules, sort, order);
+      var stream = await menuItemService.ExportExcelAsync(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
     //导入excel
@@ -257,6 +258,7 @@ namespace SmartAdmin.WebUI.Controllers
       }
       catch (Exception e)
       {
+        Response.StatusCode = 500;
         this._logger.LogError(e, "Excel导入失败");
         return this.Json(new { success = false, err = e.GetBaseException().Message });
       }

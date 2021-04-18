@@ -66,7 +66,7 @@ namespace SmartAdmin.WebUI.Controllers
           TypeName = n.TypeName,
           SourceFieldName = n.SourceFieldName,
           IsEnabled = n.IsEnabled,
-          IgnoredColumn = n.IgnoredColumn,
+                             Exportable = n.Exportable,
           RegularExpression = n.RegularExpression,
           LineNo=n.LineNo
         }).ToList();
@@ -222,8 +222,9 @@ namespace SmartAdmin.WebUI.Controllers
     [HttpPost]
     public async Task<ActionResult> ExportExcel(string filterRules = "", string sort = "Id", string order = "asc")
     {
+      var filters = PredicateBuilder.FromFilter<DataTableImportMapping>(filterRules);
       var fileName = "excelconfiguration_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
-      var stream = await this._dataTableImportMappingService.ExportExcelAsync(filterRules, sort, order);
+      var stream = await this._dataTableImportMappingService.ExportExcelAsync(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
 

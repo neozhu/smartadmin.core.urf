@@ -1,5 +1,5 @@
 /*!
- * FilePondPluginFilePoster 2.2.0
+ * FilePondPluginFilePoster 2.4.2
  * Licensed under MIT, https://opensource.org/licenses/MIT/
  * Please visit https://pqina.nl/filepond/ for details.
  */
@@ -12,7 +12,6 @@
 .filepond--image-preview-wrapper ~ .filepond--file-poster-wrapper {
   display: none;
 }
-
 .filepond--file-poster-overlay {
   display: block;
   position: absolute;
@@ -32,34 +31,42 @@
   user-select: none;
 }
 
+/* success (is second canvas) */
 .filepond--file-poster-overlay:nth-of-type(2) {
   mix-blend-mode: normal;
 }
 
+/* error (is third canvas) */
 .filepond--file-poster-overlay:nth-of-type(3) {
   mix-blend-mode: normal;
 }
 
+/* disable for Safari as mix-blend-mode causes the overflow:hidden of the parent container to not work */
 @supports (-webkit-marquee-repetition: infinite) and
   ((-o-object-fit: fill) or (object-fit: fill)) {
   .filepond--file-poster-overlay {
     mix-blend-mode: normal;
   }
 }
-
 .filepond--file-poster-wrapper {
+  /* no interaction */
   pointer-events: none;
+
+  /* have preview fill up all available space */
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   height: 100%;
   margin: 0;
+
+  /* radius is .05em less to prevent the panel background color from shining through */
   border-radius: 0.45em;
   overflow: hidden;
+
+  /* this seems to prevent Chrome from redrawing this layer constantly */
   background: rgba(0, 0, 0, 0.01);
 }
-
 .filepond--file-poster {
   position: relative;
   z-index: 1;
@@ -70,12 +77,16 @@
   -webkit-transform-origin: center center;
   transform-origin: center center;
   background: #222;
+
+  /* will be animated */
   will-change: transform, opacity;
 }
 .filepond--file-poster img {
-  width: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
+  height: 100%;
+  width: auto;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  display: block;
   will-change: transform;
 }

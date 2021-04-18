@@ -35,7 +35,7 @@ namespace SmartAdmin.Data.Models
     public virtual  bool IsEnabled { get; set; }
     [Display(Name = "是否导出", Description = "是否导出")]
     [DefaultValue(false)]
-    public virtual  bool IgnoredColumn { get; set; }
+    public virtual  bool Exportable { get; set; }
 
     [Display(Name = "验证表达式", Description = "验证表达式")]
     [MaxLength(100)]

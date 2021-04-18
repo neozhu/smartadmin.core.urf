@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -101,42 +102,20 @@ namespace SmartAdmin.Service
       }
     }
 
-    public async Task<Stream> ExportExcelAsync(string filterRules = "", string sort = "Id", string order = "asc")
+    public async Task<Stream> ExportExcelAsync(Expression<Func<MenuItem, bool>> filters, string sort = "Id", string order = "asc")
     {
-      var filters = PredicateBuilder.FromFilter<MenuItem>(filterRules);
       var expcolopts = await this._mappingservice.Queryable()
-             .Where(x => x.EntitySetName == "MenuItem")
+             .Where(x => x.EntitySetName == "DataTableImportMapping" && x.Exportable)
              .Select(x => new ExpColumnOpts()
              {
                EntitySetName = x.EntitySetName,
                FieldName = x.FieldName,
-               IgnoredColumn = x.IgnoredColumn,
-               SourceFieldName = x.SourceFieldName
+               IsExportable = x.Exportable,
+               SourceFieldName = x.SourceFieldName,
+               LineNo = x.LineNo
              }).ToArrayAsync();
-
-      var menuitems = (await this.Query(filters)
-         .Include(p => p.Parent)
-         .OrderBy(n => n.OrderBy($"{sort} {order}"))
-         .SelectAsync())
-         .Select(n=>new {
-          
-           Id = n.Id,
-           Title = n.Title,
-           Description = n.Description,
-           LineNum = n.LineNum,
-           Url = n.Url,
-           Controller = n.Controller,
-           Action = n.Action,
-           Icon = n.Icon,
-           n.Roles,
-           n.Target,
-           IsEnabled = n.IsEnabled,
-           ParentId = n.Parent?.Title
-
-         });
-        
-
-      return await NPOIHelper.ExportExcelAsync("系统导航栏", menuitems, expcolopts);
+      var data = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();
+      return await NPOIHelper.ExportExcelAsync("MenuItem", data, expcolopts);
 
     }
 

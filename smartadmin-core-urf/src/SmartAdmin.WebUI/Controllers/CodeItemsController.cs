@@ -157,6 +157,7 @@ namespace SmartAdmin.WebUI.Controllers
       }
       catch (Exception e)
       {
+        Response.StatusCode = 500;
         this._logger.LogError(e, "Excel导入失败");
         return this.Json(new { success = false, err = e.GetBaseException().Message });
       }

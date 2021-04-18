@@ -243,6 +243,7 @@ namespace SmartAdmin.WebUI.Controllers
         return Json(new { success = true, total = total, elapsedTime = watch.ElapsedMilliseconds });
       }
       catch (Exception e) {
+        Response.StatusCode = 500;
         this._logger.LogError(e, "Excel导入失败");
         return this.Json(new { success = false,  err = e.GetBaseException().Message });
       }

@@ -59,13 +59,14 @@ namespace SmartAdmin.Service
     {
       var filters = PredicateBuilder.FromFilter<Notification>(filterRules);
       var expcolopts = await this.mappingservice.Queryable()
-         .Where(x => x.EntitySetName == "Notification")
+         .Where(x => x.EntitySetName == "Notification" && x.Exportable)
          .Select(x => new ExpColumnOpts()
          {
            EntitySetName = x.EntitySetName,
            FieldName = x.FieldName,
-           IgnoredColumn = x.IgnoredColumn,
-           SourceFieldName = x.SourceFieldName
+           IsExportable = x.Exportable,
+           SourceFieldName = x.SourceFieldName,
+           LineNo = x.LineNo
          })
          .ToArrayAsync();
       var notifications = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SmartAdmin.Data.Models;
 using SmartAdmin.Dto;
@@ -18,6 +20,6 @@ namespace SmartAdmin.Service
     Task CreateExcelTemplateAsync(string entityname, string filename);
     Task ImportDataTableAsync(DataTable datatable);
     Task Delete(int[] id);
-    Task<Stream> ExportExcelAsync(string filterRules = "", string sort = "Id", string order = "asc");
+    Task<Stream> ExportExcelAsync(Expression<Func<DataTableImportMapping, bool>> filters, string sort = "Id", string order = "asc");
   }
 }
