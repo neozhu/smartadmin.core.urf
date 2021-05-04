@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SmartAdmin.Domain.Commands;
+using SmartAdmin.Application.Commands;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;
 
-namespace SmartAdmin.Domain.Handlers
+namespace SmartAdmin.Application.Handlers
 {
   public class DeleteCustomerHandler : IRequestHandler<DeleteCustomerCommand>
   {

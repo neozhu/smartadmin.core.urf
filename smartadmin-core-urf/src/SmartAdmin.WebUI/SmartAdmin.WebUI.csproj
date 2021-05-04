@@ -57,7 +57,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartAdmin.Data\SmartAdmin.Data.csproj" />
-    <ProjectReference Include="..\SmartAdmin.Domain\SmartAdmin.Domain.csproj" />
+    <ProjectReference Include="..\SmartAdmin.Domain\SmartAdmin.Application.csproj" />
     <ProjectReference Include="..\SmartAdmin.Service\SmartAdmin.Service.csproj" />
   </ItemGroup>
 

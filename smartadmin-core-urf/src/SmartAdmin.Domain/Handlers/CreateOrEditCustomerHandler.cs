@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SmartAdmin.Data.Models;
-using SmartAdmin.Domain.Commands;
+using SmartAdmin.Application.Commands;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;
 using Mapster;
-namespace SmartAdmin.Domain.Handlers
+namespace SmartAdmin.Application.Handlers
 {
   public class CreateOrEditCustomerHandler : IRequestHandler<CreateOrEditCustomerCommand, Customer>
   {

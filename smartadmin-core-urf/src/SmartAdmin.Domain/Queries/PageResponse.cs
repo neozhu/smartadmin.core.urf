@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartAdmin.Domain.Queries
+namespace SmartAdmin.Application.Queries
 {
   public class PageResponse<T>
   {

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SmartAdmin.Data.Models;
-using SmartAdmin.Domain.Queries;
+using SmartAdmin.Application.Queries;
 using SmartAdmin.Service;
 using System.Linq.Dynamic.Core;
-namespace SmartAdmin.Domain.Handlers
+namespace SmartAdmin.Application.Handlers
 {
   public class CustomerQueryHandler : IRequestHandler<CustomerPaginationQuery, PageResponse<Customer>>
     , IRequestHandler<GetCustomerById, Customer>

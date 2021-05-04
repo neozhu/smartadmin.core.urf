@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SmartAdmin.Data.Models;
 
-namespace SmartAdmin.Domain.Queries
+namespace SmartAdmin.Application.Queries
 {
    public  class CustomerPaginationQuery:IRequest<PageResponse<Customer>>
     {

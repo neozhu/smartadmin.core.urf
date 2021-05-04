@@ -15,8 +15,8 @@ using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;
 using MediatR;
-using SmartAdmin.Domain.Queries;
-using SmartAdmin.Domain.Commands;
+using SmartAdmin.Application.Queries;
+using SmartAdmin.Application.Commands;
 
 namespace SmartAdmin.WebUI.Controllers
 {

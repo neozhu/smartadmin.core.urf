@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Service", "src\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Dto", "src\SmartAdmin.Dto\SmartAdmin.Dto.csproj", "{D2E912CE-058E-44A5-9D3C-E0BDAC884734}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartAdmin.Domain", "src\SmartAdmin.Domain\SmartAdmin.Domain.csproj", "{1D01BC32-6F3C-48B9-B2B0-9B8EA7867F0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Application", "src\SmartAdmin.Domain\SmartAdmin.Application.csproj", "{1D01BC32-6F3C-48B9-B2B0-9B8EA7867F0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

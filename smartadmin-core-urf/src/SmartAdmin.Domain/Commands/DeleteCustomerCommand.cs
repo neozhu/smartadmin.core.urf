@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace SmartAdmin.Domain.Commands
+namespace SmartAdmin.Application.Commands
 {
   public class DeleteCustomerCommand:IRequest
   {

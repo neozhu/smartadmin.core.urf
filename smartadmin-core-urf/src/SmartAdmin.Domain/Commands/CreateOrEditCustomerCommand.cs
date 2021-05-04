@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SmartAdmin.Data.Models;
 
-namespace SmartAdmin.Domain.Commands
+namespace SmartAdmin.Application.Commands
 {
   public class CreateOrEditCustomerCommand:IRequest<Customer>
   {
