@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Dto;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;

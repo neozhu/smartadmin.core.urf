@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using URF.Core.EF.Trackable;
 
-namespace SmartAdmin.Data.Models
+namespace SmartAdmin.Domain.Models
 {
   public partial class CodeItem : Entity
   {

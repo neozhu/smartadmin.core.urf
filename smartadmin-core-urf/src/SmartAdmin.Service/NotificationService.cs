@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Dto;
 using URF.Core.Abstractions.Trackable;
 using URF.Core.Services;

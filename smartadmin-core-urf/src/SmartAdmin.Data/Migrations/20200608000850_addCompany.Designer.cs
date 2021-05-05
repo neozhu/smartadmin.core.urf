@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 
-namespace SmartAdmin.Data.Migrations
+namespace SmartAdmin.Infrastructure.Migrations
 {
     [DbContext(typeof(SmartDbContext))]
     [Migration("20200608000850_addCompany")]

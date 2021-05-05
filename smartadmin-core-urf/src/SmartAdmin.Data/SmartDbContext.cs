@@ -1,15 +1,7 @@
-﻿using System;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using SmartAdmin.Data.Models;
-using URF.Core.EF.Trackable;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartAdmin.Domain.Models;
 
-namespace SmartAdmin.Data.Models
+namespace SmartAdmin.Infrastructure
 {
   public partial class SmartDbContext : DbContext
   {

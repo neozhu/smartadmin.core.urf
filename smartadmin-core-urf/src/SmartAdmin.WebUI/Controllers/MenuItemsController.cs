@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Service;
 using SmartAdmin.WebUI.Extensions;
 using URF.Core.Abstractions;

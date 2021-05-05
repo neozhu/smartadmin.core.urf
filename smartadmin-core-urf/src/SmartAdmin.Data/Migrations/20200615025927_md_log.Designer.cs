@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 
-namespace SmartAdmin.Data.Migrations
+namespace SmartAdmin.Infrastructure.Migrations
 {
     [DbContext(typeof(SmartDbContext))]
     [Migration("20200615025927_md_log")]
@@ -21,7 +21,7 @@ namespace SmartAdmin.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Category", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.CodeItem", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.CodeItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +116,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("CodeItems");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Company", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -177,7 +177,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.DataTableImportMapping", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.DataTableImportMapping", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,7 +244,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("DataTableImportMappings");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Log", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Log", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

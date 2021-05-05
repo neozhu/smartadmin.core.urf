@@ -9,7 +9,7 @@ using System.Web;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Dto;
 
 namespace SmartAdmin

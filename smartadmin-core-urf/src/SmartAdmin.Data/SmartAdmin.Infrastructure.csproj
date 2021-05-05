@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartAdmin.Entity\SmartAdmin.Entity.csproj" />
+    <ProjectReference Include="..\SmartAdmin.Entity\SmartAdmin.Domain.csproj" />
   </ItemGroup>
 
 </Project>

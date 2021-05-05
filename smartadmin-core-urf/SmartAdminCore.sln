@@ -42,9 +42,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "URF.Core.Mongo.Tests", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "URF.Core.Services", "src\URF.Core\URF.Core.Services\URF.Core.Services.csproj", "{8A76E730-5C6E-4EC0-B0EB-63EEC571BFE3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Data", "src\SmartAdmin.Data\SmartAdmin.Data.csproj", "{3065564E-0195-4DCB-BCAC-69B0718304F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Infrastructure", "src\SmartAdmin.Data\SmartAdmin.Infrastructure.csproj", "{3065564E-0195-4DCB-BCAC-69B0718304F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Entity", "src\SmartAdmin.Entity\SmartAdmin.Entity.csproj", "{DB9194B1-4DEA-4F70-BB7F-513BC018A5D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Domain", "src\SmartAdmin.Entity\SmartAdmin.Domain.csproj", "{DB9194B1-4DEA-4F70-BB7F-513BC018A5D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAdmin.Repository", "src\SmartAdmin.Repository\SmartAdmin.Repository.csproj", "{72B3AAD4-C02B-4103-B515-CC3F8461284E}"
 EndProject

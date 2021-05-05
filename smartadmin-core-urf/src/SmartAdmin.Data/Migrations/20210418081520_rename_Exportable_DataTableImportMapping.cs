@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SmartAdmin.Data.Migrations
+namespace SmartAdmin.Infrastructure.Migrations
 {
     public partial class rename_Exportable_DataTableImportMapping : Migration
     {

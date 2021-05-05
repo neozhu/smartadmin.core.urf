@@ -1,4 +1,4 @@
-﻿using SmartAdmin.Data.Models;
+﻿using SmartAdmin.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 // Sample to extend CustomerService, scoped to only CustomerService vs. application wide

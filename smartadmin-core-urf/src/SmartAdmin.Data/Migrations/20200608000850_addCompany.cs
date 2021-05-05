@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SmartAdmin.Data.Migrations
+namespace SmartAdmin.Infrastructure.Migrations
 {
     public partial class addCompany : Migration
     {

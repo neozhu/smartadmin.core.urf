@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 
-namespace SmartAdmin.Data.Migrations
+namespace SmartAdmin.Infrastructure.Migrations
 {
     [DbContext(typeof(SmartDbContext))]
     [Migration("20200616045238_md_RoleMenus")]
@@ -21,7 +21,7 @@ namespace SmartAdmin.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Category", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.CodeItem", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.CodeItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +116,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("CodeItems");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Company", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -177,7 +177,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.DataTableImportMapping", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.DataTableImportMapping", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,7 +244,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("DataTableImportMappings");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Log", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Log", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,7 +319,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.MenuItem", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.MenuItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -395,7 +395,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("MenuItems");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.Notification", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -452,7 +452,7 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.RoleMenu", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.RoleMenu", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -518,16 +518,16 @@ namespace SmartAdmin.Data.Migrations
                     b.ToTable("RoleMenus");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.MenuItem", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.MenuItem", b =>
                 {
-                    b.HasOne("SmartAdmin.Data.Models.MenuItem", "Parent")
+                    b.HasOne("SmartAdmin.Domain.Models.MenuItem", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
                 });
 
-            modelBuilder.Entity("SmartAdmin.Data.Models.RoleMenu", b =>
+            modelBuilder.Entity("SmartAdmin.Domain.Models.RoleMenu", b =>
                 {
-                    b.HasOne("SmartAdmin.Data.Models.MenuItem", "MenuItem")
+                    b.HasOne("SmartAdmin.Domain.Models.MenuItem", "MenuItem")
                         .WithMany()
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)

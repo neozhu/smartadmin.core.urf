@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Application.Commands;
 using SmartAdmin.Service;
 using URF.Core.Abstractions;

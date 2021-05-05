@@ -6,7 +6,7 @@ using URF.Core.EF.Trackable;
 using System.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SmartAdmin.Data.Models
+namespace SmartAdmin.Domain.Models
 {
   public partial class Order : Entity
   {

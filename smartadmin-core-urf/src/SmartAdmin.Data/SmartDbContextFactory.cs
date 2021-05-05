@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Infrastructure;
 
 namespace SmartAdmin.Data
 {

@@ -2,7 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Dto;
 using URF.Core.Abstractions.Services;
 

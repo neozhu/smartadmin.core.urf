@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using SmartAdmin.Application.Queries;
 using SmartAdmin.Service;
 using System.Linq.Dynamic.Core;

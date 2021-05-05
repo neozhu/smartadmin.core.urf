@@ -4,7 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using SmartAdmin.Data.Models;
+using SmartAdmin.Domain.Models;
 using URF.Core.Abstractions.Services;
 
 namespace SmartAdmin.Service
