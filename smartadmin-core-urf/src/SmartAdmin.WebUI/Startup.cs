@@ -25,6 +25,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SmartAdmin.Domain.Models;
 using SmartAdmin.Infrastructure;
+using SmartAdmin.Infrastructure.Persistence;
 using SmartAdmin.Repository;
 using SmartAdmin.Service;
 using SmartAdmin.Service.Helper;
