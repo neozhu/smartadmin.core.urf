@@ -222,10 +222,9 @@ namespace SmartAdmin.WebUI.Controllers
             {
               Directory.CreateDirectory(path);
             }
-            var datatable = await NPOIHelper.GetDataTableFromExcelAsync(file.OpenReadStream(), ext);
-            await this.companyService.ImportDataTableAsync(datatable);
-            await this.unitOfWork.SaveChangesAsync();
-            total = datatable.Rows.Count;
+            //var datatable = await NPOIHelper.GetDataTableFromExcelAsync(file.OpenReadStream(), ext);
+            await this.companyService.ImportDataTableAsync(file.OpenReadStream());
+            total= await this.unitOfWork.SaveChangesAsync();
             if (autosave)
             {
               var filepath = Path.Combine(path, filename);

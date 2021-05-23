@@ -190,7 +190,7 @@ namespace SmartAdmin.WebUI.Controllers
     {
       var fileName = "customers_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
       var filters = PredicateBuilder.FromFilter<Customer>(filterRules);
-      var stream = await this.customerService.ExportExcelAsync(filters, sort, order);
+      var stream = await this.customerService.Export(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
     //上传导入Excel
@@ -209,10 +209,9 @@ namespace SmartAdmin.WebUI.Controllers
             var stream = new MemoryStream();
             await formFile.CopyToAsync(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            var datatable = await NPOIHelper.GetDataTableFromExcelAsync(stream, ext);
-            await this.customerService.ImportDataTableAsync(datatable, this.User.Identity.Name);
-            await this.unitOfWork.SaveChangesAsync();
-            total = total + datatable.Rows.Count;
+                  await this.customerService.ImportData(stream);
+            total =await this.unitOfWork.SaveChangesAsync();
+    
           }
         }
 

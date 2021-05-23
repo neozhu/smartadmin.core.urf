@@ -28,6 +28,7 @@ using SmartAdmin.Infrastructure;
 using SmartAdmin.Infrastructure.Persistence;
 using SmartAdmin.Repository;
 using SmartAdmin.Service;
+using SmartAdmin.Service.Common;
 using SmartAdmin.Service.Helper;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
@@ -113,7 +114,7 @@ namespace SmartAdmin.WebUI
       services.AddScoped<INotificationService, NotificationService>();
       services.AddScoped<ITrackableRepository<RoleMenu>, TrackableRepository<RoleMenu>>();
       services.AddScoped<IRoleMenuService, RoleMenuService>();
-
+      services.AddScoped<IExcelService, ExcelService>();
 
       #endregion
 

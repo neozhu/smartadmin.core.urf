@@ -178,7 +178,7 @@ namespace SmartAdmin.WebUI.Controllers
     {
       var fileName = "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
       var filters = PredicateBuilder.FromFilter<Product>(filterRules);
-      var stream = await this.productService.ExportExcelAsync(filters, sort, order);
+      var stream = await this.productService.Export(filters, sort, order);
       return File(stream, "application/vnd.ms-excel", fileName);
     }
     //导入excel
@@ -208,10 +208,10 @@ namespace SmartAdmin.WebUI.Controllers
             {
               Directory.CreateDirectory(path);
             }
-            var datatable = await NPOIHelper.GetDataTableFromExcelAsync(file.OpenReadStream(), ext);
-            await this.productService.ImportDataTableAsync(datatable);
-            await this.unitOfWork.SaveChangesAsync();
-            total = datatable.Rows.Count;
+         
+            await this.productService.ImportData(file.OpenReadStream());
+            total =await this.unitOfWork.SaveChangesAsync();
+      
             if (autosave)
             {
               var filepath = Path.Combine(path, filename);
