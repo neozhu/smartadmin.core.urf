@@ -130,6 +130,85 @@ namespace SmartAdmin.Service.Common
       stream.Seek(0, SeekOrigin.Begin);
       return await Task.FromResult(stream);
     }
+
+    public async Task<Stream> Export<T>(IEnumerable<T> data, Dictionary<string, Func<T, object>> mappers, string name = "Sheet1") {
+      var stream = new MemoryStream();
+      var workbook = new XSSFWorkbook();
+      var sheet = workbook.CreateSheet(name);
+      var headerRow = sheet.CreateRow(0);
+      //Below loop is create header
+      var headstyle = workbook.CreateCellStyle();
+      var font = workbook.CreateFont();
+      font.FontHeightInPoints = 11;
+      font.IsBold = true;
+      headstyle.SetFont(font);
+      headstyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+      headstyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+      headstyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+      headstyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+      headstyle.FillForegroundColor = NPOI.HSSF.Util.HSSFColor.Grey25Percent.Index;
+      headstyle.FillPattern = FillPattern.SolidForeground;
+      var col = 0;
+      var headers = mappers.Keys.Select(x => x).ToList();
+      foreach (var title in headers)
+      {
+        var cell = headerRow.CreateCell(col++);
+        cell.SetCellValue(title);
+        cell.CellStyle = headstyle;
+      }
+      var rowindex = 0;
+      foreach (var item in data)
+      {
+        var row = sheet.CreateRow(++rowindex);
+        col = 0;
+        var style = workbook.CreateCellStyle();
+        style.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        style.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        style.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        style.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        var datarow = headers.Select(x => mappers[x](item));
+
+        foreach (var value in datarow)
+        {
+          var cell = row.CreateCell(col++);
+         switch (value)
+            {
+              case string:
+              cell.SetCellValue(value.ToString());
+              break;
+            case int:
+              var intformat = workbook.CreateDataFormat();
+              style.DataFormat = intformat.GetFormat("#,##0");
+              cell.SetCellValue(Convert.ToInt32(value));
+              break;
+            case decimal:
+            case float:
+            case double:
+              var decformat = workbook.CreateDataFormat();
+              style.DataFormat = decformat.GetFormat("#,##0.00");
+              cell.SetCellValue(Convert.ToDouble(value));
+              break;
+            case DateTime:
+              var dateformat = workbook.CreateDataFormat();
+              style.DataFormat = dateformat.GetFormat("yyyy-MM-dd HH:mm");
+              cell.SetCellValue(Convert.ToDateTime(value));
+              break;
+
+
+          }
+          cell.CellStyle = style;
+          //sheet.AutoSizeColumn(col);
+        }
+      }
+
+      var bookstream = new MemoryStream();
+      workbook.Write(bookstream);
+      var byteArray = bookstream.ToArray();
+      stream.Write(byteArray, 0, byteArray.Length);
+      stream.Seek(0, SeekOrigin.Begin);
+      return await Task.FromResult(stream);
+
+    }
     public async Task<DataTable> ReadDataTable(Stream inputSteam, string type) {
       IWorkbook workbook = null;
       IFormulaEvaluator eval = null;

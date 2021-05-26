@@ -12,6 +12,8 @@ using URF.Core.Services;
 using System.Linq.Dynamic.Core;
 using URF.Core.EF.Trackable;
 using SmartAdmin.Service.Common;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace SmartAdmin.Service
 {
@@ -104,6 +106,7 @@ namespace SmartAdmin.Service
       var entityName = typeof(TEntity).Name;
       var expcolopts = await this._mappingservice.Queryable()
              .Where(x => x.EntitySetName == entityName && x.Exportable)
+             .OrderBy(x=>x.LineNo)
              .Select(x => new ExpColumnOpts()
              {
                EntitySetName = x.EntitySetName,
@@ -112,10 +115,13 @@ namespace SmartAdmin.Service
                SourceFieldName = x.SourceFieldName,
                LineNo=x.LineNo
              }).ToArrayAsync();
-
+      var mappers = new Dictionary<string, Func<TEntity, object>>();
+      foreach (var opt in expcolopts) {
+        var func = DynamicExpressionParser.ParseLambda<TEntity, object>(ParsingConfig.Default, false,$"x=>x.{opt.FieldName}", opt).Compile();
+        mappers.Add(opt.SourceFieldName, func);
+        }
       var result = await this.Query(filters).OrderBy(n => n.OrderBy($"{sort} {order}")).SelectAsync();
-      
-      return await this.excelService.Export(result,expcolopts);
+      return await this.excelService.Export(result, mappers);
     }
 
     public Task<TEntity> CreateOrEdit(TEntity entity) {

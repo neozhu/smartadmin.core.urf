@@ -13,5 +13,6 @@ namespace SmartAdmin.Service.Common
   {
     Task<DataTable> ReadDataTable(Stream inputSteam, string type = ".xlsx");
     Task<Stream> Export<T>( IEnumerable<T> data, ExpColumnOpts[] colopts = null,string name="Sheet1");
+    Task<Stream> Export<T>(IEnumerable<T> data, Dictionary<string, Func<T, object>> mappers, string name = "Sheet1");
   }
 }
