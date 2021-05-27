@@ -1271,5 +1271,5 @@ public void ConfigureServices(IServiceCollection services)
 
 
 ## contact information
-![me](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/me.png)![qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)!
+[qq群](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/qqcode.png)!
 
