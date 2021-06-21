@@ -40,12 +40,12 @@ namespace SmartAdmin.WebUI.Controllers
 
     }
     [HttpPost]
-    public async Task<JsonResult> Upload(List<IFormFile> uploadfiles) {
-      foreach(var file in uploadfiles)
+    public async Task<JsonResult> Upload(List<IFormFile> file,string name,string tag) {
+      foreach(var fi in file)
       {
-        var filename = file.FileName;
+        var filename = fi.FileName;
         var stream = new MemoryStream();
-        await file.CopyToAsync(stream);
+        await fi.CopyToAsync(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
         var request = new AddPhotoCommand()
