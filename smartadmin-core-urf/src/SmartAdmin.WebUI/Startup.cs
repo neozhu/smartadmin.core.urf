@@ -30,6 +30,8 @@ using SmartAdmin.Repository;
 using SmartAdmin.Service;
 using SmartAdmin.Service.Common;
 using SmartAdmin.Service.Helper;
+using SmartAdmin.Service.Implementation;
+using SmartAdmin.Service.Interfaces;
 using SmartAdmin.WebUI.Data;
 using SmartAdmin.WebUI.Data.Models;
 using SmartAdmin.WebUI.Hubs;
@@ -125,6 +127,9 @@ namespace SmartAdmin.WebUI
       services.AddScoped<IProductService, ProductService>();
       services.AddScoped<IRepositoryX<Customer>, RepositoryX<Customer>>();
       services.AddScoped<ICustomerService, CustomerService>();
+
+      services.AddScoped<IRepositoryX<Photo>, RepositoryX<Photo>>();
+      services.AddScoped<IPhotoService, PhotoService>();
       #endregion
       services.AddTransient<IEmailSender, EmailSender>();
 
@@ -151,7 +156,7 @@ namespace SmartAdmin.WebUI
       services.AddRazorPages();
       services.AddMvc().AddRazorRuntimeCompilation();
 
-      services.AddMediatR(Assembly.Load("SmartAdmin.Domain"));
+      services.AddMediatR(Assembly.Load("SmartAdmin.Application"));
 
       //Jwt Authentication
       services.AddAuthentication(opts =>

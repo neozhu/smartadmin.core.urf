@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SmartAdmin.Application.Shared;
 using SmartAdmin.Domain.Models;
-
+using SmartAdmin.Service.Interfaces;
+using System.Linq.Dynamic.Core;
 namespace SmartAdmin.Application.Photos.Queries
 {
    public  class PhotoFliterQuery : IRequest<PageResponse<Photo>>
@@ -41,5 +43,33 @@ namespace SmartAdmin.Application.Photos.Queries
     {
 
     }
+  }
+
+  public class PhotoFilterQueryHandel : IRequestHandler<PhotoFliterQuery, PageResponse<Photo>>,
+    IRequestHandler<GetPhotoById, Photo>
+  {
+    private readonly IPhotoService photoService;
+
+    public PhotoFilterQueryHandel(IPhotoService photoService)
+    {
+      this.photoService = photoService;
+    }
+    public async Task<PageResponse<Photo>> Handle(PhotoFliterQuery request, CancellationToken cancellationToken) {
+
+      var filters = PredicateBuilder.FromFilter<Photo>(request.FilterRules);
+      var total = await this.photoService
+                          .Query(filters).CountAsync();
+      var pagerows = (await this.photoService
+                           .Query(filters)
+                         .OrderBy(n => n.OrderBy($"{request.Sort} {request.Order}"))
+                         .Skip(request.Page - 1).Take(request.Rows).SelectAsync())
+                         .ToList();
+      var pagelist = new PageResponse<Photo> { total = total, rows = pagerows };
+      return pagelist;
+    }
+
+    public async Task<Photo> Handle(GetPhotoById request, CancellationToken cancellationToken) {
+      return await this.photoService.FindAsync(request.Id);
+      }
   }
 }
