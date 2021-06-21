@@ -41,6 +41,7 @@ namespace SmartAdmin.WebUI.Controllers
     }
     [HttpPost]
     public async Task<JsonResult> Upload(List<IFormFile> file,string name,string tag) {
+      var path = Path.Combine(this.webHostEnvironment.WebRootPath,"photos");
       foreach(var fi in file)
       {
         var filename = fi.FileName;
@@ -52,12 +53,19 @@ namespace SmartAdmin.WebUI.Controllers
         {
           FileName = filename,
           Stream = stream,
-          Path = "",
+          Path = path,
           Size = stream.Length
         };
         var result = this.mediator.Send(request);
       }
       return Json(new { success = true });
+    }
+
+    [HttpPost]
+    public async Task<JsonResult> DeleteChecked(DeletePhotoCommand request)
+    {
+      var result = await this.mediator.Send(request);
+      return Json(result);
     }
   }
 }

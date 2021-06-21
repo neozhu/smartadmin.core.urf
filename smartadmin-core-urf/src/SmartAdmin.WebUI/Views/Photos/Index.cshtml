@@ -11,6 +11,7 @@
     <div id="panel-1" class="panel">
       <div class="panel-hdr">
         <h2>
+         
           照片库
         </h2>
         <div class="panel-toolbar">
@@ -31,7 +32,7 @@
                 </button>
               </div>
               <div class="btn-group btn-group-sm">
-                <button name="deletebutton" disabled onclick="removeItem()" class="btn btn-default">
+                <button name="deletebutton" disabled onclick="deleteChecked()" class="btn btn-default">
                   <span class="fal fa-times mr-1"></span> 删除
                 </button>
               </div>
@@ -234,10 +235,8 @@
     function appendItem() {
       openuploadfilemodal();
     }
-            //删除编辑的行
-    function removeItem() {
-        deletechecked();
-    }
+      
+
     //删除选中的行
     function deleteChecked() {
       const checked = $dg.datagrid('getChecked').map(item => {
@@ -255,7 +254,7 @@
         if (result) {
           $.post('/Photos/DeleteChecked', { id: selected })
             .done(response => {
-              if (response.success) {
+              if (response.Succeeded) {
                 toastr.error(`成功删除 [${selected.length}] 行记录`);
                 reload();
               } else {
