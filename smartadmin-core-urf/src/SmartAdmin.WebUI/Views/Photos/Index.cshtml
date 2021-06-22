@@ -11,7 +11,7 @@
     <div id="panel-1" class="panel">
       <div class="panel-hdr">
         <h2>
-         
+
           照片库
         </h2>
         <div class="panel-toolbar">
@@ -95,11 +95,45 @@
   </div>
 </div>
 
+<div class="modal fade" id="photoviewmodal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          预览照片
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fal fa-times"></i></span>
+        </button>
+      </div>
+      <div class="modal-body pb-0 pt-0">
+        <div class="card" id="photo_card" >
+          <div id="photo-container">
+
+          </div>
+          @*<img id="photo_img" class="card-img-top" />*@
+          @*<canvas id="photo-canvas" style="width:456px;height:400px"></canvas>*@
+          <div class="card-body">
+            <h5 class="card-title"></h5>
+            <p class="card-text" id="detectedresult"></p>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button onclick="predict()" id="detectbutton" disabled type="button" class="btn btn-info">Detect</button>
+        <button onclick="savepredict()" id="savepredictbutton" disabled type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section HeadBlock {
 
   <link href="~/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css" rel="stylesheet" asp-append-version="true" />
   <link href="~/js/easyui/themes/insdep/easyui.css" rel="stylesheet" asp-append-version="true" />
   <style>
+
     .plfile_empty_div {
       position: absolute;
       left: 27%;
@@ -178,6 +212,7 @@
   </style>
 }
 @section ScriptsBlock {
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js" type="text/javascript"></script>
   <script src="~/js/plugin/filesize/filesize.js"></script>
   <script src="~/js/dependency/numeral/numeral.min.js" asp-append-version="true"></script>
   <script src="~/js/dependency/moment/moment.js" asp-append-version="true"></script>
@@ -192,6 +227,83 @@
   <script src="~/js/plugin/jquery.serializejson/jquery.serializejson.js" asp-append-version="true"></script>
   <script src="~/js/jquery.custom.extend.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
+  <script>
+    let facemesh;
+    let predictions = [];
+    facemesh = ml5.facemesh(() => {
+      console.log('facemesh mode ready')
+      $('#detectbutton').attr('disabled', false);
+    
+    });
+    $('#photoviewmodal').on('shown.bs.modal', function () {
+      console.log('shown')
+      //var canvas = document.getElementById('photo-canvas');
+      //var ctx = canvas.getContext('2d');
+      //var imageObj = document.getElementById('photo_img');
+      //console.log(imageObj.width, imageObj.height)
+      //var xRate = 456 / imageObj.width;
+      //var yRate = 400 / imageObj.height;
+      //var setRate = xRate < yRate ? xRate : yRate;
+      ////if (setRate > 5) { setRate = 5; }
+
+      //ctx.drawImage(imageObj, 0, 0, imageObj.width * setRate, imageObj.height * setRate);
+      //$('#photo_img').hide();
+  
+     
+    })
+    function openphotoviewmodal(photo) {
+      var div = document.getElementById('photo-container');
+      div.innerHTML = '';
+      //$('#photo_img').attr("src", photo.Path);
+      var oc = document.createElement('canvas');
+      oc.id = 'photo-canvas';
+      var octx = oc.getContext('2d');
+      var img = new Image();
+      var w= 456;
+      img.src = photo.Path;
+      img.onload = function () {
+        oc.width = img.width;
+        oc.height = img.height;
+        octx.drawImage(img, 0, 0);
+        while (oc.width * 0.5 > w) {
+          oc.width *= 0.5;
+          oc.height *= 0.5;
+          octx.drawImage(oc, 0, 0, oc.width, oc.height);
+        }
+        oc.width = w;
+        oc.height = oc.width * img.height / img.width;
+        octx.drawImage(img, 0, 0, oc.width, oc.height);
+        var div = document.getElementById('photo-container');
+        div.appendChild(oc)
+      }
+     
+
+      $('.card-title').text(photo.Name)
+      $('#photoviewmodal').modal('toggle');
+    }
+
+    function predict() {
+      const img = document.getElementById('photo-canvas');
+      facemesh.predict(img).then(faces => {
+        console.log(faces)
+        if (faces) {
+          var canvas = document.getElementById("photo-canvas");
+          console.log(canvas)
+          var draw = canvas.getContext("2d");
+          var mesh = faces[0].scaledMesh;
+          console.log(mesh);
+
+          /* highlight facial landmark points on canvas board */
+          draw.fillStyle = "#00FF00";
+
+          for (i = 0; i < mesh.length; i++) {
+            var [x, y, z] = mesh[i];
+            draw.fillRect(Math.round(x), Math.round(y), 2, 2);
+          }
+        }
+      });
+    }
+  </script>
   <script>
     //全屏事件
     document.addEventListener('panel.onfullscreen', () => {
@@ -223,9 +335,10 @@
 
     }
             //弹出明细信息
-    function showDetailsWindow(id, index) {
-      const product = $dg.datagrid('getRows')[index];
-      openProductDetailWindow(product, 'Modified');
+    function previewphoto(id, index) {
+      const photo = $dg.datagrid('getRows')[index];
+      console.log(photo)
+      openphotoviewmodal(photo)
     }
     function reload() {
       $dg.datagrid('uncheckAll');
@@ -235,7 +348,7 @@
     function appendItem() {
       openuploadfilemodal();
     }
-      
+
 
     //删除选中的行
     function deleteChecked() {
@@ -352,8 +465,7 @@
             formatter: function showdetailsformatter(value, row, index) {
 
                 return `<div class="btn-group">\
-                         <button onclick="showDetailsWindow('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="查看明细" ><i class="fal fa-edit"></i> </button>\
-                      <button onclick="deleteRows(['${row.Id}'],${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="删除记录" ><i class="fal fa-times"></i> </button>\
+                         <button onclick="previewphoto('${row.Id}',  ${index})" class="btn btn-primary btn-sm btn-icon waves-effect waves-themed" title="预览照片" ><i class="fal fal fa-image"></i> </button>\
                       `
             }
           }
@@ -475,16 +587,16 @@
         var html = '';
         plupload.each(files, function (file) {
           html += ` <li id="${file.id}"  >
-                          <span class="plupload_filename">${file.name}</span>
-                          <span id="filesize" class="plupload_filesize">(大小:${plupload.formatSize(file.size)})</span>
-                          <span id="plfilesize" class="plupload_d-none">${plupload.formatSize(file.size)}</span>
-                          <span id="remove" class="plupload_fileremove">
-                                      <a href="javascript:void(0);" class="btn btn-outline-info btn-xs btn-icon waves-effect waves-themed">
-                                          <i class="fal fa-times"></i>
-                                      </a>
-                          </span>
-                          <span id="progress" class="plupload_fileprogress"></span>
-                          </li>`
+                            <span class="plupload_filename">${file.name}</span>
+                            <span id="filesize" class="plupload_filesize">(大小:${plupload.formatSize(file.size)})</span>
+                            <span id="plfilesize" class="plupload_d-none">${plupload.formatSize(file.size)}</span>
+                            <span id="remove" class="plupload_fileremove">
+                                        <a href="javascript:void(0);" class="btn btn-outline-info btn-xs btn-icon waves-effect waves-themed">
+                                            <i class="fal fa-times"></i>
+                                        </a>
+                            </span>
+                            <span id="progress" class="plupload_fileprogress"></span>
+                            </li>`
           //html += '<li id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></li>';
         });
         document.getElementById('filelist').innerHTML += html;
