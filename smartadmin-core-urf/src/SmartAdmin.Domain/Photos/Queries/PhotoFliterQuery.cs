@@ -9,6 +9,8 @@ using SmartAdmin.Application.Shared;
 using SmartAdmin.Domain.Models;
 using SmartAdmin.Service.Interfaces;
 using System.Linq.Dynamic.Core;
+using Microsoft.EntityFrameworkCore;
+
 namespace SmartAdmin.Application.Photos.Queries
 {
    public  class PhotoFliterQuery : IRequest<PageResponse<Photo>>
@@ -44,9 +46,15 @@ namespace SmartAdmin.Application.Photos.Queries
 
     }
   }
+  public class GetPhotosQuery : IRequest<IEnumerable<Photo>>
+  {
+
+  }
+
 
   public class PhotoFilterQueryHandel : IRequestHandler<PhotoFliterQuery, PageResponse<Photo>>,
-    IRequestHandler<GetPhotoById, Photo>
+    IRequestHandler<GetPhotoById, Photo>,
+    IRequestHandler<GetPhotosQuery, IEnumerable<Photo>>
   {
     private readonly IPhotoService photoService;
 
@@ -70,6 +78,11 @@ namespace SmartAdmin.Application.Photos.Queries
 
     public async Task<Photo> Handle(GetPhotoById request, CancellationToken cancellationToken) {
       return await this.photoService.FindAsync(request.Id);
+      }
+
+    public async Task<IEnumerable<Photo>> Handle(GetPhotosQuery request, CancellationToken cancellationToken) {
+      return await this.photoService.Queryable().ToListAsync();
+
       }
   }
 }

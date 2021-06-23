@@ -39,6 +39,22 @@ namespace SmartAdmin.WebUI.Controllers
       return Json(result);
 
     }
+    public async Task<JsonResult> GetAll()
+    {
+      var result = await this.mediator.Send(new GetPhotosQuery());
+      return Json(result);
+    }
+    public async Task<JsonResult> GetById(int id)
+    {
+      var result = await this.mediator.Send(new GetPhotoById() { Id=id});
+      return Json(result);
+    }
+    [HttpPost]
+    public async Task<JsonResult> Update(UpdatePhotoCommand request) {
+      var result = await this.mediator.Send(request);
+      return Json(result);
+    }
+
     [HttpPost]
     public async Task<JsonResult> Upload(List<IFormFile> file,string name,string tag) {
       var path = Path.Combine(this.webHostEnvironment.WebRootPath,"photos");
