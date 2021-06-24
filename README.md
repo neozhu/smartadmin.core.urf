@@ -1,4 +1,4 @@
-# Domain Driven Design (DDD) ultra-lightweight rapid development architecture(support .net 5.0)
+# Domain Driven Design (DDD) lightweight development architecture(support .net 5.0)
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/meitu_0.jpg)
 **smartadmin.core.urf offers a complete, modular and layered software architecture based on Domain Driven Design principles and patterns. It also provides the necessary infrastructure to implement this architecture, focusing on the core of the business Demand, reduce duplication coding,  allow junior programmers to develop professional and beautiful Web applications**
 
