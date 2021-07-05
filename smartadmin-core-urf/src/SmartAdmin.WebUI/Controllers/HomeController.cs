@@ -40,7 +40,7 @@ namespace SmartAdmin.WebUI.Controllers
       this.logger.LogInformation("访问首页");
       _eventBus.Publish("smartadmin.eventbus", new SubscribeEventData()
       {
-        publisher=typeof(HomeController).Name,
+        publisher = typeof(HomeController).Name,
         content = $"欢迎来到首页 @ {DateTime.Now}",
         from = ViewBag.GivenName,
         group = "操作日志",

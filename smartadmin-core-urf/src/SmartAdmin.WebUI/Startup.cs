@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Savorboard.CAP.InMemoryMessageQueue;
 using SmartAdmin.Domain.Models;
 using SmartAdmin.Infrastructure;
 using SmartAdmin.Infrastructure.Persistence;
@@ -45,7 +46,7 @@ namespace SmartAdmin.WebUI
 {
   public class Startup
   {
-    
+
 
     public Startup(IConfiguration configuration)
     {
@@ -58,11 +59,11 @@ namespace SmartAdmin.WebUI
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<SmartSettings>(Configuration.GetSection(SmartSettings.SectionName));
+      services.Configure<SmartSettings>(Configuration.GetSection(SmartSettings.SectionName));
       var settings = Configuration.GetSection(nameof(SmartSettings)).Get<SmartSettings>();
       // Note: This line is for demonstration purposes only, I would not recommend using this as a shorthand approach for accessing settings
       // While having to type '.Value' everywhere is driving me nuts (>_<), using this method means reloaded appSettings.json from disk will not work
-     
+
       services.Configure<CookiePolicyOptions>(options =>
       {
         // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -71,9 +72,10 @@ namespace SmartAdmin.WebUI
       });
       var connectionString = Configuration.GetConnectionString(nameof(SmartDbContext));
 
-      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, sqlServerOptions=> {
+      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, sqlServerOptions =>
+      {
         sqlServerOptions.CommandTimeout(60);
-        })
+      })
       .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
       );
       services.AddDbContext<SmartDbContext>(options => options.UseSqlServer(connectionString));
@@ -98,7 +100,7 @@ namespace SmartAdmin.WebUI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-      
+
 
       #region infrastructure framework
       services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
@@ -152,7 +154,7 @@ namespace SmartAdmin.WebUI
         });
 
 
-
+      services.AddCors();
       services.AddRazorPages();
       services.AddMvc().AddRazorRuntimeCompilation();
 
@@ -186,21 +188,21 @@ namespace SmartAdmin.WebUI
          options.SlidingExpiration = true;
          options.ExpireTimeSpan = TimeSpan.FromDays(30); //Account.Login overrides this default value
        })
-        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,x =>
-      {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
-        {
-          ValidateIssuerSigningKey = true,
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Jwt:Key"])),
-          ValidateIssuer = true,
-          ValidateAudience = true,
-          ValidateLifetime = true,
-          ValidIssuer = Configuration["Jwt:Issuer"],
-          ValidAudience = Configuration["Jwt:Issuer"],
-        };
-      });
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, x =>
+       {
+         x.RequireHttpsMetadata = false;
+         x.SaveToken = true;
+         x.TokenValidationParameters = new TokenValidationParameters
+         {
+           ValidateIssuerSigningKey = true,
+           IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Jwt:Key"])),
+           ValidateIssuer = true,
+           ValidateAudience = true,
+           ValidateLifetime = true,
+           ValidIssuer = Configuration["Jwt:Issuer"],
+           ValidAudience = Configuration["Jwt:Issuer"],
+         };
+       });
 
 
       services.ConfigureApplicationCookie(options =>
@@ -257,15 +259,18 @@ namespace SmartAdmin.WebUI
                 });
       });
 
-      var mqoptions= Configuration.GetSection(nameof(RabbitMQOptions)).Get<RabbitMQOptions>();
+      var mqoptions = Configuration.GetSection(nameof(RabbitMQOptions)).Get<RabbitMQOptions>();
       services.AddCap(x =>
       {
         x.UseEntityFramework<SmartDbContext>();
-        x.UseRabbitMQ(options=> {
-          options = mqoptions;
-          });
-        x.UseDashboard( options=> {
-          options.Authorization= new[] { new DashboardAuthorizationFilter() };
+        x.UseInMemoryMessageQueue();
+        //x.UseRabbitMQ(options =>
+        //{
+        //  options = mqoptions;
+        //});
+        x.UseDashboard(options =>
+        {
+          options.UseChallengeOnAuth = true;
         });
         x.FailedRetryCount = 5;
         x.FailedThresholdCallback = failed =>
@@ -280,12 +285,12 @@ namespace SmartAdmin.WebUI
         options.EnableDetailedErrors = true;
         options.KeepAliveInterval = TimeSpan.FromMinutes(1);
       });
-     }
+    }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
-  
+
       //Use the EF Core DB Context Service to automatically migrate database changes
       using (var serviceScope = app.ApplicationServices.CreateScope())
       {
@@ -313,6 +318,10 @@ namespace SmartAdmin.WebUI
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
       }
+      app.UseCors(builder => builder
+         .AllowAnyOrigin()
+         .AllowAnyMethod()
+         .AllowAnyHeader());
       app.UseHttpsRedirection();
       app.UseStaticFiles();
 
@@ -325,9 +334,9 @@ namespace SmartAdmin.WebUI
       {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartAdmin.WebApi");
       });
-
+     
       app.UseRouting();
-
+    
       app.UseAuthentication();
       app.UseAuthorization();
 
@@ -338,12 +347,13 @@ namespace SmartAdmin.WebUI
                   "default",
                   "{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
-        endpoints.MapHub<NotificationHub>("/notificationhub", options=> {
+        endpoints.MapHub<NotificationHub>("/notificationhub", options =>
+        {
           options.Transports = HttpTransportType.LongPolling;
-          });
+        });
       });
-      
-       logger.LogTrace("网站启动");
+
+      logger.LogTrace("网站启动");
     }
   }
 }
