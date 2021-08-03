@@ -87,6 +87,9 @@
           remoteFilter: true,
           singleSelect: false,
           method: 'get',
+          height: 670,
+          pageSize: 15,
+          pageList: [15, 20, 50, 100, 500, 2000],
           onClickCell: (index, field) => {
             this.item = this.$dg.datagrid('getRows')[index];
             const _actions = ['action', 'ck'];

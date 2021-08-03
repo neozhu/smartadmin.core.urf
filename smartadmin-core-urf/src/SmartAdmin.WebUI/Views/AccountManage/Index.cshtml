@@ -253,8 +253,11 @@
         singleSelect: false,
         method: 'get',
         pagination: true,
-         clientPaging: false,
+        clientPaging: false,
         striped: true,
+        height: 670,
+        pageSize: 15,
+        pageList: [15, 20, 50, 100, 500, 2000],
         onDblClickRow: function (index, row) {
           edituser(row);
         },
@@ -293,6 +296,8 @@
           {
             field: 'status',
             title: '状态',
+            width: 80,
+            align: 'center',
             formatter: function (v, r, i) {
               if (r.LockoutEnd == null) {
                 return '<span class="badge badge-info">正常</span>'

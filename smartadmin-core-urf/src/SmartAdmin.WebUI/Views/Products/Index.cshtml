@@ -244,8 +244,6 @@
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
   <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
   <script src="~/js/plugin/filesaver/FileSaver.js" asp-append-version="true"></script>
@@ -472,13 +470,9 @@
         pagination: true,
         striped: true,
         filterRules: [],
-        onHeaderContextMenu: function (e, field) {
-          e.preventDefault();
-          $(this).datagrid('columnMenu').menu('show', {
-            left: e.pageX,
-            top: e.pageY
-          });
-        },
+        height: 670,
+        pageSize: 15,
+        pageList: [15, 20, 50, 100, 500, 2000],
         onBeforeLoad: function () {
           $('.enable-loader').removeClass('enable-loader')
         },
@@ -606,8 +600,7 @@
             formatter: numberformatter
           }
         ]]
-      }).datagrid('columnMoving')
-        .datagrid('resetColumns')
+      })
         .datagrid('enableFilter', [
         ])
         .datagrid('load', '/Products/GetData');

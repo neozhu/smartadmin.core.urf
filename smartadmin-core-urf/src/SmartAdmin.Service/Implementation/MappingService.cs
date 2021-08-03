@@ -38,7 +38,7 @@ namespace SmartAdmin.Service
       => await Task.Run(() =>
                         {
                           var list = new List<EntityInfo>();
-                          var asm = Assembly.Load("SmartAdmin.Entity");
+                          var asm = Assembly.Load("SmartAdmin.Domain");
                           list = asm.GetTypes()
                                  .Where(type => typeof(Entity).IsAssignableFrom(type))
                                  .SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
@@ -53,7 +53,7 @@ namespace SmartAdmin.Service
     public async Task GenerateByEnityNameAsync(string entityName)
     {
 
-      var asm = Assembly.Load("SmartAdmin.Entity");
+      var asm = Assembly.Load("SmartAdmin.Domain");
       var list = asm.GetTypes()
              .Where(type => typeof(Entity).IsAssignableFrom(type))
              .SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))

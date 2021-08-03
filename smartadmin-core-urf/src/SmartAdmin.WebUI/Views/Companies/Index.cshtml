@@ -309,13 +309,12 @@
           clientPaging: false,
           pagination: true,
           striped: true,
+          height: 670,
+          pageSize: 15,
+          pageList: [15, 20, 50, 100, 500, 2000],
           filterRules: [],
           onClickCell: (index, field) => {
             this.onClickCell(index, field);
-          },
-          onHeaderContextMenu: (e, field) => {
-            e.preventDefault();
-            this.showContextMenu(e, field);
           },
           onBeforeLoad: () => {
             $('.enable-loader').removeClass('enable-loader')

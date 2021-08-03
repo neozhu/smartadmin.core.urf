@@ -13,13 +13,7 @@
                 <div class="page-content-wrapper">
                     <partial name="_PageHeader" />
                     <main id="js-page-content" role="main" class="page-content">
-                        @if (ViewBag.PreemptiveClass?.Length > 0)
-                        {
-                        }
-                        else
-                        {
-            <partial name="_PageBreadcrumb" />
-                            <div class="subheader"><partial name="_PageHeading" />@RenderSection("Subheaderblock", required: false)</div>}
+                    <partial name="_PageBreadcrumb" />
                         @RenderBody()
                     </main>
                     <partial name="_PageContentOverlay" />

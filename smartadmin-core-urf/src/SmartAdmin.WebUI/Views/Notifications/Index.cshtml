@@ -331,13 +331,9 @@
         pagination: true,
         clientPaging: false,
         striped: true,
-        onHeaderContextMenu: function (e, field) {
-          e.preventDefault();
-          $(this).datagrid('columnMenu').menu('show', {
-            left: e.pageX,
-            top: e.pageY
-          });
-        },
+        height: 670,
+        pageSize: 15,
+        pageList: [15, 20, 50, 100, 500, 2000],
         onBeforeLoad: function () {
           $('.enable-loader').removeClass('enable-loader')
         },

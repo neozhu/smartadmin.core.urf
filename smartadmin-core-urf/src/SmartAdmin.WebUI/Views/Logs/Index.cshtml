@@ -385,19 +385,14 @@
         pagination: true,
         clientPaging: false,
         striped: true,
-        pageList: [10, 20, 50, 100, 500],
+        height: 670,
+        pageSize: 15,
+        pageList: [15, 20, 50, 100, 500, 2000],
         filterRules: [{
           field: 'Resolved',
           op: 'equal',
           value: 'false'
         }],
-        onHeaderContextMenu: function (e, field) {
-          e.preventDefault();
-          $(this).datagrid('columnMenu').menu('show', {
-            left: e.pageX,
-            top: e.pageY
-          });
-        },
         onBeforeLoad: function () {
           $('.enable-loader').removeClass('enable-loader')
         },

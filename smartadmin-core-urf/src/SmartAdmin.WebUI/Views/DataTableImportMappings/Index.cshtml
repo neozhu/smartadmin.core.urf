@@ -119,8 +119,6 @@
   <script src="~/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.min.js" asp-append-version="true"></script>
   <script src="~/js/easyui/plugins/datagrid-filter.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-ext.js" asp-append-version="true"></script>
-  <script src="~/js/easyui/plugins/columns-reset.js" asp-append-version="true"></script>
   <script src="~/js/easyui/locale/easyui-lang-zh_CN.js" asp-append-version="true"></script>
   <script src="~/js/easyui/jquery.easyui.component.js" asp-append-version="true"></script>
   <script src="~/js/jquery.extend.formatter.js" asp-append-version="true"></script>
@@ -368,7 +366,9 @@
         rownumbers: true,
         remoteFilter: true,
         singleSelect: false,
-        pageList: [10, 20, 50, 100, 500],
+        height: 670,
+        pageSize: 15,
+        pageList: [15, 20, 50, 100, 500, 2000],
         method: 'get',
         onClickCell: onClickCell,
          clientPaging: false,
