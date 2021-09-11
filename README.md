@@ -11,11 +11,8 @@ Domain-driven design is predicated on the following goals:
 ## Demo Site
 ![](https://raw.githubusercontent.com/neozhu/smartadmin.core.urf/master/img/login.png)
 
-[Demo (http://139.196.107.159:1060)](http://139.196.107.159:1060/Identity/Account/Login) 
-
 UserName:**demo** Password:**123456** 
-
-[Demo (http://106.52.105.140:6200)](http://106.52.105.140:6200/)
+[Demo (https://admin.i247365.net/)](https://admin.i247365.net/)
 > Please give me **Star** if you like it. Every Star is a motivation to encourage me to continue updating.
 > 
 ## Layers
