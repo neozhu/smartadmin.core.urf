@@ -288,7 +288,7 @@ namespace SmartAdmin.WebUI
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+    public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
 
       //Use the EF Core DB Context Service to automatically migrate database changes
@@ -300,11 +300,15 @@ namespace SmartAdmin.WebUI
           logger.LogInformation("SmartDbContext:执行数据库迁移");
           context.Database.Migrate();
         }
+      await   SmartDbContextSeed.SeedSampleDataAsync(context);
         var identitycontext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
         if (identitycontext.Database.GetPendingMigrations().Any())
         {
           logger.LogInformation("ApplicationDbContext:执行数据库迁移");
           identitycontext.Database.Migrate();
+          var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
+          var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+          await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
         }
       }
       if (env.IsDevelopment())

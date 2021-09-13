@@ -67,6 +67,7 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Mapping\" />
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\js\plugin\jquery.validation\" />
     <Folder Include="wwwroot\js\plugin\jquery.form.binding\" />
     <Folder Include="wwwroot\js\plugin\snowflakeid\" />
