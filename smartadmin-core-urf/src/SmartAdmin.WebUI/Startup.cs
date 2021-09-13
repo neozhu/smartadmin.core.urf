@@ -299,8 +299,9 @@ namespace SmartAdmin.WebUI
         {
           logger.LogInformation("SmartDbContext:执行数据库迁移");
           context.Database.Migrate();
+          await SmartDbContextSeed.SeedSampleDataAsync(context);
         }
-      await   SmartDbContextSeed.SeedSampleDataAsync(context);
+       
         var identitycontext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
         if (identitycontext.Database.GetPendingMigrations().Any())
         {
