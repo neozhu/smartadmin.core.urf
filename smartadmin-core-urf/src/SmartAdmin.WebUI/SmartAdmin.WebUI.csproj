@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\**" />
+    <Content Remove="Migrations\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Migrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Models\DashboardAuthorizationFilter.cs" />
     <Compile Remove="Models\SmartNavigation.cs" />
   </ItemGroup>
@@ -67,7 +74,6 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Mapping\" />
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\js\plugin\jquery.validation\" />
     <Folder Include="wwwroot\js\plugin\jquery.form.binding\" />
     <Folder Include="wwwroot\js\plugin\snowflakeid\" />

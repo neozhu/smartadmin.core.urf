@@ -31,12 +31,12 @@ namespace SmartAdmin.WebUI.Models
         var role = claimsidentity.FindFirst(ClaimTypes.Role)?.Value;
         // SmartAdmin Toggle Features
         controller.ViewBag.AppSidebar = _settings.Features.AppSidebar;
-        controller.ViewBag.AppHeader = _settings.Features.AppHeader; 
-        controller.ViewBag.AppLayoutShortcut = _settings.Features.AppLayoutShortcut; 
+        controller.ViewBag.AppHeader = _settings.Features.AppHeader;
+        controller.ViewBag.AppLayoutShortcut = _settings.Features.AppLayoutShortcut;
         controller.ViewBag.AppFooter = _settings.Features.AppFooter;
         controller.ViewBag.ShortcutMenu = _settings.Features.ShortcutMenu;
-        controller.ViewBag.ChatInterface = _settings.Features.ChatInterface ;
-        controller.ViewBag.LayoutSettings = _settings.Features.LayoutSettings; 
+        controller.ViewBag.ChatInterface = _settings.Features.ChatInterface;
+        controller.ViewBag.LayoutSettings = _settings.Features.LayoutSettings;
 
         // SmartAdmin Default Settings
         controller.ViewBag.App = _settings.App;
@@ -52,8 +52,8 @@ namespace SmartAdmin.WebUI.Models
         controller.ViewBag.TenantId = tenantid;
         controller.ViewBag.Email = email;
         controller.ViewBag.Twitter = givenname;
-        controller.ViewBag.Avatar = string.IsNullOrEmpty(avatarurl)? $"{username}.png": avatarurl;
-        controller.ViewBag.AvatarM = string.IsNullOrEmpty(avatarurl) ? $"{username}.png" : avatarurl; ;
+        controller.ViewBag.Avatar = avatarurl;
+        controller.ViewBag.AvatarM = avatarurl;
         controller.ViewBag.Version = _settings.Version;
         controller.ViewBag.ThemeVersion = _settings.Theme.ThemeVersion;
         controller.ViewBag.Logo = _settings.Logo;
