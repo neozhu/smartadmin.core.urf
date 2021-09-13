@@ -52,8 +52,8 @@ namespace SmartAdmin.WebUI.Models
         controller.ViewBag.TenantId = tenantid;
         controller.ViewBag.Email = email;
         controller.ViewBag.Twitter = givenname;
-        controller.ViewBag.Avatar = avatarurl;
-        controller.ViewBag.AvatarM = avatarurl;
+        controller.ViewBag.Avatar = string.IsNullOrEmpty(avatarurl)? $"{username}.png": avatarurl;
+        controller.ViewBag.AvatarM = string.IsNullOrEmpty(avatarurl) ? $"{username}.png" : avatarurl; ;
         controller.ViewBag.Version = _settings.Version;
         controller.ViewBag.ThemeVersion = _settings.Theme.ThemeVersion;
         controller.ViewBag.Logo = _settings.Logo;
